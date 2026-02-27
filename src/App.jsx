@@ -1,4 +1,6 @@
-import { Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import useStore from './store/useStore';
 
 // Layouts
 import AppLayout from './components/layout/AppLayout';
@@ -21,6 +23,8 @@ import QueryManager   from './pages/QueryManager';
 import Settings       from './pages/Settings';
 import ClientPortal   from './pages/ClientPortal';
 import Onboarding     from './pages/Onboarding';
+import Login          from './pages/Login';
+import Signup         from './pages/Signup';
 
 // Toast for standalone layouts
 import Toast from './components/ui/Toast';
@@ -56,18 +60,50 @@ function NotFound() {
   );
 }
 
+// ── Theme sync ────────────────────────────────
+// Keeps document data-theme in sync with store
+function ThemeSync() {
+  const isDarkMode = useStore((s) => s.isDarkMode);
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+  }, [isDarkMode]);
+  return null;
+}
+
+// ── Onboarding guard (auth required, but not onboarding) ──
+function OnboardingGuard() {
+  const isAuthenticated = useStore((s) => s.isAuthenticated);
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  return <OnboardingLayout />;
+}
+
+// ── Main app guard (auth + onboarding both required) ──────
+function ProtectedLayout() {
+  const isAuthenticated    = useStore((s) => s.isAuthenticated);
+  const onboardingComplete = useStore((s) => s.onboardingComplete);
+  if (!isAuthenticated)    return <Navigate to="/login" replace />;
+  if (!onboardingComplete) return <Navigate to="/onboarding" replace />;
+  return <AppLayout />;
+}
+
 // ── Route table ───────────────────────────────
 export default function App() {
   return (
+    <>
+    <ThemeSync />
     <Routes>
       {/* Client portal — standalone layout */}
       <Route path="/client-portal" element={<ClientLayout />} />
 
-      {/* Onboarding — standalone layout */}
-      <Route path="/onboarding" element={<OnboardingLayout />} />
+      {/* Auth — standalone layouts */}
+      <Route path="/login"  element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
 
-      {/* Main app — AppLayout wraps all routes */}
-      <Route element={<AppLayout />}>
+      {/* Onboarding — requires auth, no sidebar */}
+      <Route path="/onboarding" element={<OnboardingGuard />} />
+
+      {/* Main app — guarded by onboarding check */}
+      <Route element={<ProtectedLayout />}>
         <Route index               element={<Dashboard />} />
         <Route path="campaigns"     element={<CampaignList />} />
         <Route path="campaigns/new" element={<CampaignNew />} />
@@ -86,5 +122,6 @@ export default function App() {
         <Route path="*"             element={<NotFound />} />
       </Route>
     </Routes>
+    </>
   );
 }

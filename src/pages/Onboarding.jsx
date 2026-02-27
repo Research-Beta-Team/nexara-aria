@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { C, F, R, S, T, shadows } from '../tokens';
+import useStore from '../store/useStore';
 
 // ── Onboarding questions ──────────────────────
 const QUESTIONS = [
@@ -139,6 +140,7 @@ function CampaignBrief({ answers }) {
 // ── Main Onboarding component ─────────────────
 export default function Onboarding() {
   const navigate = useNavigate();
+  const completeOnboarding = useStore((s) => s.completeOnboarding);
   const [messages,    setMessages]    = useState([]);
   const [phase,       setPhase]       = useState('starting');
   const [qIndex,      setQIndex]      = useState(0);
@@ -236,9 +238,24 @@ export default function Onboarding() {
       <div style={{ width: '100%', maxWidth: '680px', display: 'flex', flexDirection: 'column', gap: S[5] }}>
 
         {/* Brand header */}
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontFamily: F.display, fontSize: '30px', fontWeight: 800, color: C.primary, letterSpacing: '-0.03em' }}>NEXTARA</div>
-          <div style={{ fontFamily: F.body, fontSize: '14px', color: C.textSecondary, marginTop: '4px' }}>AI-Powered B2B Campaign Intelligence</div>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+          <div style={{ flex: 1 }}/>
+          <div style={{ textAlign: 'center', flex: 2 }}>
+            <div style={{ fontFamily: F.display, fontSize: '30px', fontWeight: 800, color: C.primary, letterSpacing: '-0.03em' }}>NEXTARA</div>
+            <div style={{ fontFamily: F.body, fontSize: '14px', color: C.textSecondary, marginTop: '4px' }}>AI-Powered B2B Campaign Intelligence</div>
+          </div>
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', paddingTop: '6px' }}>
+            {phase !== 'complete' && (
+              <button
+                onClick={() => { completeOnboarding(); navigate('/'); }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: F.body, fontSize: '12px', color: C.textMuted, padding: `${S[1]} ${S[2]}`, borderRadius: R.md, transition: T.color }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = C.textSecondary; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = C.textMuted; }}
+              >
+                Skip to Dashboard →
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Progress indicator */}
@@ -325,7 +342,7 @@ export default function Onboarding() {
           {phase === 'complete' && (
             <div style={{ padding: S[4], borderTop: `1px solid ${C.border}`, backgroundColor: C.surface2, display: 'flex', gap: S[3] }}>
               <button
-                onClick={() => navigate('/campaigns/new')}
+                onClick={() => { completeOnboarding(); navigate('/campaigns/new'); }}
                 style={{ flex: 1, padding: `${S[3]} ${S[4]}`, backgroundColor: C.primary, color: C.textInverse, border: 'none', borderRadius: R.button, fontFamily: F.body, fontSize: '14px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: S[2], transition: T.base }}
               >
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -334,7 +351,7 @@ export default function Onboarding() {
                 Launch Campaign
               </button>
               <button
-                onClick={() => navigate('/')}
+                onClick={() => { completeOnboarding(); navigate('/'); }}
                 style={{ flex: 1, padding: `${S[3]} ${S[4]}`, backgroundColor: 'transparent', color: C.textSecondary, border: `1px solid ${C.border}`, borderRadius: R.button, fontFamily: F.body, fontSize: '14px', fontWeight: 500, cursor: 'pointer', transition: T.base }}
               >
                 Go to Dashboard

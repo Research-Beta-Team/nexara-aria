@@ -8,9 +8,14 @@ const useStore = create((set, get) => ({
   currentClient: 'Acme Corp',
   currentCampaign: 'CFO Vietnam Q1',
 
+  // ── Auth ────────────────────────────────────
+  isAuthenticated: false,
+
   // ── UI State ────────────────────────────────
   ariaOpen: false,
   sidebarCollapsed: false,
+  onboardingComplete: false,
+  isDarkMode: true,
 
   // ── Notifications ────────────────────────────
   notifications: [],
@@ -27,6 +32,14 @@ const useStore = create((set, get) => ({
   setCampaign: (campaign) => set({ currentCampaign: campaign }),
 
   // ── Actions: UI ──────────────────────────────
+  // ── Actions: Auth ────────────────────────────
+  login:  () => set({ isAuthenticated: true }),
+  logout: () => set({ isAuthenticated: false, onboardingComplete: false }),
+
+  completeOnboarding: () => set({ onboardingComplete: true }),
+
+  toggleTheme: () => set((s) => ({ isDarkMode: !s.isDarkMode })),
+
   toggleAria: () => set((state) => ({ ariaOpen: !state.ariaOpen })),
 
   setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),

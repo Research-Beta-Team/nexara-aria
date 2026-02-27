@@ -1,1 +1,114 @@
 @import "tailwindcss";
+
+/* ─────────────────────────────────────────────
+   NEXARA — CSS Design Token Variables
+   Dark theme is the default (:root).
+   Light theme activates via [data-theme="light"]
+   on <html>.
+───────────────────────────────────────────── */
+
+/* ── Dark theme (default) ─────────────────── */
+:root {
+  /* Backgrounds */
+  --c-bg:       #070D09;
+  --c-surface:  #0C1510;
+  --c-surface2: #111B14;
+  --c-surface3: #162019;
+
+  /* Borders */
+  --c-border:       #1C2E22;
+  --c-border-hover: #2A4433;
+
+  /* Brand accents */
+  --c-primary:      #3DDC84;
+  --c-primary-dim:  #2AA860;
+  --c-primary-glow: rgba(61, 220, 132, 0.15);
+  --c-secondary:    #5EEAD4;
+  --c-secondary-dim:#3DBFAB;
+
+  /* Text */
+  --c-text-primary:   #DFF0E8;
+  --c-text-secondary: #6B9478;
+  --c-text-muted:     #3A5242;
+  --c-text-inverse:   #070D09;
+
+  /* Semantic */
+  --c-red:       #FF6E7A;
+  --c-red-dim:   rgba(255, 110, 122, 0.15);
+  --c-amber:     #F5C842;
+  --c-amber-dim: rgba(245, 200, 66, 0.15);
+  --c-green:     #3DDC84;
+  --c-green-dim: rgba(61, 220, 132, 0.15);
+
+  /* Overlays */
+  --c-overlay:       rgba(7, 13, 9, 0.70);
+  --c-overlay-heavy: rgba(7, 13, 9, 0.92);
+
+  /* Shadows */
+  --shadow-card:       0 1px 3px rgba(0,0,0,0.4), 0 0 0 1px rgba(28,46,34,0.8);
+  --shadow-card-hover: 0 4px 16px rgba(0,0,0,0.5), 0 0 0 1px rgba(61,220,132,0.2);
+  --shadow-glow:       0 0 20px rgba(61,220,132,0.2);
+  --shadow-glow-sm:    0 0 8px rgba(61,220,132,0.15);
+  --shadow-modal:      0 24px 64px rgba(0,0,0,0.8);
+  --shadow-dropdown:   0 8px 24px rgba(0,0,0,0.6), 0 0 0 1px rgba(28,46,34,1);
+  --shadow-inset:      inset 0 1px 3px rgba(0,0,0,0.4);
+}
+
+/* ── Light theme ──────────────────────────── */
+[data-theme="light"] {
+  /* Backgrounds */
+  --c-bg:       #EFF7F2;
+  --c-surface:  #FFFFFF;
+  --c-surface2: #F4FAF6;
+  --c-surface3: #E6F2EB;
+
+  /* Borders */
+  --c-border:       #C8E3D2;
+  --c-border-hover: #9CCBB3;
+
+  /* Brand accents — darker for legibility on white */
+  --c-primary:      #1A9B5F;
+  --c-primary-dim:  #14825000;
+  --c-primary-glow: rgba(26, 155, 95, 0.12);
+  --c-secondary:    #12A99A;
+  --c-secondary-dim:#0E8F82;
+
+  /* Text */
+  --c-text-primary:   #081A0F;
+  --c-text-secondary: #38644B;
+  --c-text-muted:     #7CA88A;
+  --c-text-inverse:   #FFFFFF;
+
+  /* Semantic */
+  --c-red:       #C42B3B;
+  --c-red-dim:   rgba(196, 43, 59, 0.10);
+  --c-amber:     #8A6200;
+  --c-amber-dim: rgba(138, 98, 0, 0.10);
+  --c-green:     #1A9B5F;
+  --c-green-dim: rgba(26, 155, 95, 0.12);
+
+  /* Overlays */
+  --c-overlay:       rgba(8, 26, 15, 0.50);
+  --c-overlay-heavy: rgba(8, 26, 15, 0.85);
+
+  /* Shadows */
+  --shadow-card:       0 1px 3px rgba(0,0,0,0.07), 0 0 0 1px rgba(200,227,210,0.9);
+  --shadow-card-hover: 0 4px 16px rgba(0,0,0,0.10), 0 0 0 1px rgba(26,155,95,0.25);
+  --shadow-glow:       0 0 20px rgba(26,155,95,0.15);
+  --shadow-glow-sm:    0 0 8px rgba(26,155,95,0.10);
+  --shadow-modal:      0 24px 64px rgba(0,0,0,0.18);
+  --shadow-dropdown:   0 8px 24px rgba(0,0,0,0.10), 0 0 0 1px rgba(200,227,210,1);
+  --shadow-inset:      inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* ── Global base ──────────────────────────── */
+html {
+  background-color: var(--c-bg);
+  transition: background-color 0.25s ease;
+}
+
+body {
+  background-color: var(--c-bg);
+  color: var(--c-text-primary);
+  transition: background-color 0.25s ease, color 0.2s ease;
+}

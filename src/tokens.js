@@ -1,45 +1,46 @@
 // ─────────────────────────────────────────────
 //  NEXARA Design Tokens
-//  Single source of truth — import from here,
-//  never hardcode values in components.
+//  All color values resolve from CSS variables
+//  defined in index.css. Switching data-theme
+//  on <html> swaps the full palette instantly.
 // ─────────────────────────────────────────────
 
 // ── Colors ───────────────────────────────────
 export const C = {
   // Backgrounds
-  bg:       '#070D09',
-  surface:  '#0C1510',
-  surface2: '#111B14',
-  surface3: '#162019',
+  bg:       'var(--c-bg)',
+  surface:  'var(--c-surface)',
+  surface2: 'var(--c-surface2)',
+  surface3: 'var(--c-surface3)',
 
   // Borders
-  border:   '#1C2E22',
-  borderHover: '#2A4433',
+  border:      'var(--c-border)',
+  borderHover: 'var(--c-border-hover)',
 
   // Brand accents
-  primary:  '#3DDC84',
-  primaryDim: '#2AA860',
-  primaryGlow: 'rgba(61,220,132,0.15)',
-  secondary: '#5EEAD4',
-  secondaryDim: '#3DBFAB',
+  primary:      'var(--c-primary)',
+  primaryDim:   'var(--c-primary-dim)',
+  primaryGlow:  'var(--c-primary-glow)',
+  secondary:    'var(--c-secondary)',
+  secondaryDim: 'var(--c-secondary-dim)',
 
   // Text
-  textPrimary:   '#DFF0E8',
-  textSecondary: '#6B9478',
-  textMuted:     '#3A5242',
-  textInverse:   '#070D09',
+  textPrimary:   'var(--c-text-primary)',
+  textSecondary: 'var(--c-text-secondary)',
+  textMuted:     'var(--c-text-muted)',
+  textInverse:   'var(--c-text-inverse)',
 
   // Semantic
-  red:    '#FF6E7A',
-  redDim: 'rgba(255,110,122,0.15)',
-  amber:  '#F5C842',
-  amberDim: 'rgba(245,200,66,0.15)',
-  green:  '#3DDC84',
-  greenDim: 'rgba(61,220,132,0.15)',
+  red:      'var(--c-red)',
+  redDim:   'var(--c-red-dim)',
+  amber:    'var(--c-amber)',
+  amberDim: 'var(--c-amber-dim)',
+  green:    'var(--c-green)',
+  greenDim: 'var(--c-green-dim)',
 
   // Overlays
-  overlay: 'rgba(7,13,9,0.7)',
-  overlayHeavy: 'rgba(7,13,9,0.92)',
+  overlay:      'var(--c-overlay)',
+  overlayHeavy: 'var(--c-overlay-heavy)',
 };
 
 // ── Typography ────────────────────────────────
@@ -78,13 +79,13 @@ export const S = {
 
 // ── Shadows ───────────────────────────────────
 export const shadows = {
-  card:    '0 1px 3px rgba(0,0,0,0.4), 0 0 0 1px rgba(28,46,34,0.8)',
-  cardHover: '0 4px 16px rgba(0,0,0,0.5), 0 0 0 1px rgba(61,220,132,0.2)',
-  glow:    '0 0 20px rgba(61,220,132,0.2)',
-  glowSm:  '0 0 8px rgba(61,220,132,0.15)',
-  modal:   '0 24px 64px rgba(0,0,0,0.8)',
-  dropdown:'0 8px 24px rgba(0,0,0,0.6), 0 0 0 1px rgba(28,46,34,1)',
-  inset:   'inset 0 1px 3px rgba(0,0,0,0.4)',
+  card:      'var(--shadow-card)',
+  cardHover: 'var(--shadow-card-hover)',
+  glow:      'var(--shadow-glow)',
+  glowSm:    'var(--shadow-glow-sm)',
+  modal:     'var(--shadow-modal)',
+  dropdown:  'var(--shadow-dropdown)',
+  inset:     'var(--shadow-inset)',
 };
 
 // ── Z-index scale ─────────────────────────────
@@ -265,17 +266,17 @@ export const badge = {
   green: {
     backgroundColor: C.greenDim,
     color: C.primary,
-    border: `1px solid rgba(61,220,132,0.2)`,
+    border: `1px solid ${C.primaryGlow}`,
   },
   red: {
     backgroundColor: C.redDim,
     color: C.red,
-    border: `1px solid rgba(255,110,122,0.2)`,
+    border: `1px solid ${C.redDim}`,
   },
   amber: {
     backgroundColor: C.amberDim,
     color: C.amber,
-    border: `1px solid rgba(245,200,66,0.2)`,
+    border: `1px solid ${C.amberDim}`,
   },
   muted: {
     backgroundColor: C.surface3,

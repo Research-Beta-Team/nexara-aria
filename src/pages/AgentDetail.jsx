@@ -229,64 +229,181 @@ function OutputHistoryTab({ agent }) {
   );
 }
 
+// ── Configuration Tab sub-components ─────────
+
+function TempBar({ value }) {
+  const pct = Math.min(1, Math.max(0, value ?? 0)) * 100;
+  const color = value > 0.7 ? C.amber : C.primary;
+  return (
+    <div>
+      <div style={{ fontFamily: F.mono, fontSize: '22px', fontWeight: 700, color: C.textPrimary, lineHeight: 1 }}>{value}</div>
+      <div style={{ marginTop: '8px', height: '5px', borderRadius: '3px', backgroundColor: C.surface3 }}>
+        <div style={{ height: '100%', width: `${pct}%`, backgroundColor: color, borderRadius: '3px' }}/>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
+        <span style={{ fontFamily: F.mono, fontSize: '9px', color: C.textMuted, letterSpacing: '0.04em' }}>FOCUSED</span>
+        <span style={{ fontFamily: F.mono, fontSize: '9px', color: C.textMuted, letterSpacing: '0.04em' }}>CREATIVE</span>
+      </div>
+    </div>
+  );
+}
+
+function TagList({ value }) {
+  const tags = String(value ?? '').split(/[,/]/).map((t) => t.trim()).filter(Boolean);
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '2px' }}>
+      {tags.map((t) => (
+        <span key={t} style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 600, color: C.secondary, backgroundColor: C.surface3, border: `1px solid rgba(94,234,212,0.2)`, borderRadius: R.pill, padding: `2px ${S[2]}` }}>{t}</span>
+      ))}
+    </div>
+  );
+}
+
+function ModelBadge({ value }) {
+  return (
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: S[2], backgroundColor: C.primaryGlow, border: `1px solid ${C.primary}`, borderRadius: R.md, padding: `${S[1]} ${S[3]}` }}>
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M6 1L11 10H1L6 1z" stroke={C.primary} strokeWidth="1.2" strokeLinejoin="round"/>
+        <path d="M3 7.5h6" stroke={C.primary} strokeWidth="1.2" strokeLinecap="round"/>
+      </svg>
+      <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, color: C.primary }}>{value ?? '—'}</span>
+    </div>
+  );
+}
+
+function ConfigCell({ label, children }) {
+  return (
+    <div style={{ padding: `${S[4]} ${S[5]}` }}>
+      <div style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: S[2] }}>{label}</div>
+      {children}
+    </div>
+  );
+}
+
+function CfgSection({ title, description, icon, items }) {
+  return (
+    <div style={{ backgroundColor: C.surface2, border: `1px solid ${C.border}`, borderRadius: R.card, overflow: 'hidden' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: S[3], padding: `${S[3]} ${S[5]}`, borderBottom: `1px solid ${C.border}`, backgroundColor: C.surface3 }}>
+        <span style={{ color: C.primary, display: 'flex' }}>{icon}</span>
+        <div>
+          <div style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary }}>{title}</div>
+          <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted }}>{description}</div>
+        </div>
+      </div>
+      {/* Items — 2-column grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+        {items.map(({ label, value, type }, idx) => {
+          const isLastRow = idx >= items.length - (items.length % 2 === 0 ? 2 : 1);
+          const isOdd = idx % 2 === 0;
+          return (
+            <div key={label} style={{
+              borderRight: isOdd ? `1px solid ${C.border}` : 'none',
+              borderBottom: isLastRow ? 'none' : `1px solid ${C.border}`,
+            }}>
+              <ConfigCell label={label}>
+                {type === 'model'       && <ModelBadge value={value} />}
+                {type === 'temperature' && <TempBar value={value} />}
+                {type === 'tags'        && <TagList value={value} />}
+                {type === 'number'      && <span style={{ fontFamily: F.mono, fontSize: '22px', fontWeight: 700, color: C.textPrimary }}>{Number(value ?? 0).toLocaleString()}</span>}
+                {(type === 'text' || type === 'date') && (
+                  <span style={{ fontFamily: F.body, fontSize: '13px', color: C.textPrimary, lineHeight: '1.6' }}>{value ?? '—'}</span>
+                )}
+              </ConfigCell>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ── Configuration Tab ─────────────────────────
 function ConfigurationTab({ agent }) {
   const toast = useToast();
   const cfg = agent.config ?? {};
 
-  const rows = [
-    ['Model',               cfg.model           ?? '—'],
-    ['Temperature',         cfg.temperature != null ? String(cfg.temperature) : '—'],
-    ['Max Tokens',          cfg.maxTokens       ?? '—'],
-    ['Approval Gate',       cfg.approvalGate    ?? '—'],
-    ['Escalation Threshold',cfg.escalationThreshold ?? '—'],
-    ['Output Languages',    cfg.outputLanguages ?? '—'],
-    ['Retry Logic',         cfg.retryLogic      ?? '—'],
-    ['Rate Limit',          cfg.rateLimit       ?? '—'],
-    ['Created By',          cfg.createdBy       ?? '—'],
-    ['Last Updated',        cfg.lastUpdated     ?? '—'],
+  const CONFIG_SECTIONS = [
+    {
+      title: 'Model Settings',
+      description: 'AI model and generation parameters',
+      icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L12 10H2L7 1z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/><path d="M4 7.5h6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>,
+      items: [
+        { label: 'Model',       value: cfg.model,       type: 'model'       },
+        { label: 'Temperature', value: cfg.temperature, type: 'temperature' },
+        { label: 'Max Tokens',  value: cfg.maxTokens,   type: 'number'      },
+      ],
+    },
+    {
+      title: 'Quality Controls',
+      description: 'Approval gates and escalation thresholds',
+      icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L1.5 3.5V7c0 3 2 4.5 5.5 5.5C10 11.5 12 10 12 7V3.5L7 1z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/><path d="M4.5 7l2 2 3-3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+      items: [
+        { label: 'Approval Gate',        value: cfg.approvalGate,        type: 'text' },
+        { label: 'Escalation Threshold', value: cfg.escalationThreshold, type: 'text' },
+      ],
+    },
+    {
+      title: 'Output Settings',
+      description: 'Languages, retry behaviour and rate limits',
+      icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M4 6h6M4 8.5h4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>,
+      items: [
+        { label: 'Languages',   value: cfg.outputLanguages, type: 'tags' },
+        { label: 'Retry Logic', value: cfg.retryLogic,      type: 'text' },
+        { label: 'Rate Limit',  value: cfg.rateLimit,       type: 'text' },
+      ],
+    },
+    {
+      title: 'Metadata',
+      description: 'Configuration history and ownership',
+      icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.3"/><path d="M7 4v3.5l2 1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+      items: [
+        { label: 'Created By',   value: cfg.createdBy,   type: 'text' },
+        { label: 'Last Updated', value: cfg.lastUpdated, type: 'date' },
+      ],
+    },
   ];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: S[4] }}>
-      <div style={{
-        backgroundColor: C.amberDim, border: `1px solid rgba(245,200,66,0.2)`,
-        borderRadius: R.md, padding: `${S[2]} ${S[4]}`,
-        display: 'flex', alignItems: 'center', gap: S[2],
-      }}>
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M7 1.5L1 12.5h12L7 1.5z" stroke={C.amber} strokeWidth="1.3" strokeLinejoin="round"/>
-          <path d="M7 5.5v3M7 10v.5" stroke={C.amber} strokeWidth="1.3" strokeLinecap="round"/>
+      {/* Tab header */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: S[4] }}>
+        <div>
+          <div style={{ fontFamily: F.display, fontSize: '15px', fontWeight: 700, color: C.textPrimary }}>Agent Configuration</div>
+          <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, marginTop: '3px' }}>Live parameters governing this agent's behaviour. Read-only.</div>
+        </div>
+        <button
+          style={{
+            display: 'flex', alignItems: 'center', gap: S[2], flexShrink: 0,
+            padding: `${S[2]} ${S[4]}`,
+            fontFamily: F.body, fontSize: '13px', fontWeight: 600,
+            color: C.primary, backgroundColor: C.primaryGlow,
+            border: `1px solid ${C.primary}`, borderRadius: R.button, cursor: 'pointer', transition: T.color,
+          }}
+          onClick={() => toast.info('Configuration change request sent to Campaign Owner.')}
+        >
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+            <path d="M9 1.5L11.5 4 5 10.5H2.5V8L9 1.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
+          </svg>
+          Request Change
+        </button>
+      </div>
+
+      {/* Read-only notice */}
+      <div style={{ backgroundColor: C.amberDim, border: `1px solid rgba(245,200,66,0.2)`, borderRadius: R.md, padding: `${S[2]} ${S[4]}`, display: 'flex', alignItems: 'center', gap: S[2] }}>
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+          <path d="M6.5 1.5L1 11.5h11L6.5 1.5z" stroke={C.amber} strokeWidth="1.3" strokeLinejoin="round"/>
+          <path d="M6.5 5.5v2.5M6.5 9.5v.5" stroke={C.amber} strokeWidth="1.3" strokeLinecap="round"/>
         </svg>
         <span style={{ fontFamily: F.body, fontSize: '12px', color: C.amber }}>
-          Configuration is read-only. Contact your Campaign Owner to request changes.
+          Changes require Campaign Owner approval. Use <strong>Request Change</strong> to submit a modification.
         </span>
       </div>
 
-      <div style={{ backgroundColor: C.surface2, border: `1px solid ${C.border}`, borderRadius: R.card, overflow: 'hidden' }}>
-        {rows.map(([label, value], i) => (
-          <div key={label} style={{
-            display: 'flex', alignItems: 'flex-start', gap: S[4],
-            padding: `${S[3]} ${S[4]}`,
-            borderBottom: i < rows.length - 1 ? `1px solid ${C.border}` : 'none',
-          }}>
-            <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted, width: '180px', flexShrink: 0 }}>{label}</span>
-            <span style={{ fontFamily: F.mono, fontSize: '12px', color: C.textPrimary, flex: 1, lineHeight: '1.5' }}>{String(value)}</span>
-          </div>
-        ))}
-      </div>
-
-      <button
-        style={{
-          alignSelf: 'flex-start', padding: `${S[2]} ${S[4]}`,
-          fontFamily: F.body, fontSize: '13px', fontWeight: 600,
-          color: C.textSecondary, backgroundColor: C.surface2,
-          border: `1px solid ${C.border}`, borderRadius: R.button, cursor: 'pointer',
-        }}
-        onClick={() => toast.info('Configuration edit request sent to Campaign Owner.')}
-      >
-        Request Config Change
-      </button>
+      {/* Section cards */}
+      {CONFIG_SECTIONS.map((section) => (
+        <CfgSection key={section.title} {...section} />
+      ))}
     </div>
   );
 }

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Background -->
+  <rect width="100" height="100" rx="22" fill="#3DDC84"/>
+  <!-- N strokes -->
+  <path d="M19 81V19L81 81V19" stroke="#070D09" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Network nodes at corners -->
+  <circle cx="19" cy="19" r="7.5" fill="#070D09"/>
+  <circle cx="19" cy="81" r="7.5" fill="#070D09"/>
+  <circle cx="81" cy="19" r="7.5" fill="#070D09"/>
+  <circle cx="81" cy="81" r="7.5" fill="#070D09"/>
+</svg>

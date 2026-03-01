@@ -1,6 +1,13 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Zap, X } from 'lucide-react';
 import useStore from '../../store/useStore';
 import useToast from '../../hooks/useToast';
+import useCredits from '../../hooks/useCredits';
+import usePlan from '../../hooks/usePlan';
+import NotificationDropdown from '../notifications/NotificationDropdown';
+import UpgradeModal from '../plan/UpgradeModal';
+import { IconWarning } from '../ui/Icons';
 import { C, F, R, S, T, shadows } from '../../tokens';
 
 // ── Campaign options (mock) ───────────────────
@@ -11,75 +18,6 @@ const CAMPAIGNS = [
   'ANZ Retargeting',
   'Global Partner Enablement',
 ];
-
-// ── Notification panel ────────────────────────
-function NotifPanel({ onClose }) {
-  const notifications = useStore((s) => s.notifications);
-  const markAllRead = useStore((s) => s.markAllNotificationsRead);
-
-  const panelStyle = {
-    position: 'absolute',
-    top: 'calc(100% + 8px)',
-    right: 0,
-    width: '320px',
-    backgroundColor: C.surface2,
-    border: `1px solid ${C.border}`,
-    borderRadius: R.card,
-    boxShadow: shadows.dropdown,
-    zIndex: 100,
-    overflow: 'hidden',
-  };
-
-  const headerStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: `${S[3]} ${S[4]}`,
-    borderBottom: `1px solid ${C.border}`,
-  };
-
-  const emptyStyle = {
-    padding: `${S[8]} ${S[4]}`,
-    textAlign: 'center',
-    color: C.textMuted,
-    fontFamily: F.body,
-    fontSize: '13px',
-  };
-
-  return (
-    <div style={panelStyle}>
-      <div style={headerStyle}>
-        <span style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: C.textPrimary }}>
-          Notifications
-        </span>
-        <button
-          style={{ background: 'none', border: 'none', color: C.textSecondary, fontSize: '12px', fontFamily: F.body, cursor: 'pointer' }}
-          onClick={() => { markAllRead(); onClose(); }}
-        >
-          Mark all read
-        </button>
-      </div>
-
-      {notifications.length === 0 ? (
-        <div style={emptyStyle}>No notifications</div>
-      ) : (
-        <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
-          {notifications.slice(0, 8).map((n) => (
-            <div key={n.id} style={{
-              padding: `${S[3]} ${S[4]}`,
-              borderBottom: `1px solid ${C.border}`,
-              backgroundColor: n.read ? 'transparent' : C.surface3,
-              cursor: 'pointer',
-            }}>
-              <div style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary }}>{n.title}</div>
-              {n.body && <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, marginTop: '2px' }}>{n.body}</div>}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ── Campaign selector ─────────────────────────
 function CampaignSelector() {
@@ -174,7 +112,7 @@ function CampaignSelector() {
 // ── Avatar / Role badge ───────────────────────
 function AvatarButton() {
   const currentRole = useStore((s) => s.currentRole);
-  const toast = useToast();
+  const navigate = useNavigate();
 
   const avatarStyle = {
     width: '32px',
@@ -210,14 +148,13 @@ function AvatarButton() {
       }}>
         {currentRole}
       </span>
-      <div style={avatarStyle} onClick={() => toast.info('Profile settings coming soon')}>
+      <div style={avatarStyle} onClick={() => navigate('/settings')}>
         NX
       </div>
     </div>
   );
 }
 
-// ── TopBar ────────────────────────────────────
 // ── Theme toggle button ───────────────────────
 function ThemeToggle() {
   const isDarkMode  = useStore((s) => s.isDarkMode);
@@ -258,6 +195,205 @@ function ThemeToggle() {
   );
 }
 
+// ── Credit chip ───────────────────────────────
+function CreditChip() {
+  const {
+    creditsRemaining,
+    creditsIncluded,
+    rolloverBalance,
+    usagePercent,
+    isLow,
+    isCritical,
+    estimatedDaysRemaining,
+  } = useCredits();
+  const navigate   = useNavigate();
+  const [hovered, setHovered] = useState(false);
+
+  const chipColor = isCritical ? C.red : isLow ? C.amber : C.primary;
+  const chipBg    = isCritical ? C.redDim : isLow ? C.amberDim : C.primaryGlow;
+  const totalAvail = creditsIncluded + rolloverBalance;
+  const daysLabel  = Number.isFinite(estimatedDaysRemaining)
+    ? `~${estimatedDaysRemaining}d remaining`
+    : 'unlimited';
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <button
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: S[1],
+          height: '28px',
+          padding: `0 ${S[2]}`,
+          backgroundColor: chipBg,
+          border: `1px solid ${chipColor}`,
+          borderRadius: R.pill,
+          color: chipColor,
+          cursor: 'pointer',
+          fontFamily: F.mono,
+          fontSize: '11px',
+          fontWeight: 700,
+          letterSpacing: '0.02em',
+          whiteSpace: 'nowrap',
+          transition: T.color,
+        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onClick={() => navigate('/billing')}
+        title="View billing & credits"
+      >
+        <Zap size={11} />
+        {creditsRemaining.toLocaleString()}
+      </button>
+
+      {/* Tooltip */}
+      {hovered && (
+        <div style={{
+          position: 'absolute',
+          top: 'calc(100% + 8px)',
+          right: 0,
+          backgroundColor: C.surface2,
+          border: `1px solid ${C.border}`,
+          borderRadius: R.card,
+          padding: S[3],
+          boxShadow: shadows.dropdown,
+          zIndex: 200,
+          minWidth: '200px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: S[1],
+          pointerEvents: 'none',
+        }}>
+          <div style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.textPrimary }}>
+            Agent Credits
+          </div>
+          <div style={{ fontFamily: F.mono, fontSize: '11px', color: C.textSecondary }}>
+            {creditsRemaining.toLocaleString()} remaining
+          </div>
+          <div style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted }}>
+            {creditsIncluded.toLocaleString()} included
+            {rolloverBalance > 0 && ` + ${rolloverBalance.toLocaleString()} rollover`}
+          </div>
+          <div style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted }}>
+            {daysLabel}
+          </div>
+          {/* Mini bar */}
+          <div style={{ height: '3px', borderRadius: R.pill, backgroundColor: C.surface3, marginTop: S[1] }}>
+            <div style={{
+              width: `${Math.min(100, usagePercent)}%`,
+              height: '100%',
+              borderRadius: R.pill,
+              backgroundColor: chipColor,
+            }} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Low credit banner ─────────────────────────
+function LowCreditBanner() {
+  const { isLow, creditsRemaining } = useCredits();
+  const { planId, upgradePlan }     = usePlan();
+  const toast = useToast();
+
+  const [dismissed, setDismissed] = useState(() => {
+    const val = localStorage.getItem('nexara_credit_banner_dismissed');
+    if (!val) return false;
+    return Date.now() - parseInt(val, 10) < 24 * 60 * 60 * 1000;
+  });
+
+  const [showUpgrade, setShowUpgrade] = useState(false);
+
+  if (!isLow || dismissed) return null;
+
+  return (
+    <>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: S[4],
+        backgroundColor: C.amberDim,
+        borderBottom: `1px solid ${C.amber}`,
+        padding: `${S[2]} ${S[6]}`,
+        flexShrink: 0,
+      }}>
+        <span style={{ fontFamily: F.body, fontSize: '13px', color: C.amber, flex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <IconWarning color={C.amber} width={16} height={16} />
+          Low on credits — {creditsRemaining.toLocaleString()} credits remaining.
+        </span>
+        <button
+          style={{
+            fontFamily: F.body,
+            fontSize: '12px',
+            fontWeight: 600,
+            color: C.amber,
+            background: 'none',
+            border: `1px solid ${C.amber}`,
+            borderRadius: R.button,
+            padding: `${S[1]} ${S[3]}`,
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+          }}
+          onClick={() => toast.info('Processing credits purchase... (mock)')}
+        >
+          Buy 10K credits — $99
+        </button>
+        {upgradePlan && (
+          <button
+            style={{
+              fontFamily: F.body,
+              fontSize: '12px',
+              fontWeight: 600,
+              color: C.amber,
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              textDecoration: 'underline',
+              textUnderlineOffset: '2px',
+            }}
+            onClick={() => setShowUpgrade(true)}
+          >
+            Upgrade plan
+          </button>
+        )}
+        <button
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: C.amber,
+            padding: S[1],
+            borderRadius: R.sm,
+          }}
+          onClick={() => {
+            localStorage.setItem('nexara_credit_banner_dismissed', Date.now().toString());
+            setDismissed(true);
+          }}
+          aria-label="Dismiss"
+        >
+          <X size={14} />
+        </button>
+      </div>
+
+      {showUpgrade && upgradePlan && (
+        <UpgradeModal
+          fromPlan={planId}
+          toPlan={upgradePlan.id}
+          featureUnlocked={null}
+          onClose={() => setShowUpgrade(false)}
+        />
+      )}
+    </>
+  );
+}
+
+// ── TopBar ────────────────────────────────────
 export default function TopBar({ onAriaOpen }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const notifications = useStore((s) => s.notifications);
@@ -298,88 +434,95 @@ export default function TopBar({ onAriaOpen }) {
   };
 
   return (
-    <header style={barStyle}>
-      {/* Left: campaign selector */}
-      <CampaignSelector />
+    <>
+      <header style={barStyle}>
+        {/* Left: campaign selector */}
+        <CampaignSelector />
 
-      {/* Right: search, notif, aria, avatar */}
-      <div style={rightStyle}>
-        {/* Search */}
-        <button
-          style={iconButtonStyle}
-          title="Search"
-          onClick={() => toast.info('Global search coming soon')}
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5"/>
-            <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-          </svg>
-        </button>
-
-        {/* ARIA AI button */}
-        <button
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            height: '30px',
-            padding: '0 10px',
-            backgroundColor: C.primaryGlow,
-            border: `1px solid rgba(61,220,132,0.3)`,
-            borderRadius: R.pill,
-            color: C.primary,
-            cursor: 'pointer',
-            transition: T.base,
-          }}
-          title="Ask ARIA"
-          onClick={() => onAriaOpen?.()}
-        >
-          {/* ARIA triangle-A circuit mark */}
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M7 1.5L13.2 12.8H0.8L7 1.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
-            <path d="M3.6 9.2h6.8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
-            <circle cx="7"    cy="1.5"  r="1.1" fill="currentColor"/>
-            <circle cx="0.8"  cy="12.8" r="1.1" fill="currentColor"/>
-            <circle cx="13.2" cy="12.8" r="1.1" fill="currentColor"/>
-          </svg>
-          <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em' }}>ARIA</span>
-        </button>
-
-        {/* Theme toggle */}
-        <ThemeToggle />
-
-        {/* Notification bell */}
-        <div style={{ position: 'relative' }}>
+        {/* Right: search, aria, theme, notif, credit chip, divider, avatar */}
+        <div style={rightStyle}>
+          {/* Search */}
           <button
             style={iconButtonStyle}
-            title="Notifications"
-            onClick={() => setNotifOpen((o) => !o)}
+            title="Search"
+            onClick={() => toast.info('Global search coming soon')}
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 1.5a5 5 0 00-5 5v2.5l-1 2h12l-1-2V6.5a5 5 0 00-5-5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-              <path d="M6.5 12.5a1.5 1.5 0 003 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5"/>
+              <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
-            {unread > 0 && (
-              <span style={{
-                position: 'absolute',
-                top: '3px',
-                right: '3px',
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                backgroundColor: C.red,
-                border: `1.5px solid ${C.surface}`,
-              }}/>
-            )}
           </button>
-          {notifOpen && <NotifPanel onClose={() => setNotifOpen(false)} />}
+
+          {/* ARIA AI button */}
+          <button
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              height: '30px',
+              padding: '0 10px',
+              backgroundColor: C.primaryGlow,
+              border: `1px solid rgba(61,220,132,0.3)`,
+              borderRadius: R.pill,
+              color: C.primary,
+              cursor: 'pointer',
+              transition: T.base,
+            }}
+            title="Ask ARIA"
+            onClick={() => onAriaOpen?.()}
+          >
+            {/* ARIA triangle-A circuit mark */}
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M7 1.5L13.2 12.8H0.8L7 1.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
+              <path d="M3.6 9.2h6.8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+              <circle cx="7"    cy="1.5"  r="1.1" fill="currentColor"/>
+              <circle cx="0.8"  cy="12.8" r="1.1" fill="currentColor"/>
+              <circle cx="13.2" cy="12.8" r="1.1" fill="currentColor"/>
+            </svg>
+            <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em' }}>ARIA</span>
+          </button>
+
+          {/* Theme toggle */}
+          <ThemeToggle />
+
+          {/* Notification bell */}
+          <div style={{ position: 'relative' }}>
+            <button
+              style={iconButtonStyle}
+              title="Notifications"
+              onClick={() => setNotifOpen((o) => !o)}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 1.5a5 5 0 00-5 5v2.5l-1 2h12l-1-2V6.5a5 5 0 00-5-5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+                <path d="M6.5 12.5a1.5 1.5 0 003 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              {unread > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: '3px',
+                  right: '3px',
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: C.red,
+                  border: `1.5px solid ${C.surface}`,
+                }}/>
+              )}
+            </button>
+            <NotificationDropdown open={notifOpen} onClose={() => setNotifOpen(false)} />
+          </div>
+
+          {/* Credit chip */}
+          <CreditChip />
+
+          {/* Divider */}
+          <div style={{ width: '1px', height: '20px', backgroundColor: C.border }}/>
+
+          <AvatarButton />
         </div>
+      </header>
 
-        {/* Divider */}
-        <div style={{ width: '1px', height: '20px', backgroundColor: C.border }}/>
-
-        <AvatarButton />
-      </div>
-    </header>
+      <LowCreditBanner />
+    </>
   );
 }

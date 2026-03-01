@@ -15,7 +15,20 @@ const useStore = create((set, get) => ({
   ariaOpen: false,
   sidebarCollapsed: false,
   onboardingComplete: false,
+  onboardingSkipped: false,
+  onboardingCompanyType: '',
+  onboardingSelectedPlanId: '',
+  onboardingConnections: { website: '', crm: '', ads: false },
   isDarkMode: true,
+
+  // ── Connections (used by onboarding + Settings) ──
+  connections: {
+    website: null,
+    crm: null,
+    meta: false,
+    linkedin: false,
+    google: false,
+  },
 
   // ── Notifications ────────────────────────────
   notifications: [],
@@ -23,6 +36,30 @@ const useStore = create((set, get) => ({
   // ── Toasts ──────────────────────────────────
   // Each toast: { id, message, type: 'success'|'error'|'warning'|'info', duration? }
   toasts: [],
+
+  // ── Checkout State ───────────────────────────
+  checkoutOpen: false,
+  checkoutTargetPlan: null,      // planId string e.g. 'scale'
+  checkoutSourceFeature: null,   // featureKey that triggered upgrade, or null
+
+  // ── Plan State ───────────────────────────────
+  currentPlanId: 'growth',
+  billingCycle: 'annual',
+  planRenewsAt: '2027-03-01',
+  seatsUsed: 7,
+  workspacesUsed: 2,
+  activeCampaignsCount: 8,
+  addonsActive: ['intent_data_boost'],
+
+  // ── Credit State ─────────────────────────────
+  creditsIncluded: 25000,
+  creditsUsed: 18340,
+  rolloverBalance: 4200,
+  creditBurnRatePerDay: 612,
+
+  // ── ARIA: escalations & scheduled actions (for tool executor) ──
+  ariaEscalations: [],
+  ariaScheduledActions: [],
 
   // ── Actions: Identity ────────────────────────
   setRole: (role) => set({ currentRole: role }),
@@ -37,6 +74,21 @@ const useStore = create((set, get) => ({
   logout: () => set({ isAuthenticated: false, onboardingComplete: false }),
 
   completeOnboarding: () => set({ onboardingComplete: true }),
+
+  setOnboardingSkipped: (skipped) => set({ onboardingSkipped: skipped }),
+  setOnboardingCompanyType: (v) => set({ onboardingCompanyType: v }),
+  setOnboardingSelectedPlanId: (v) => set({ onboardingSelectedPlanId: v }),
+  setOnboardingConnections: (v) => set((s) => ({ onboardingConnections: { ...s.onboardingConnections, ...v } })),
+
+  setConnectionWebsite: (url) => set((s) => ({ connections: { ...s.connections, website: url || null } })),
+  setConnectionCrm: (name) => set((s) => ({ connections: { ...s.connections, crm: name || null } })),
+  setConnectionAds: (platform, connected) =>
+    set((s) => ({
+      connections: {
+        ...s.connections,
+        [platform]: connected,
+      },
+    })),
 
   toggleTheme: () => set((s) => ({ isDarkMode: !s.isDarkMode })),
 
@@ -64,6 +116,9 @@ const useStore = create((set, get) => ({
   clearToasts: () => set({ toasts: [] }),
 
   // ── Actions: Notifications ───────────────────
+  // Seed with a pre-built array (preserves id, read, severity, time, etc.)
+  seedNotifications: (arr) => set({ notifications: arr }),
+
   addNotification: ({ title, body, type = 'info', link = null }) => {
     const id = `notif-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     const notification = {
@@ -99,6 +154,38 @@ const useStore = create((set, get) => ({
     })),
 
   clearNotifications: () => set({ notifications: [] }),
+
+  // ── Actions: Checkout ────────────────────────
+  openCheckout: (planId, sourceFeature = null) =>
+    set({ checkoutOpen: true, checkoutTargetPlan: planId, checkoutSourceFeature: sourceFeature }),
+
+  closeCheckout: () =>
+    set({ checkoutOpen: false, checkoutTargetPlan: null, checkoutSourceFeature: null }),
+
+  completeUpgrade: (planId, creditsIncluded) =>
+    set({ currentPlanId: planId, creditsIncluded, checkoutOpen: false, checkoutTargetPlan: null, checkoutSourceFeature: null }),
+
+  // ── Actions: Plan & Credits ──────────────────
+  setPlan: (planId) => set({ currentPlanId: planId }),
+
+  setCreditsIncluded: (n) => set({ creditsIncluded: n }),
+
+  setCreditsUsed: (n) => set({ creditsUsed: n }),
+
+  consumeCredits: (amount) =>
+    set((state) => ({ creditsUsed: state.creditsUsed + amount })),
+
+  addAriaEscalation: (escalation) =>
+    set((state) => ({ ariaEscalations: [...state.ariaEscalations, escalation] })),
+
+  addAriaScheduledAction: (action) =>
+    set((state) => ({ ariaScheduledActions: [...state.ariaScheduledActions, action] })),
+
+  activateAddon: (addonId) =>
+    set((state) => ({ addonsActive: [...state.addonsActive, addonId] })),
+
+  deactivateAddon: (addonId) =>
+    set((state) => ({ addonsActive: state.addonsActive.filter((a) => a !== addonId) })),
 
   // ── Derived (getters) ────────────────────────
   get unreadCount() {

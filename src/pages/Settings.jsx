@@ -23,7 +23,10 @@ const SECTIONS = [
     icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1.5a4.5 4.5 0 00-4.5 4.5v2.5l-1 2h11l-1-2V6a4.5 4.5 0 00-4.5-4.5Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M6 11.5a1.5 1.5 0 003 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>,
   },
   {
-    id: 'security', label: 'Security',
+    id: 'connections', label: 'Connections',
+    icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M5 4.5h1M9 4.5h1M5 7h5M5 9.5h3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><rect x="1.5" y="2" width="12" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.4"/><path d="M4 13.5h7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>,
+  },
+  {
     icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1L2 3.5V7c0 3.5 2.5 5.5 5.5 6.5C10 12.5 13 10.5 13 7V3.5L7.5 1z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 7.5l2 2 3-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>,
   },
   {
@@ -355,6 +358,107 @@ function NotificationsSection() {
 }
 
 // ── Security section ──────────────────────────
+function ConnectionsSection() {
+  const connections = useStore((s) => s.connections);
+  const setConnectionWebsite = useStore((s) => s.setConnectionWebsite);
+  const setConnectionCrm = useStore((s) => s.setConnectionCrm);
+  const setConnectionAds = useStore((s) => s.setConnectionAds);
+  const toast = useToast();
+  const [focus, setFocus] = useState(null);
+  const [editingWebsite, setEditingWebsite] = useState(false);
+  const [websiteInput, setWebsiteInput] = useState(connections.website || '');
+
+  const saveWebsite = () => {
+    setConnectionWebsite(websiteInput.trim() || null);
+    setEditingWebsite(false);
+    toast.success(websiteInput.trim() ? 'Website saved.' : 'Website disconnected.');
+  };
+
+  return (
+    <div>
+      <SectionHeader
+        title="Connections"
+        description="Add or remove integrations. Some features use these connections."
+      />
+
+      <Card style={{ marginBottom: S[4] }}>
+        {/* Company website */}
+        <div style={{ padding: S[5], borderBottom: `1px solid ${C.border}` }}>
+          <div style={{ fontFamily: F.body, fontSize: '14px', fontWeight: 500, color: C.textPrimary, marginBottom: '4px' }}>Company website</div>
+          <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, marginBottom: S[3] }}>We use this for ICP and ARIA context.</div>
+          {editingWebsite ? (
+            <div style={{ display: 'flex', gap: S[2], alignItems: 'center' }}>
+              <input
+                type="url"
+                value={websiteInput}
+                onChange={(e) => setWebsiteInput(e.target.value)}
+                placeholder="https://..."
+                onFocus={() => setFocus('website')}
+                onBlur={() => setFocus(null)}
+                style={{
+                  flex: 1, boxSizing: 'border-box',
+                  backgroundColor: C.bg, color: C.textPrimary,
+                  border: `1px solid ${focus === 'website' ? C.primary : C.border}`,
+                  borderRadius: R.input, padding: `${S[2]} ${S[3]}`,
+                  fontFamily: F.body, fontSize: '14px', outline: 'none', transition: T.color,
+                }}
+              />
+              <button onClick={saveWebsite} style={{ padding: `${S[2]} ${S[3]}`, backgroundColor: C.primary, color: C.textInverse, border: 'none', borderRadius: R.button, fontFamily: F.body, fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>Save</button>
+              <button onClick={() => { setEditingWebsite(false); setWebsiteInput(connections.website || ''); }} style={{ padding: `${S[2]} ${S[3]}`, backgroundColor: 'transparent', color: C.textSecondary, border: `1px solid ${C.border}`, borderRadius: R.button, fontFamily: F.body, fontSize: '12px', cursor: 'pointer' }}>Cancel</button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: S[4] }}>
+              <span style={{ fontFamily: F.body, fontSize: '13px', color: connections.website ? C.textPrimary : C.textMuted }}>{connections.website || 'Not connected'}</span>
+              <div style={{ display: 'flex', gap: S[2] }}>
+                <button onClick={() => { setEditingWebsite(true); setWebsiteInput(connections.website || ''); }} style={{ padding: `${S[1]} ${S[3]}`, backgroundColor: 'transparent', color: C.textSecondary, border: `1px solid ${C.border}`, borderRadius: R.button, fontFamily: F.body, fontSize: '12px', cursor: 'pointer' }}>Edit</button>
+                {connections.website && <button onClick={() => { setConnectionWebsite(null); toast.success('Website disconnected.'); }} style={{ padding: `${S[1]} ${S[3]}`, backgroundColor: 'transparent', color: C.red, border: `1px solid ${C.red}`, borderRadius: R.button, fontFamily: F.body, fontSize: '12px', cursor: 'pointer' }}>Disconnect</button>}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* CRM */}
+        <CardRow
+          label="CRM"
+          description={connections.crm ? `Connected (${connections.crm})` : 'Connect HubSpot, Salesforce, or Pipedrive.'}
+          last={false}
+        >
+          <button onClick={() => toast.info('CRM connection coming soon.')} style={{ padding: `${S[1]} ${S[3]}`, backgroundColor: connections.crm ? C.redDim : 'transparent', color: connections.crm ? C.red : C.textSecondary, border: `1px solid ${connections.crm ? C.red : C.border}`, borderRadius: R.button, fontFamily: F.body, fontSize: '12px', cursor: 'pointer' }}>{connections.crm ? 'Disconnect' : 'Connect'}</button>
+        </CardRow>
+
+        {/* Ads */}
+        <div style={{ padding: `${S[3]} ${S[5]}`, borderBottom: `1px solid ${C.border}` }}>
+          <div style={{ fontFamily: F.body, fontSize: '11px', fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Ads & channels</div>
+        </div>
+        {[
+          { key: 'meta', label: 'Meta Ads' },
+          { key: 'linkedin', label: 'LinkedIn Ads' },
+          { key: 'google', label: 'Google Ads' },
+        ].map(({ key, label }, i, arr) => {
+          const connected = connections[key];
+          return (
+            <div
+              key={key}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: S[4],
+                padding: `${S[4]} ${S[5]}`,
+                borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : 'none',
+              }}
+            >
+              <div>
+                <div style={{ fontFamily: F.body, fontSize: '14px', fontWeight: 500, color: C.textPrimary }}>{label}</div>
+                <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, marginTop: '2px' }}>Coming soon</div>
+              </div>
+              <button onClick={() => toast.info(`${label} connection coming soon.`)} style={{ padding: `${S[1]} ${S[3]}`, backgroundColor: 'transparent', color: C.textSecondary, border: `1px solid ${C.border}`, borderRadius: R.button, fontFamily: F.body, fontSize: '12px', cursor: 'pointer', opacity: 0.8 }}>Connect</button>
+            </div>
+          );
+        })}
+      </Card>
+    </div>
+  );
+}
+
+// ── Security section ──────────────────────────
 function SecuritySection() {
   const toast = useToast();
 
@@ -455,6 +559,7 @@ const SECTION_COMPONENTS = {
   workspace:     WorkspaceSection,
   appearance:    AppearanceSection,
   notifications: NotificationsSection,
+  connections:   ConnectionsSection,
   security:      SecuritySection,
   danger:        DangerSection,
 };

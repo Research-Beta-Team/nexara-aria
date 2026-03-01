@@ -1,15 +1,16 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import useToast from '../hooks/useToast';
 import { C, F, R, S, T, btn, badge, flex, shadows } from '../tokens';
+import { IconSend, IconEye, IconLink, IconMessage, IconCalendar, IconCompass } from '../components/ui/Icons';
 import { prospects } from '../data/campaigns';
 
 const TOUCHPOINT_ICONS = {
-  email_sent:    { icon: '✉', color: C.textSecondary, label: 'Email Sent'     },
-  email_opened:  { icon: '◉', color: C.primary,       label: 'Email Opened'   },
-  email_clicked: { icon: '↗', color: C.secondary,     label: 'Link Clicked'   },
-  email_replied: { icon: '↩', color: C.primary,       label: 'Replied'        },
-  linkedin_view: { icon: '⬡', color: '#0A66C2',       label: 'LinkedIn View'  },
-  demo_booked:   { icon: '⬤', color: C.amber,         label: 'Demo Booked'    },
+  email_sent:    { Icon: IconSend,    color: C.textSecondary, label: 'Email Sent'     },
+  email_opened:  { Icon: IconEye,     color: C.primary,       label: 'Email Opened'   },
+  email_clicked: { Icon: IconLink,    color: C.secondary,     label: 'Link Clicked'   },
+  email_replied: { Icon: IconMessage, color: C.primary,       label: 'Replied'        },
+  linkedin_view: { Icon: IconCompass, color: '#0A66C2',       label: 'LinkedIn View'  },
+  demo_booked:   { Icon: IconCalendar, color: C.amber,        label: 'Demo Booked'    },
 };
 
 const INTENT_BADGE = {
@@ -44,7 +45,7 @@ function IcpRing({ score }) {
 
 // ── Timeline node ─────────────────────────────
 function TimelineNode({ touchpoint, isLast }) {
-  const meta = TOUCHPOINT_ICONS[touchpoint.type] ?? { icon: '·', color: C.textMuted, label: touchpoint.type };
+  const meta = TOUCHPOINT_ICONS[touchpoint.type] ?? { Icon: null, color: C.textMuted, label: touchpoint.type };
 
   return (
     <div style={{ display: 'flex', gap: S[4], alignItems: 'flex-start' }}>
@@ -55,10 +56,10 @@ function TimelineNode({ touchpoint, isLast }) {
           backgroundColor: `${meta.color}18`,
           border: `2px solid ${meta.color}`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '14px', boxShadow: `0 0 8px ${meta.color}30`,
+          boxShadow: `0 0 8px ${meta.color}30`,
           flexShrink: 0,
         }}>
-          {meta.icon}
+          {meta.Icon ? <meta.Icon color={meta.color} width={16} height={16} /> : <span style={{ fontSize: '14px', color: meta.color }}>·</span>}
         </div>
         {!isLast && (
           <div style={{ width: '2px', flex: 1, minHeight: '24px', backgroundColor: C.border, margin: `${S[1]} 0` }}/>
@@ -175,7 +176,7 @@ export default function OutreachDetail() {
           </div>
 
           <div style={{ display: 'flex', gap: S[4], flexWrap: 'wrap' }}>
-            <span style={{ fontFamily: F.mono, fontSize: '12px', color: C.textMuted }}>✉ {prospect.email}</span>
+            <span style={{ fontFamily: F.mono, fontSize: '12px', color: C.textMuted, display: 'flex', alignItems: 'center', gap: 6 }}><IconSend color={C.textMuted} width={14} height={14} /> {prospect.email}</span>
             <span style={{ fontFamily: F.mono, fontSize: '12px', color: C.textMuted }}>⬡ {prospect.linkedin}</span>
             <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted }}>
               Step {prospect.sequenceStep}/5 · Last touch {prospect.lastTouch}

@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
+import useStore from '../store/useStore';
+import usePlan from '../hooks/usePlan';
 import useToast from '../hooks/useToast';
-import { C, F, S, btn, flex } from '../tokens';
+import { C, F, R, S, btn, flex, cardStyle } from '../tokens';
 
 // Components
 import CampaignHealthCard    from '../components/dashboard/CampaignHealthCard';
@@ -22,6 +24,16 @@ import {
 export default function Dashboard() {
   const navigate = useNavigate();
   const toast = useToast();
+  const openCheckout = useStore((s) => s.openCheckout);
+  const activeCampaignsCount = useStore((s) => s.activeCampaignsCount);
+  const { hasFeature, getLimit, isLimitReached } = usePlan();
+
+  const campaignLimit = getLimit('activeCampaigns');
+  const atCampaignLimit = campaignLimit !== -1 && isLimitReached('activeCampaigns', activeCampaignsCount);
+  const displayCampaigns = campaignLimit === -1 ? campaigns : campaigns.slice(0, campaignLimit);
+  const campaignSubtitle = campaignLimit === -1
+    ? `${campaigns.length} active campaigns`
+    : `${displayCampaigns.length} / ${campaignLimit} campaigns`;
 
   const pageStyle = {
     padding: S[6],
@@ -73,7 +85,7 @@ export default function Dashboard() {
             Dashboard
           </h1>
           <span style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary }}>
-            GTM overview · 3 active campaigns
+            GTM overview · {campaignSubtitle}
           </span>
         </div>
 
@@ -117,18 +129,59 @@ export default function Dashboard() {
           Campaign Health
         </h2>
         <div style={campaignGridStyle}>
-          {campaigns.map((c) => (
+          {displayCampaigns.map((c) => (
             <CampaignHealthCard key={c.id} {...c} />
           ))}
         </div>
       </div>
 
-      {/* ── Bottom Row: Meta | Escalations | Agent Feed ── */}
+      {/* ── Bottom Row: Meta | Escalations | Agent Feed (or upgrade card) ── */}
       <div style={bottomRowStyle}>
-        <MetaPerformanceWidget stats={metaStats} chartData={ctrChartData} />
+        {hasFeature('metaAdsMonitoring') ? (
+          <MetaPerformanceWidget stats={metaStats} chartData={ctrChartData} />
+        ) : (
+          <div
+            style={{
+              ...cardStyle,
+              padding: S[5],
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '160px',
+              textAlign: 'center',
+            }}
+          >
+            <div style={{ fontFamily: F.body, fontSize: '13px', color: C.textMuted, marginBottom: S[2] }}>Meta performance</div>
+            <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, margin: `0 0 ${S[3]} 0` }}>Upgrade to unlock Meta Monitor</p>
+            <button style={{ ...btn.primary, fontSize: '12px' }} onClick={() => openCheckout('growth', 'dashboard')}>Upgrade to unlock</button>
+          </div>
+        )}
         <EscalationMini escalations={escalationsSummary} />
         <AgentFeed feed={agentFeed} />
       </div>
+
+      {/* ── Upgrade CTA for Starter (locked features) ── */}
+      {!hasFeature('unifiedInbox') && (
+        <div
+          style={{
+            ...cardStyle,
+            padding: S[5],
+            borderStyle: 'dashed',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: S[4],
+            flexWrap: 'wrap',
+          }}
+        >
+          <div>
+            <div style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: C.textPrimary, marginBottom: '4px' }}>Unified Inbox, ABM & more</div>
+            <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>Get unlimited campaigns, Intent Signals, and Pipeline views.</div>
+          </div>
+          <button style={{ ...btn.secondary, fontSize: '13px' }} onClick={() => navigate('/billing/upgrade')}>Upgrade to Growth</button>
+        </div>
+      )}
     </div>
   );
 }

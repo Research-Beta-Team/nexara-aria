@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useStore from '../store/useStore';
+import usePlan from '../hooks/usePlan';
 import useToast from '../hooks/useToast';
 import { C, F, R, S, T, btn, badge, flex, cardStyle, inputStyle, shadows } from '../tokens';
 import { campaigns } from '../data/campaigns';
@@ -118,9 +120,26 @@ const ALL_CHANNELS = ['all', 'LinkedIn', 'Meta', 'Display', 'Google'];
 export default function CampaignList() {
   const navigate = useNavigate();
   const toast = useToast();
+  const openCheckout = useStore((s) => s.openCheckout);
+  const activeCampaignsCount = useStore((s) => s.activeCampaignsCount);
+  const { getLimit, isLimitReached } = usePlan();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [channelFilter, setChannelFilter] = useState('all');
+
+  const campaignLimit = getLimit('activeCampaigns');
+  const atCampaignLimit = campaignLimit !== -1 && isLimitReached('activeCampaigns', activeCampaignsCount);
+  const countLabel = campaignLimit === -1
+    ? `${campaigns.length} campaigns · ${campaigns.filter(c => c.status === 'active').length} active`
+    : `${activeCampaignsCount} / ${campaignLimit} campaigns · ${campaigns.filter(c => c.status === 'active').length} active`;
+
+  const handleNewCampaign = () => {
+    if (atCampaignLimit) {
+      openCheckout('growth', 'campaigns');
+      return;
+    }
+    navigate('/campaigns/new');
+  };
 
   const filtered = campaigns.filter((c) => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -152,18 +171,18 @@ export default function CampaignList() {
             Campaigns
           </h1>
           <span style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary }}>
-            {campaigns.length} campaigns · {campaigns.filter(c => c.status === 'active').length} active
+            {countLabel}
           </span>
         </div>
         <div style={{ display: 'flex', gap: S[2] }}>
           <button style={{ ...btn.secondary, fontSize: '13px' }} onClick={() => toast.info('Import campaign coming soon')}>
             Import
           </button>
-          <button style={{ ...btn.primary, fontSize: '13px' }} onClick={() => navigate('/campaigns/new')}>
+          <button style={{ ...btn.primary, fontSize: '13px' }} onClick={handleNewCampaign}>
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
               <path d="M6.5 1v11M1 6.5h11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
-            New Campaign
+            {atCampaignLimit ? 'Upgrade to add more' : 'New Campaign'}
           </button>
         </div>
       </div>

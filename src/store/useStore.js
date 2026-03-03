@@ -291,15 +291,14 @@ const useStore = create((set, get) => ({
   // ── Actions: UI ──────────────────────────────
   // ── Actions: Auth ────────────────────────────
   login: () => {
-    const treatAsNewLogin = import.meta.env.DEV;
-    if (treatAsNewLogin) {
-      set({
-        isAuthenticated: true,
-        isOnboarded: false,
-        onboardingComplete: false,
-        ariaMomentCompleted: false,
-      });
-      writeAuthToStorage(true, false);
+    set({
+      isAuthenticated: true,
+      isOnboarded: false,
+      onboardingComplete: false,
+      ariaMomentCompleted: false,
+    });
+    writeAuthToStorage(true, false);
+    if (import.meta.env.DEV) {
       try {
         const keysToRemove = [];
         for (let i = 0; i < localStorage.length; i++) {
@@ -311,9 +310,6 @@ const useStore = create((set, get) => ({
       try {
         sessionStorage.removeItem('nexara_credit_toast_last');
       } catch (_) {}
-    } else {
-      set({ isAuthenticated: true });
-      writeAuthToStorage(true, get().isOnboarded);
     }
   },
   logout: () => {

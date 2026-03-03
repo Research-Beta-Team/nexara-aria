@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import useStore from '../../store/useStore';
 import useToast from '../../hooks/useToast';
 import { C, F, R, S, btn, sectionHeading } from '../../tokens';
+import { getRoleDisplayName } from '../../config/roleConfig';
 import { IconWarning } from '../../components/ui/Icons';
 import RoleCard from '../../components/dev/RoleCard';
 
-// Role definitions (store id → display config)
+// Role definitions for RoleCard (display name comes from roleConfig.getRoleDisplayName)
 const ROLES = [
   {
     id: 'owner',
@@ -16,6 +17,15 @@ const ROLES = [
     icon: 'crown',
     permissions: ['All features', 'Billing & team', 'Client assignment'],
     dashboardVariant: 'Full control',
+  },
+  {
+    id: 'founder',
+    name: 'Founder',
+    description: 'Solo founder view · 5-item sidebar · Daily brief dashboard',
+    color: '#3DDC84',
+    icon: 'user',
+    permissions: ["Today's tasks", 'Content queue', 'Outreach', 'Analytics', 'ARIA'],
+    dashboardVariant: 'Founder daily brief',
   },
   {
     id: 'advisor',
@@ -56,10 +66,10 @@ const ROLES = [
   {
     id: 'sdr',
     name: 'SDR / Outreach',
-    description: 'Sequences · Prospect management · Unified Inbox (outreach)',
+    description: 'Sequences · Prospect management · Company Social Inbox (outreach)',
     color: '#5EEAD4',
     icon: 'send',
-    permissions: ['Sequences', 'Prospects', 'Inbox outreach'],
+    permissions: ['Sequences', 'Prospects', 'Company Social Inbox outreach'],
     dashboardVariant: 'Outreach focus',
   },
   {
@@ -82,10 +92,8 @@ const ROLES = [
   },
 ];
 
-export function getRoleDisplayName(roleId) {
-  const r = ROLES.find((x) => x.id === roleId);
-  return r ? r.name : roleId;
-}
+// Re-export for TopBar and other consumers
+export { getRoleDisplayName };
 
 export default function RoleSwitcher() {
   const currentRole = useStore((s) => s.currentRole);

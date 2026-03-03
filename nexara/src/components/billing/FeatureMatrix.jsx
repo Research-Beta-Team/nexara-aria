@@ -28,8 +28,8 @@ const GROUPS = [
       { key: 'emailOutreach',    label: 'Email outreach',      source: 'feature' },
       { key: 'linkedinOutreach', label: 'LinkedIn outreach',   source: 'feature' },
       { key: 'whatsappOutreach', label: 'WhatsApp outreach',   source: 'feature' },
-      { key: 'unifiedInbox',     label: 'Unified inbox',       source: 'feature' },
-      { key: 'queryManager',     label: 'Query manager',       source: 'feature' },
+      { key: 'unifiedInbox',     label: 'Company social inbox', source: 'feature' },
+      { key: 'queryManager',     label: 'Team Query',       source: 'feature' },
     ],
   },
   {

@@ -1,6 +1,18 @@
-import { C, F, R, S, T } from '../../tokens';
+import { useState } from 'react';
+import { C, F, R, S, T, btn } from '../../tokens';
+import UpgradeModal from '../plan/UpgradeModal';
 
 const CHANNELS = [
+  {
+    id: 'email',
+    name: 'Email Outreach',
+    color: '#3DDC84',
+    desc: 'AI-powered cold outreach sequences via SDR agents.',
+    ariaScore: 88,
+    bestFor: 'Personalized 1:1 outreach',
+    avgCPL: '$40–80',
+    featureKey: null,
+  },
   {
     id: 'linkedin',
     name: 'LinkedIn',
@@ -9,6 +21,7 @@ const CHANNELS = [
     ariaScore: 95,
     bestFor: 'Quality leads',
     avgCPL: '$180–240',
+    featureKey: 'linkedinOutreach',
   },
   {
     id: 'meta',
@@ -18,6 +31,8 @@ const CHANNELS = [
     ariaScore: 82,
     bestFor: 'Volume + retargeting',
     avgCPL: '$90–150',
+    featureKey: 'metaAdsManagement',
+    lockNote: 'Meta monitoring included, full management requires Growth plan',
   },
   {
     id: 'google',
@@ -27,15 +42,17 @@ const CHANNELS = [
     ariaScore: 74,
     bestFor: 'High-intent search',
     avgCPL: '$120–200',
+    featureKey: 'googleAdsManagement',
   },
   {
-    id: 'email',
-    name: 'Email Outreach',
-    color: '#3DDC84',
-    desc: 'AI-powered cold outreach sequences via SDR agents.',
-    ariaScore: 88,
-    bestFor: 'Personalized 1:1 outreach',
-    avgCPL: '$40–80',
+    id: 'linkedin_ads',
+    name: 'LinkedIn Ads',
+    color: '#0A66C2',
+    desc: 'Sponsored content and InMail for B2B.',
+    ariaScore: 78,
+    bestFor: 'B2B reach',
+    avgCPL: '$150–220',
+    featureKey: 'linkedinAdsManagement',
   },
   {
     id: 'content',
@@ -45,6 +62,7 @@ const CHANNELS = [
     ariaScore: 60,
     bestFor: 'Long-term pipeline',
     avgCPL: '$20–60',
+    featureKey: null,
   },
   {
     id: 'display',
@@ -54,6 +72,17 @@ const CHANNELS = [
     ariaScore: 55,
     bestFor: 'Awareness at scale',
     avgCPL: '$60–110',
+    featureKey: null,
+  },
+  {
+    id: 'whatsapp',
+    name: 'WhatsApp',
+    color: '#25D366',
+    desc: 'Conversational outreach and notifications.',
+    ariaScore: 72,
+    bestFor: 'High-engagement markets',
+    avgCPL: '$30–70',
+    featureKey: 'whatsappOutreach',
   },
 ];
 
@@ -68,11 +97,16 @@ function ScoreBar({ score, color }) {
   );
 }
 
-export default function WizardStep3({ data, onChange, errors }) {
+export default function WizardStep3({ data, onChange, errors, hasFeature, openCheckout, planId }) {
+  const [channelLockClicked, setChannelLockClicked] = useState(null);
+  const [showUpgrade, setShowUpgrade] = useState(false);
+
   const selected = data.channels ?? [];
   const toggle = (id) => {
     onChange('channels', selected.includes(id) ? selected.filter((c) => c !== id) : [...selected, id]);
   };
+
+  const lockedChannel = channelLockClicked ? CHANNELS.find((c) => c.id === channelLockClicked) : null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: S[5] }}>
@@ -95,69 +129,115 @@ export default function WizardStep3({ data, onChange, errors }) {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: S[3] }}>
         {CHANNELS.map((ch) => {
           const active = selected.includes(ch.id);
+          const isLocked = ch.featureKey && !(hasFeature?.(ch.featureKey) ?? true);
+          const handleClick = () => {
+            if (isLocked) {
+              setChannelLockClicked(ch.id);
+              return;
+            }
+            setChannelLockClicked(null);
+            toggle(ch.id);
+          };
           return (
-            <div
-              key={ch.id}
-              style={{
-                backgroundColor: active ? C.primaryGlow : C.surface2,
-                border: `1px solid ${active ? 'rgba(61,220,132,0.4)' : C.border}`,
-                borderLeft: `4px solid ${ch.color}`,
-                borderRadius: R.md,
-                padding: S[4],
-                cursor: 'pointer',
-                transition: T.base,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: S[2],
-                position: 'relative',
-              }}
-              onClick={() => toggle(ch.id)}
-            >
-              {/* Channel name + check */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontFamily: F.mono, fontSize: '13px', fontWeight: 700, color: ch.color }}>{ch.name}</span>
-                <div style={{
-                  width: '18px', height: '18px', borderRadius: '50%',
-                  backgroundColor: active ? C.primary : C.surface3,
-                  border: `2px solid ${active ? C.primary : C.border}`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+            <div key={ch.id} style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+              <div
+                style={{
+                  backgroundColor: active ? C.primaryGlow : C.surface2,
+                  border: `1px solid ${active ? 'rgba(61,220,132,0.4)' : C.border}`,
+                  borderLeft: `4px solid ${ch.color}`,
+                  borderRadius: R.md,
+                  padding: S[4],
+                  cursor: 'pointer',
                   transition: T.base,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: S[2],
+                  position: 'relative',
+                  opacity: isLocked ? 0.75 : 1,
+                }}
+                onClick={handleClick}
+              >
+                {/* Channel name + check / badge */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontFamily: F.mono, fontSize: '13px', fontWeight: 700, color: ch.color }}>{ch.name}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: S[1] }}>
+                    {isLocked && (
+                      <span style={{
+                        fontFamily: F.mono, fontSize: '9px', fontWeight: 700, color: C.amber,
+                        backgroundColor: C.amberDim, border: `1px solid ${C.amber}`,
+                        borderRadius: R.pill, padding: '2px 6px',
+                      }}>
+                        [GROWTH]
+                      </span>
+                    )}
+                    <div style={{
+                      width: '18px', height: '18px', borderRadius: '50%',
+                      backgroundColor: active && !isLocked ? C.primary : C.surface3,
+                      border: `2px solid ${active && !isLocked ? C.primary : C.border}`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: T.base,
+                    }}>
+                      {active && !isLocked && (
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                          <path d="M2 5l2.5 2.5 3.5-4" stroke={C.textInverse} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, margin: 0, lineHeight: '1.4' }}>
+                  {ch.desc}
+                </p>
+
+                {/* Stats row */}
+                <div style={{ display: 'flex', gap: S[4] }}>
+                  <div>
+                    <div style={{ fontFamily: F.body, fontSize: '10px', color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Best For</div>
+                    <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textSecondary }}>{ch.bestFor}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontFamily: F.body, fontSize: '10px', color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Avg CPL</div>
+                    <div style={{ fontFamily: F.mono, fontSize: '11px', color: C.textSecondary }}>{ch.avgCPL}</div>
+                  </div>
+                </div>
+
+                {/* ARIA score */}
+                <div>
+                  <div style={{ fontFamily: F.body, fontSize: '10px', color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '3px' }}>
+                    ARIA Match Score
+                  </div>
+                  <ScoreBar score={ch.ariaScore} color={ch.color} />
+                </div>
+              </div>
+
+              {/* Inline callout for this channel when locked and clicked */}
+              {channelLockClicked === ch.id && isLocked && (
+                <div style={{
+                  marginTop: S[2], padding: S[3], backgroundColor: C.amberDim,
+                  border: `1px solid ${C.amber}`, borderRadius: R.md,
+                  fontFamily: F.body, fontSize: '12px', color: C.textPrimary,
                 }}>
-                  {active && (
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                      <path d="M2 5l2.5 2.5 3.5-4" stroke={C.textInverse} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  )}
+                  {ch.name} would reach 3× more of your ICP. Unlock on Growth ($499/mo) →{' '}
+                  <button
+                    type="button"
+                    style={{ ...btn.ghost, fontSize: '12px', fontWeight: 600, color: C.amber, padding: 0, textDecoration: 'underline' }}
+                    onClick={(e) => { e.stopPropagation(); setShowUpgrade(true); }}
+                  >
+                    Upgrade
+                  </button>
                 </div>
-              </div>
-
-              <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, margin: 0, lineHeight: '1.4' }}>
-                {ch.desc}
-              </p>
-
-              {/* Stats row */}
-              <div style={{ display: 'flex', gap: S[4] }}>
-                <div>
-                  <div style={{ fontFamily: F.body, fontSize: '10px', color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Best For</div>
-                  <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textSecondary }}>{ch.bestFor}</div>
-                </div>
-                <div>
-                  <div style={{ fontFamily: F.body, fontSize: '10px', color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Avg CPL</div>
-                  <div style={{ fontFamily: F.mono, fontSize: '11px', color: C.textSecondary }}>{ch.avgCPL}</div>
-                </div>
-              </div>
-
-              {/* ARIA score */}
-              <div>
-                <div style={{ fontFamily: F.body, fontSize: '10px', color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '3px' }}>
-                  ARIA Match Score
-                </div>
-                <ScoreBar score={ch.ariaScore} color={ch.color} />
-              </div>
+              )}
             </div>
           );
         })}
       </div>
+
+      {lockedChannel?.lockNote && channelLockClicked === lockedChannel.id && (
+        <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted }}>
+          {lockedChannel.lockNote}
+        </div>
+      )}
 
       {selected.length > 0 && (
         <div style={{
@@ -171,6 +251,15 @@ export default function WizardStep3({ data, onChange, errors }) {
         }}>
           Selected: <span style={{ color: C.primary, fontWeight: 600 }}>{selected.map((id) => CHANNELS.find((c) => c.id === id)?.name).filter(Boolean).join(', ')}</span>
         </div>
+      )}
+
+      {showUpgrade && (
+        <UpgradeModal
+          fromPlan={planId}
+          toPlan="growth"
+          featureUnlocked={lockedChannel?.featureKey ?? 'linkedinOutreach'}
+          onClose={() => setShowUpgrade(false)}
+        />
       )}
     </div>
   );

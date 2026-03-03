@@ -1,15 +1,15 @@
 import { C, F, R, S, btn, badge } from '../../tokens';
 
 function scoreColor(score) {
-  if (score >= 80) return C.primary;
-  if (score >= 60) return C.amber;
-  return C.textMuted;
+  if (score >= 80) return { text: C.primary, bg: C.greenDim };
+  if (score >= 60) return { text: C.amber, bg: C.amberDim };
+  return { text: C.textMuted, bg: C.surface3 };
 }
 
 export default function AccountIntentCard({ account, onOutreach, onViewInCrm, toast }) {
   if (!account) return null;
   const { account: name, score, signals, topSignalType, lastActivity, inCRM } = account;
-  const color = scoreColor(score);
+  const { text: color, bg: bgColor } = scoreColor(score);
   const typeLabel = topSignalType ? topSignalType.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()) : '—';
 
   return (
@@ -49,7 +49,7 @@ export default function AccountIntentCard({ account, onOutreach, onViewInCrm, to
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
-            backgroundColor: `${color}18`,
+            backgroundColor: bgColor,
           }}
         >
           <span style={{ fontFamily: F.mono, fontSize: '16px', fontWeight: 700, color }}>{score}</span>

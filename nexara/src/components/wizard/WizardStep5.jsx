@@ -1,4 +1,6 @@
 import { C, F, R, S, inputStyle, labelStyle } from '../../tokens';
+import LimitWarning from '../plan/LimitWarning';
+import useStore from '../../store/useStore';
 
 const ROLES = [
   { id: 'owner',             label: 'Campaign Owner',      desc: 'Oversees the entire campaign. Receives all alerts.',          required: true  },
@@ -18,7 +20,7 @@ const TEAM_MEMBERS = [
   'Dana P.',
 ];
 
-function RoleRow({ role, value, onChange }) {
+function RoleRow({ role, value, onChange, disabled }) {
   return (
     <div style={{
       display: 'grid',
@@ -51,7 +53,8 @@ function RoleRow({ role, value, onChange }) {
       <select
         value={value ?? ''}
         onChange={(e) => onChange(role.id, e.target.value)}
-        style={{ ...inputStyle, fontSize: '13px', cursor: 'pointer' }}
+        style={{ ...inputStyle, fontSize: '13px', cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? 0.7 : 1 }}
+        disabled={disabled}
       >
         <option value="">— Unassigned —</option>
         {TEAM_MEMBERS.map((m) => <option key={m} value={m}>{m}</option>)}
@@ -60,7 +63,11 @@ function RoleRow({ role, value, onChange }) {
   );
 }
 
-export default function WizardStep5({ data, onChange, errors }) {
+export default function WizardStep5({ data, onChange, errors, getLimit }) {
+  const seatsUsed = useStore((s) => s.seatsUsed);
+  const seatLimit = getLimit?.('teamSeats') ?? -1;
+  const atSeatLimit = seatLimit !== -1 && seatsUsed >= seatLimit;
+
   const handleChange = (roleId, value) => {
     onChange('team', { ...(data.team ?? {}), [roleId]: value });
   };
@@ -75,6 +82,18 @@ export default function WizardStep5({ data, onChange, errors }) {
           Assign team members to each role. Unassigned roles will be handled autonomously by ARIA agents.
         </p>
       </div>
+
+      <LimitWarning limitKey="teamSeats" currentUsage={seatsUsed} />
+
+      {atSeatLimit && (
+        <div style={{
+          fontFamily: F.body, fontSize: '12px', color: C.amber,
+          backgroundColor: C.amberDim, border: `1px solid ${C.amber}`,
+          borderRadius: R.md, padding: `${S[2]} ${S[3]}`,
+        }}>
+          You've reached your team seat limit. Upgrade to add more.
+        </div>
+      )}
 
       {errors?.owner && (
         <div style={{ fontFamily: F.body, fontSize: '12px', color: C.red, backgroundColor: C.redDim, border: `1px solid rgba(255,110,122,0.2)`, borderRadius: R.md, padding: `${S[2]} ${S[3]}` }}>
@@ -99,6 +118,7 @@ export default function WizardStep5({ data, onChange, errors }) {
             role={role}
             value={(data.team ?? {})[role.id]}
             onChange={handleChange}
+            disabled={atSeatLimit}
           />
         ))}
       </div>

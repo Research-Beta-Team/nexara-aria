@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 
 const DEFAULT_BILLING_INFO = {
-  company:  'Acme Corp',
-  email:    'billing@acmecorp.com',
+  company:  'Medglobal',
+  email:    'billing@medglobal.org',
   country:  'BD',
   taxId:    '',
   address1: '',

@@ -78,7 +78,7 @@ export default function CheckoutStep2({ billingInfo, updateBillingInfo, goNext, 
               required
               value={billingInfo.company}
               onChange={e => updateBillingInfo('company', e.target.value)}
-              placeholder="Acme Corp"
+              placeholder="Medglobal"
               style={inputStyle}
             />
           </Field>
@@ -88,7 +88,7 @@ export default function CheckoutStep2({ billingInfo, updateBillingInfo, goNext, 
               type="email"
               value={billingInfo.email}
               onChange={e => updateBillingInfo('email', e.target.value)}
-              placeholder="billing@acme.com"
+              placeholder="billing@medglobal.org"
               style={inputStyle}
             />
           </Field>

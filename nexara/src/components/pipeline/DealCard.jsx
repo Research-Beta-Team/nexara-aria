@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { C, F, R, S, badge } from '../../tokens';
 import { IconWarning } from '../ui/Icons';
 
@@ -22,9 +23,10 @@ function healthColor(health) {
   }
 }
 
-export default function DealCard({ deal, onClick }) {
+export default function DealCard({ deal, onClick, draggable, dragType }) {
   if (!deal) return null;
   const {
+    id,
     company,
     contact,
     value,
@@ -40,23 +42,44 @@ export default function DealCard({ deal, onClick }) {
   const daysColor = daysInStageColor(daysInStage);
   const healthDot = healthColor(health);
 
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragStart = (e) => {
+    if (!draggable || !dragType) return;
+    e.dataTransfer.setData(dragType, id);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', company);
+    setIsDragging(true);
+    try {
+      e.dataTransfer.setDragImage(e.currentTarget, 0, 0);
+    } catch (_) {}
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
   return (
     <div
       role="button"
       tabIndex={0}
+      draggable={!!draggable}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       onClick={() => onClick?.(deal)}
       onKeyDown={(e) => e.key === 'Enter' && onClick?.(deal)}
       style={{
         padding: S[4],
         backgroundColor: C.surface,
-        border: `1px solid ${C.border}`,
+        border: `1px solid ${isDragging ? C.primary : C.border}`,
         borderRadius: R.card,
-        cursor: 'pointer',
-        transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+        cursor: draggable ? (isDragging ? 'grabbing' : 'grab') : 'pointer',
+        opacity: isDragging ? 0.85 : 1,
+        transition: 'border-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: S[2], marginBottom: S[2] }}>
-        <span style={{ color: C.textMuted, cursor: 'grab', flexShrink: 0 }} title="Drag">⋮⋮</span>
+        <span style={{ color: C.textMuted, cursor: draggable ? 'grab' : 'default', flexShrink: 0 }} title={draggable ? 'Drag to move stage' : undefined}>⋮⋮</span>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: C.textPrimary }}>
             {company}

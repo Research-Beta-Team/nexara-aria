@@ -97,8 +97,7 @@ export default function Onboarding() {
   };
 
   const handleDoneCreateCampaign = () => {
-    completeOnboarding();
-    navigate('/campaigns/new');
+    navigate('/first-onboarding/aria');
   };
 
   return (
@@ -179,6 +178,15 @@ export default function Onboarding() {
                   Skip to Dashboard
                 </button>
               </div>
+              <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted, marginTop: S[4], textAlign: 'center' }}>
+                <button
+                  type="button"
+                  onClick={() => navigate('/first-onboarding/aria')}
+                  style={{ background: 'none', border: 'none', color: C.primary, cursor: 'pointer', fontWeight: 600, padding: 0, textDecoration: 'underline', textUnderlineOffset: 2 }}
+                >
+                  Or let ARIA build your first campaign →
+                </button>
+              </p>
             </>
           )}
 
@@ -400,7 +408,7 @@ export default function Onboarding() {
                   Go to Dashboard
                 </button>
                 <button type="button" onClick={handleDoneCreateCampaign} style={{ ...btn.secondary, width: '100%' }}>
-                  Create first campaign
+                  Create your first campaign with ARIA
                 </button>
               </div>
             </>

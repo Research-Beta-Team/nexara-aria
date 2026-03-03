@@ -12,7 +12,7 @@ const MENTION_SUGGESTIONS = [
 
 const CONTENT_SAMPLES = [
   { id: 'cl1', name: 'CFO Q2 — Touch 1: Cold Intro', type: 'Email' },
-  { id: 'cl3', name: 'Acme CFO LinkedIn Carousel',  type: 'LinkedIn Ad' },
+  { id: 'cl3', name: 'Medglobal CFO LinkedIn Carousel',  type: 'LinkedIn Ad' },
   { id: 'cl7', name: 'Finance Automation Blog Post', type: 'Blog' },
 ];
 

@@ -54,7 +54,7 @@ export default function NewThreadModal({ onClose, onCreate }) {
                 value={name}
                 onChange={(e) => { setName(e.target.value); setErr(''); }}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); }}
-                placeholder="e.g. Acme VN CFO Q2 — Strategy"
+                placeholder="e.g. Medglobal VN CFO Q2 — Strategy"
                 style={{
                   width: '100%', boxSizing: 'border-box',
                   backgroundColor: C.surface2, color: C.textPrimary,
@@ -87,7 +87,7 @@ export default function NewThreadModal({ onClose, onCreate }) {
               <input
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
-                placeholder="e.g. acme, q2, budget"
+                placeholder="e.g. medglobal, q2, budget"
                 style={{
                   width: '100%', boxSizing: 'border-box',
                   backgroundColor: C.surface2, color: C.textPrimary,

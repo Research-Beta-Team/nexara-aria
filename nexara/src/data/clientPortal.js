@@ -17,7 +17,7 @@ export const CP = {
 };
 
 export const CLIENT_INFO = {
-  name: 'Acme Corp',
+  name: 'Medglobal',
   contactName: 'Sarah Johnson',
   csm: 'Alex Rahman',
   since: 'Jan 2026',

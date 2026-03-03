@@ -4,13 +4,14 @@
 
 export const contentItems = [
 
-  // ── Campaign c1: Acme VN CFO Q2 ──────────────
+  // ── Campaign c1: Medglobal VN CFO Q2 ──────────────
   {
     id: 'cl1',
+    contentId: 'CAMP-001-EMAIL-001',
     type: 'Email',
     name: 'CFO Q2 — Touch 1: Cold Intro',
     campaign: 'c1',
-    campaignName: 'Acme VN CFO Q2',
+    campaignName: 'Medglobal VN CFO Q2',
     agent: 'Email Sequencer',
     agentId: 'a4',
     status: 'approved',
@@ -47,10 +48,11 @@ Best,
 
   {
     id: 'cl2',
+    contentId: 'CAMP-001-EMAIL-002',
     type: 'Email',
     name: 'CFO Q2 — Touch 2: Value Prop',
     campaign: 'c1',
-    campaignName: 'Acme VN CFO Q2',
+    campaignName: 'Medglobal VN CFO Q2',
     agent: 'Email Sequencer',
     agentId: 'a4',
     status: 'pending',
@@ -82,10 +84,11 @@ Best,
 
   {
     id: 'cl3',
+    contentId: 'CAMP-001-EMAIL-003',
     type: 'Email',
     name: 'CFO Q2 — Touch 3: Break-up',
     campaign: 'c1',
-    campaignName: 'Acme VN CFO Q2',
+    campaignName: 'Medglobal VN CFO Q2',
     agent: 'Email Sequencer',
     agentId: 'a4',
     status: 'approved',
@@ -117,10 +120,11 @@ Either way, best of luck with {{company}}'s growth this year.
 
   {
     id: 'cl4',
+    contentId: 'CAMP-001-LI-001',
     type: 'LinkedIn Ad',
     name: 'CFO Q2 — LinkedIn Sponsored Post: Thought Leadership',
     campaign: 'c1',
-    campaignName: 'Acme VN CFO Q2',
+    campaignName: 'Medglobal VN CFO Q2',
     agent: 'Ad Composer',
     agentId: 'a2',
     status: 'approved',
@@ -159,10 +163,11 @@ AUDIENCE: CFO, VP Finance | Vietnam | 32-55 | Company 500-5000 employees`,
 
   {
     id: 'cl5',
+    contentId: 'CAMP-001-AD-001',
     type: 'Meta Ad',
     name: 'CFO Q2 — Meta Carousel Batch B (3 cards)',
     campaign: 'c1',
-    campaignName: 'Acme VN CFO Q2',
+    campaignName: 'Medglobal VN CFO Q2',
     agent: 'Ad Composer',
     agentId: 'a2',
     status: 'pending',
@@ -203,10 +208,11 @@ Audience: Lookalike 1% (Finance/CFO Vietnam)`,
 
   {
     id: 'cl6',
+    contentId: 'CAMP-001-SEO-001',
     type: 'SEO Article',
     name: 'CFO Guide: Automating Month-End Close in Vietnam',
     campaign: 'c1',
-    campaignName: 'Acme VN CFO Q2',
+    campaignName: 'Medglobal VN CFO Q2',
     agent: 'Content Strategist',
     agentId: 'a3',
     status: 'approved',
@@ -284,12 +290,13 @@ Most CFOs we work with find the ROI calculation straightforward. If your team sp
 
 ---
 
-*Published: February 7, 2025 | Author: ARIA Content Strategist | Campaign: Acme VN CFO Q2*`,
+*Published: February 7, 2025 | Author: ARIA Content Strategist | Campaign: Medglobal VN CFO Q2*`,
   },
 
   // ── Campaign c2: APAC Brand Awareness ────────
   {
     id: 'cl7',
+    contentId: 'CAMP-002-AD-001',
     type: 'Meta Ad',
     name: 'APAC Brand — Single Image Ad: Awareness',
     campaign: 'c2',
@@ -334,6 +341,7 @@ Placement: Facebook Feed, Instagram Feed, Audience Network`,
 
   {
     id: 'cl8',
+    contentId: 'CAMP-002-BLOG-001',
     type: 'Blog',
     name: 'The CFO Automation Playbook for Asia-Pacific',
     campaign: 'c2',
@@ -409,6 +417,7 @@ Most APAC finance teams complete this full implementation in 10-14 weeks with a 
 
   {
     id: 'cl9',
+    contentId: 'CAMP-002-LI-001',
     type: 'LinkedIn Ad',
     name: 'APAC Brand — LinkedIn Lead Gen: ROI Calculator',
     campaign: 'c2',
@@ -453,6 +462,7 @@ CTA: Get My ROI Report`,
 
   {
     id: 'cl10',
+    contentId: 'CAMP-002-BLOG-002',
     type: 'Blog',
     name: 'Finance Automation vs Manual: The True Cost Comparison',
     campaign: 'c2',
@@ -513,6 +523,7 @@ Annual close cost (Company B): $24,000 + $16,000 team time = $40,000
   // ── Campaign c3: SEA Demand Gen ───────────────
   {
     id: 'cl11',
+    contentId: 'CAMP-003-EMAIL-001',
     type: 'Email',
     name: 'SEA Demand Gen — Outreach Sequence (3 touches)',
     campaign: 'c3',
@@ -574,6 +585,7 @@ Either way, best of luck with the SEA expansion.
 
   {
     id: 'cl12',
+    contentId: 'CAMP-003-LI-001',
     type: 'LinkedIn Ad',
     name: 'SEA Demand Gen — LinkedIn Sponsored InMail',
     campaign: 'c3',
@@ -621,6 +633,7 @@ TARGETING:
 
   {
     id: 'cl13',
+    contentId: 'CAMP-003-LP-001',
     type: 'Landing Page',
     name: 'SEA Demand Gen — Demo Request Landing Page',
     campaign: 'c3',
@@ -676,6 +689,7 @@ Issue: Bounce rate high (58%) — suggests mismatch between ad and page messagin
   // ── Drafts / No campaign ──────────────────────
   {
     id: 'cl14',
+    contentId: 'CAMP-000-AD-001',
     type: 'Meta Ad',
     name: 'Q2 Brand Refresh — Meta Video Script (Draft)',
     campaign: null,
@@ -728,6 +742,7 @@ Voiceover style: Confident, peer-to-peer (not salesy)`,
 
   {
     id: 'cl15',
+    contentId: 'CAMP-000-EMAIL-001',
     type: 'Email',
     name: 'Winback Sequence — Churned CFO Prospects',
     campaign: null,
@@ -782,10 +797,11 @@ If you'd like the full report, happy to send it over.
 
   {
     id: 'cl16',
+    contentId: 'CAMP-001-SEO-002',
     type: 'SEO Article',
     name: 'Top 5 ERP Integrations for Vietnam CFOs (2025)',
     campaign: 'c1',
-    campaignName: 'Acme VN CFO Q2',
+    campaignName: 'Medglobal VN CFO Q2',
     agent: 'Content Strategist',
     agentId: 'a3',
     status: 'archived',

@@ -1,25 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { C, F, R, S, btn } from '../tokens';
 import useToast from '../hooks/useToast';
+import usePlan from '../hooks/usePlan';
+import useCredits from '../hooks/useCredits';
+import useStore from '../store/useStore';
 import WizardProgress from '../components/wizard/WizardProgress';
 import WizardAriaSidebar from '../components/wizard/WizardAriaSidebar';
 import WizardStep1 from '../components/wizard/WizardStep1';
 import WizardStep2 from '../components/wizard/WizardStep2';
 import WizardStep3 from '../components/wizard/WizardStep3';
 import WizardStep4 from '../components/wizard/WizardStep4';
+import WizardStep5Phases from '../components/wizard/WizardStep5Phases';
 import WizardStep5 from '../components/wizard/WizardStep5';
 import WizardStep6 from '../components/wizard/WizardStep6';
 import WizardStep7 from '../components/wizard/WizardStep7';
 
-const TOTAL_STEPS = 7;
-const STEP_LABELS = ['Basics', 'ICP', 'Channels', 'Knowledge', 'Team', 'Workflow', 'Review'];
+const TOTAL_STEPS = 8;
+const STEP_LABELS = ['Basics', 'ICP', 'Channels', 'Agents & Knowledge', 'Phases', 'Team', 'Workflow', 'Review'];
 
 const DEFAULT_DATA = {
   name: '', type: 'demand_gen', goalMetric: 'leads', target: '', budget: '', deadline: '', client: '',
   jobTitles: [], companySize: [], industries: [], geographies: [], exclusions: '',
-  channels: ['linkedin'],
+  icpSource: 'existing',
+  channels: ['email'],
+  selectedAgents: [],
   kbDocs: [],
+  quickUploadedDocs: [],
+  phases: null,
   team: {},
   approvalGates: { contentApproval: false, budgetChanges: true, escalationAlerts: true, weeklyReport: true, prospectReplies: true },
   escalationRouting: 'owner',
@@ -36,12 +44,13 @@ function validate(step, data) {
     if (!data.client?.trim())     errors.client   = 'Client name is required.';
   }
   if (step === 2) {
-    if (!data.jobTitles?.length)  errors.jobTitles = 'Add at least one job title.';
+    const icpSource = data.icpSource ?? 'existing';
+    if (icpSource === 'existing' && !data.jobTitles?.length) errors.jobTitles = 'Add at least one job title.';
   }
   if (step === 3) {
     if (!data.channels?.length)   errors.channels  = 'Select at least one channel.';
   }
-  if (step === 5) {
+  if (step === 6) {
     if (!data.team?.owner)        errors.owner     = 'Campaign Owner is required.';
   }
   return errors;
@@ -50,13 +59,13 @@ function validate(step, data) {
 function DeployAnimation({ campaignName, onDone }) {
   const [phase, setPhase] = useState(0);
 
-  useState(() => {
+  useEffect(() => {
     const t1 = setTimeout(() => setPhase(1), 600);
     const t2 = setTimeout(() => setPhase(2), 1400);
     const t3 = setTimeout(() => setPhase(3), 2200);
     const t4 = setTimeout(() => onDone(), 3100);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
-  });
+  }, [onDone]);
 
   const LINES = [
     'Briefing ARIA agents…',
@@ -149,11 +158,18 @@ function DeployAnimation({ campaignName, onDone }) {
 export default function CampaignWizard() {
   const navigate  = useNavigate();
   const toast     = useToast();
+  const { hasFeature, hasAgent, getLimit, isLimitReached, upgradePlan, planId, plan } = usePlan();
+  const { creditsRemaining } = useCredits();
+  const activeCampaignsCount = useStore((s) => s.activeCampaignsCount);
+  const openCheckout = useStore((s) => s.openCheckout);
 
   const [step, setStep]         = useState(1);
   const [data, setData]         = useState(DEFAULT_DATA);
   const [errors, setErrors]     = useState({});
   const [deploying, setDeploying] = useState(false);
+
+  const campaignLimit = getLimit('activeCampaigns');
+  const atCampaignLimit = campaignLimit !== -1 && isLimitReached('activeCampaigns', activeCampaignsCount);
 
   const handleChange = (field, value) => {
     setData((prev) => ({ ...prev, [field]: value }));
@@ -175,6 +191,7 @@ export default function CampaignWizard() {
   };
 
   const handleLaunch = () => {
+    if (atCampaignLimit) return;
     setDeploying(true);
   };
 
@@ -183,14 +200,42 @@ export default function CampaignWizard() {
     navigate('/campaigns');
   };
 
+  const planAlertProps = {
+    hasFeature,
+    hasAgent,
+    getLimit,
+    upgradePlan,
+    openCheckout,
+  };
+
   const STEP_COMPONENTS = {
     1: <WizardStep1 data={data} onChange={handleChange} errors={errors} />,
-    2: <WizardStep2 data={data} onChange={handleChange} errors={errors} />,
-    3: <WizardStep3 data={data} onChange={handleChange} errors={errors} />,
-    4: <WizardStep4 data={data} onChange={handleChange} errors={errors} />,
-    5: <WizardStep5 data={data} onChange={handleChange} errors={errors} />,
-    6: <WizardStep6 data={data} onChange={handleChange} errors={errors} />,
-    7: <WizardStep7 data={data} />,
+    2: <WizardStep2 data={data} onChange={handleChange} errors={errors} {...planAlertProps} />,
+    3: <WizardStep3 data={data} onChange={handleChange} errors={errors} {...planAlertProps} />,
+    4: <WizardStep4 data={data} onChange={handleChange} errors={errors} {...planAlertProps} />,
+    5: (
+      <WizardStep5Phases
+        data={data}
+        onChange={handleChange}
+      />
+    ),
+    6: <WizardStep5 data={data} onChange={handleChange} errors={errors} {...planAlertProps} />,
+    7: <WizardStep6 data={data} onChange={handleChange} errors={errors} />,
+    8: (
+      <WizardStep7
+        data={data}
+        creditsRemaining={creditsRemaining}
+        getLimit={getLimit}
+        isLimitReached={isLimitReached}
+        activeCampaignsCount={activeCampaignsCount}
+        planId={planId}
+        hasFeature={hasFeature}
+        hasAgent={hasAgent}
+        openCheckout={openCheckout}
+        atCampaignLimit={atCampaignLimit}
+        campaignLimit={campaignLimit}
+      />
+    ),
   };
 
   const isLastStep = step === TOTAL_STEPS;
@@ -261,23 +306,70 @@ export default function CampaignWizard() {
                 Step {step} / {TOTAL_STEPS}
               </span>
 
-              {isLastStep ? (
-                <button
-                  style={{
-                    fontFamily: F.body, fontSize: '14px', fontWeight: 700,
-                    color: C.bg, backgroundColor: C.primary,
-                    border: 'none', borderRadius: R.button,
-                    padding: `${S[2]} ${S[6]}`, cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', gap: S[2],
-                    boxShadow: `0 0 16px rgba(61,220,132,0.4)`,
-                  }}
-                  onClick={handleLaunch}
-                >
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <path d="M7 1l1.8 3.7 4.2.6-3 3 .7 4.1L7 10.5l-3.7 1.9.7-4.1L1 5.3l4.2-.6L7 1z" fill="currentColor"/>
-                  </svg>
-                  Launch Campaign
-                </button>
+              {step === 5 ? (
+                <div style={{ display: 'flex', gap: S[2] }}>
+                  <button
+                    style={{
+                      fontFamily: F.body, fontSize: '13px', fontWeight: 500,
+                      color: C.textMuted, backgroundColor: 'transparent',
+                      border: `1px solid ${C.border}`, borderRadius: R.button,
+                      padding: `${S[2]} ${S[4]}`, cursor: 'pointer',
+                    }}
+                    onClick={() => { handleChange('phases', null); handleNext(); }}
+                  >
+                    Skip phases — launch as single campaign →
+                  </button>
+                  <button
+                    style={{
+                      fontFamily: F.body, fontSize: '13px', fontWeight: 600,
+                      color: C.bg, backgroundColor: C.primary,
+                      border: 'none', borderRadius: R.button,
+                      padding: `${S[2]} ${S[5]}`, cursor: 'pointer',
+                    }}
+                    onClick={handleNext}
+                  >
+                    Continue →
+                  </button>
+                </div>
+              ) : isLastStep ? (
+                atCampaignLimit ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: S[2] }}>
+                    <span style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary }}>
+                      You've reached your {campaignLimit}-campaign limit on {plan?.displayName ?? planId}.
+                    </span>
+                    <div style={{ display: 'flex', gap: S[2] }}>
+                      <button
+                        style={{ ...btn.secondary, fontSize: '13px' }}
+                        onClick={() => navigate('/campaigns')}
+                      >
+                        Pause an existing campaign
+                      </button>
+                      <button
+                        style={{ ...btn.primary, fontSize: '13px' }}
+                        onClick={() => openCheckout(upgradePlan?.id ?? 'growth')}
+                      >
+                        Upgrade for unlimited
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    style={{
+                      fontFamily: F.body, fontSize: '14px', fontWeight: 700,
+                      color: C.bg, backgroundColor: C.primary,
+                      border: 'none', borderRadius: R.button,
+                      padding: `${S[2]} ${S[6]}`, cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: S[2],
+                      boxShadow: `0 0 16px rgba(61,220,132,0.4)`,
+                    }}
+                    onClick={handleLaunch}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path d="M7 1l1.8 3.7 4.2.6-3 3 .7 4.1L7 10.5l-3.7 1.9.7-4.1L1 5.3l4.2-.6L7 1z" fill="currentColor"/>
+                    </svg>
+                    Launch Campaign
+                  </button>
+                )
               ) : (
                 <button
                   style={{

@@ -17,10 +17,10 @@ export const INTENT_SIGNALS = [
   },
   {
     id: 'is2',
-    account: 'Acme Corp',
+    account: 'Medglobal',
     contact: null,
     signalType: 'g2_research',
-    signalDetail: 'Acme Corp checking G2 reviews for compliance software',
+    signalDetail: 'Medglobal checking G2 reviews for compliance software',
     intentScore: 72,
     detectedAt: '28m ago',
     channel: 'G2',
@@ -234,7 +234,7 @@ export const ACCOUNT_INTENT_SCORES = [
   { account: 'Cascade Textiles', score: 88, signals: 1, topSignalType: 'content_engage', lastActivity: '22h ago', inCRM: false },
   { account: 'Omega Logistics', score: 76, signals: 1, topSignalType: 'email_open', lastActivity: '5h ago', inCRM: true },
   { account: 'Gamma Exports', score: 78, signals: 1, topSignalType: 'funding_news', lastActivity: '3h ago', inCRM: false },
-  { account: 'Acme Corp', score: 72, signals: 1, topSignalType: 'g2_research', lastActivity: '28m ago', inCRM: false },
+  { account: 'Medglobal', score: 72, signals: 1, topSignalType: 'g2_research', lastActivity: '28m ago', inCRM: false },
 ];
 
 // Last 14 days for trend chart: total signals, high intent (>80), actioned

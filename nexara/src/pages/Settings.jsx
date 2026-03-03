@@ -11,7 +11,7 @@ const SECTIONS = [
     icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="3" stroke="currentColor" strokeWidth="1.4"/><path d="M1.5 14c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>,
   },
   {
-    id: 'workspace', label: 'Workspace',
+    id: 'organization', label: 'Organization',
     icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.4"/><path d="M5 13.5h5M7.5 11v2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>,
   },
   {
@@ -27,6 +27,7 @@ const SECTIONS = [
     icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M5 4.5h1M9 4.5h1M5 7h5M5 9.5h3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><rect x="1.5" y="2" width="12" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.4"/><path d="M4 13.5h7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>,
   },
   {
+    id: 'security', label: 'Security',
     icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1L2 3.5V7c0 3.5 2.5 5.5 5.5 6.5C10 12.5 13 10.5 13 7V3.5L7.5 1z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 7.5l2 2 3-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>,
   },
   {
@@ -129,9 +130,9 @@ function ProfileSection() {
   const currentRole = useStore((s) => s.currentRole);
   const toast = useToast();
   const [name,    setName]    = useState('Alex Nguyen');
-  const [email,   setEmail]   = useState('alex@acmecorp.com');
+  const [email,   setEmail]   = useState('alex@medglobal.org');
   const [title,   setTitle]   = useState('Head of Growth');
-  const [company, setCompany] = useState('Acme Corp');
+  const [company, setCompany] = useState('Medglobal');
   const [focus,   setFocus]   = useState(null);
 
   const initials = name.split(' ').filter(Boolean).map((w) => w[0]).join('').slice(0, 2).toUpperCase() || 'NX';
@@ -201,14 +202,14 @@ function ProfileSection() {
 // ── Workspace section ─────────────────────────
 function WorkspaceSection() {
   const toast = useToast();
-  const [orgName,   setOrgName]   = useState('Acme Corp');
+  const [orgName,   setOrgName]   = useState('Medglobal');
   const [timezone,  setTimezone]  = useState('Asia/Ho_Chi_Minh');
   const [currency,  setCurrency]  = useState('USD');
   const [focus,     setFocus]     = useState(null);
 
   return (
     <div>
-      <SectionHeader title="Workspace" description="Organisation-level settings shared across your team." />
+      <SectionHeader title="Organization" description="Organization-level settings shared across your team." />
 
       <Card style={{ marginBottom: S[5] }}>
         <div style={{ padding: S[5], display: 'flex', flexDirection: 'column', gap: S[4] }}>
@@ -237,7 +238,7 @@ function WorkspaceSection() {
       </Card>
 
       <button
-        onClick={() => toast.success('Workspace settings saved.')}
+        onClick={() => toast.success('Organization settings saved.')}
         style={{ padding: `${S[2]} ${S[5]}`, backgroundColor: C.primary, color: C.textInverse, border: 'none', borderRadius: R.button, fontFamily: F.body, fontSize: '14px', fontWeight: 600, cursor: 'pointer', transition: T.base }}
       >
         Save Changes
@@ -556,7 +557,7 @@ function DangerSection() {
 // ── Main Settings page ────────────────────────
 const SECTION_COMPONENTS = {
   profile:       ProfileSection,
-  workspace:     WorkspaceSection,
+  organization:  WorkspaceSection,
   appearance:    AppearanceSection,
   notifications: NotificationsSection,
   connections:   ConnectionsSection,

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import useToast from '../../hooks/useToast';
+import PlanGate from '../../components/plan/PlanGate';
 import { ICP_DEFINITION } from '../../data/icp';
 import ICPDefinitionPanel       from '../../components/icp/ICPDefinitionPanel';
 import ScoringCriteriaBuilder   from '../../components/icp/ScoringCriteriaBuilder';
@@ -39,6 +40,7 @@ export default function ICPBuilder() {
   const { version, lastUpdated, updatedBy, icpScore } = ICP_DEFINITION;
 
   return (
+    <PlanGate feature="icpBuilder" requiredPlan="growth">
     <div style={{ padding: S[6], display: 'flex', flexDirection: 'column', gap: S[5] }}>
 
       {/* ── Page header ─────────────────────────── */}
@@ -145,5 +147,6 @@ export default function ICPBuilder() {
         {activeTab === 'lookalike'    && <LookalikeExpansion />}
       </div>
     </div>
+    </PlanGate>
   );
 }

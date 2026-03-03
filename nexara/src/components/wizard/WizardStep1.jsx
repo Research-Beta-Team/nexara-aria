@@ -139,7 +139,7 @@ export default function WizardStep1({ data, onChange, errors }) {
         <TextInput
           value={data.client}
           onChange={(v) => onChange('client', v)}
-          placeholder="e.g. Acme Corp"
+          placeholder="e.g. Medglobal"
         />
       </Field>
     </div>

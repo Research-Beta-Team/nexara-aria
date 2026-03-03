@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { PLANS } from '../../config/plans';
 import { C, F, R, S, T } from '../../tokens';
-import { IconLock, IconCheck, IconRefresh } from '../ui/Icons';
+import { IconLock, IconCheck, IconRefresh, IconCard, IconBuilding } from '../ui/Icons';
 
 // ── Proration helper (matches Step1) ──────────
 function calcProration(fromPlanId) {
@@ -19,9 +19,9 @@ function formatCredits(n) {
 
 // ── Payment method tabs ───────────────────────
 const PAYMENT_TABS = [
-  { id: 'card',  label: '💳 Card' },
-  { id: 'wire',  label: '🏦 Wire Transfer' },
-  { id: 'crypto',label: '₿ Crypto', soon: true },
+  { id: 'card',  label: 'Card', Icon: IconCard },
+  { id: 'wire',  label: 'Wire Transfer', Icon: IconBuilding },
+  { id: 'crypto',label: 'Crypto', soon: true },
 ];
 
 // ── Card form ─────────────────────────────────
@@ -114,12 +114,9 @@ function CardForm({ cardNumber, setCardNumber }) {
 
       {/* Stripe badge */}
       <div style={{ display: 'flex', alignItems: 'center', gap: S[2], marginTop: S[1] }}>
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <rect x="1" y="3" width="12" height="8" rx="1.5" stroke={C.textMuted} strokeWidth="1.2"/>
-          <path d="M1 6h12" stroke={C.textMuted} strokeWidth="1.2"/>
-        </svg>
+        <IconLock color={C.textMuted} width={14} height={14} />
         <span style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted }}>
-          🔒 Secured by Stripe — PCI DSS Level 1 compliant
+          Secured by Stripe — PCI DSS Level 1 compliant
         </span>
       </div>
     </div>
@@ -268,7 +265,9 @@ export default function CheckoutStep3({ fromPlanId, toPlanId, billing, isProcess
             borderBottom: `1px solid ${C.border}`,
             paddingBottom: S[3],
           }}>
-            {PAYMENT_TABS.map(tab => (
+            {PAYMENT_TABS.map(tab => {
+              const TabIcon = tab.Icon;
+              return (
               <button
                 key={tab.id}
                 onClick={() => !tab.soon && setActiveTab(tab.id)}
@@ -284,6 +283,7 @@ export default function CheckoutStep3({ fromPlanId, toPlanId, billing, isProcess
                   transition: T.color,
                 }}
               >
+                {TabIcon && <TabIcon color={tab.soon ? C.textMuted : activeTab === tab.id ? C.textPrimary : C.textSecondary} width={16} height={16} />}
                 {tab.label}
                 {tab.soon && (
                   <span style={{
@@ -295,7 +295,8 @@ export default function CheckoutStep3({ fromPlanId, toPlanId, billing, isProcess
                   </span>
                 )}
               </button>
-            ))}
+              );
+            })}
           </div>
 
           {/* Tab content */}

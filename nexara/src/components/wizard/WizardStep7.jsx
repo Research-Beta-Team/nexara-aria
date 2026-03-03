@@ -1,7 +1,24 @@
-import { C, F, R, S, badge } from '../../tokens';
+import { C, F, R, S, badge, btn } from '../../tokens';
+import useToast from '../../hooks/useToast';
 
-const CHANNEL_LABELS = { linkedin: 'LinkedIn', meta: 'Meta', google: 'Google Ads', email: 'Email Outreach', content: 'Content / SEO', display: 'Display' };
+const CHANNEL_LABELS = {
+  linkedin: 'LinkedIn',
+  meta: 'Meta',
+  google: 'Google Ads',
+  linkedin_ads: 'LinkedIn Ads',
+  email: 'Email Outreach',
+  content: 'Content / SEO',
+  display: 'Display',
+  whatsapp: 'WhatsApp',
+};
 const CAMPAIGN_TYPE_LABELS = { demand_gen: 'Demand Gen', brand_awareness: 'Brand Awareness', abm: 'ABM', retargeting: 'Retargeting' };
+
+// Heuristic: credits per month for campaign (channels + agents)
+function estimateCredits(data) {
+  const channels = data.channels?.length ?? 0;
+  const agents = data.selectedAgents?.length ?? 0;
+  return Math.max(500, (channels * 800) + (agents * 400));
+}
 
 function ReviewSection({ title, children }) {
   return (
@@ -58,9 +75,40 @@ function TagList({ items }) {
   );
 }
 
-export default function WizardStep7({ data }) {
+export default function WizardStep7({
+  data,
+  creditsRemaining = 0,
+  getLimit,
+  isLimitReached,
+  activeCampaignsCount,
+  planId,
+  hasFeature,
+  hasAgent,
+  openCheckout,
+  atCampaignLimit,
+  campaignLimit,
+}) {
+  const toast = useToast();
   const team = data.team ?? {};
   const gates = data.approvalGates ?? {};
+
+  const estimatedCredits = estimateCredits(data);
+  const hasEnoughCredits = creditsRemaining >= estimatedCredits;
+  const creditsShort = Math.max(0, estimatedCredits - creditsRemaining);
+
+  // Locked features relevant to this campaign (channels they have + agents they could have had)
+  const channels = data.channels ?? [];
+  const selectedAgents = data.selectedAgents ?? [];
+  const CHANNEL_FEATURES = { linkedin: 'linkedinOutreach', meta: 'metaAdsManagement', google: 'googleAdsManagement', linkedin_ads: 'linkedinAdsManagement', whatsapp: 'whatsappOutreach' };
+  const lockedChannels = channels.filter((id) => CHANNEL_FEATURES[id] && !(hasFeature?.(CHANNEL_FEATURES[id]) ?? true));
+  const CHANNEL_AGENTS = { email: ['sdr', 'copywriter'], linkedin: ['linkedin_agent'], meta: ['meta_ads'], google: ['google_ads'], linkedin_ads: ['linkedin_ads'], whatsapp: ['whatsapp_agent'], content: ['seo', 'copywriter'], display: ['analytics'] };
+  const relevantAgentIds = [...new Set(channels.flatMap((ch) => CHANNEL_AGENTS[ch] ?? []))];
+  const lockedAgents = relevantAgentIds.filter((id) => !(hasAgent?.(id) ?? true));
+  const hasLockedFeatures = lockedChannels.length > 0 || lockedAgents.length > 0;
+  const launchWithList = [
+    ...(channels.map((id) => CHANNEL_LABELS[id] ?? id)),
+    ...(selectedAgents.length ? [`${selectedAgents.length} agent(s)`] : []),
+  ].filter(Boolean);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: S[5] }}>
@@ -143,7 +191,63 @@ export default function WizardStep7({ data }) {
         </div>
       </ReviewSection>
 
-      {/* Launch readiness indicator */}
+      {/* Credit estimate */}
+      <ReviewSection title="Credit estimate">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: S[2] }}>
+          <div style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary }}>
+            Estimated credit usage for this campaign: <strong style={{ color: C.textPrimary }}>~{estimatedCredits.toLocaleString()} credits/month</strong>
+          </div>
+          {hasEnoughCredits ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: S[2], color: C.primary }}>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <circle cx="9" cy="9" r="7" stroke={C.primary} strokeWidth="1.5"/>
+                <path d="M5 9l3 3 5-5" stroke={C.primary} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600 }}>You have enough credits</span>
+            </div>
+          ) : (
+            <div style={{
+              display: 'flex', flexDirection: 'column', gap: S[2],
+              padding: S[3], backgroundColor: C.amberDim, border: `1px solid ${C.amber}`, borderRadius: R.md,
+            }}>
+              <span style={{ fontFamily: F.body, fontSize: '13px', color: C.amber }}>
+                You'll need ~{creditsShort.toLocaleString()} more credits.
+              </span>
+              <div style={{ display: 'flex', gap: S[2], flexWrap: 'wrap' }}>
+                <button type="button" style={{ ...btn.secondary, fontSize: '12px' }} onClick={() => toast.info('Buy credits — $99 (mock)')}>
+                  Buy Credits — $99
+                </button>
+                <button type="button" style={{ ...btn.primary, fontSize: '12px' }} onClick={() => openCheckout?.('growth')}>
+                  Upgrade Plan
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </ReviewSection>
+
+      {/* Locked features summary */}
+      {hasLockedFeatures && (
+        <div style={{
+          backgroundColor: C.surface3,
+          border: `1px solid ${C.border}`,
+          borderRadius: R.card,
+          padding: S[4],
+        }}>
+          <div style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary, marginBottom: S[1] }}>
+            Some features were locked
+          </div>
+          <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, marginBottom: S[2] }}>
+            Your campaign will launch with: {launchWithList.length ? launchWithList.join(', ') : 'selected channels and agents'}.
+          </div>
+          <button type="button" style={{ ...btn.ghost, fontSize: '12px', color: C.primary, fontWeight: 600 }} onClick={() => openCheckout?.(lockedAgents.length ? 'scale' : 'growth')}>
+            Upgrade now →
+          </button>
+        </div>
+      )}
+
+      {/* Launch readiness indicator — hide when at campaign limit (footer handles it) */}
+      {!atCampaignLimit && (
       <div style={{
         backgroundColor: C.primaryGlow,
         border: `1px solid rgba(61,220,132,0.25)`,
@@ -165,6 +269,7 @@ export default function WizardStep7({ data }) {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }

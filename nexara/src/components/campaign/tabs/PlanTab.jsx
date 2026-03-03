@@ -554,18 +554,44 @@ function SummaryBar({ phases, taskStatuses }) {
   );
 }
 
+const PLAN_TYPES = [
+  { id: 'phased', label: 'Phased campaign', description: 'Multiple phases with clear milestones' },
+  { id: 'single', label: 'Single phase', description: 'One continuous execution block' },
+  { id: 'always_on', label: 'Always-on', description: 'Ongoing with no fixed end date' },
+];
+
 // ── PlanTab ───────────────────────────────────
-export default function PlanTab() {
+export default function PlanTab({ setTab }) {
+  const toast = useToast();
   const [zoomIdx,      setZoomIdx]      = useState(1);
   const [collapsed,    setCollapsed]    = useState(new Set());
   const [selectedTask, setSelectedTask] = useState(null);
   const [taskStatuses, setTaskStatuses] = useState({});
   const [taskNotes,    setTaskNotes]    = useState({});
+  const [planType,     setPlanType]     = useState('phased');
+  const [ariaModifying, setAriaModifying] = useState(false);
+  const [approved,     setApproved]     = useState(false);
 
-  const { phases, totalDays, start: planStart } = CAMPAIGN_PLAN;
+  const { phases, totalDays, start: planStart, title } = CAMPAIGN_PLAN;
   const dayPx     = ZOOM_LEVELS[zoomIdx];
   const timelineW = totalDays * dayPx;
   const phasesH   = totalPhasesH(phases, collapsed);
+
+  const handlePlanTypeChange = (typeId) => {
+    if (typeId === planType) return;
+    setAriaModifying(true);
+    setTimeout(() => {
+      setPlanType(typeId);
+      setAriaModifying(false);
+      toast.success('ARIA has updated the plan.');
+    }, 1200);
+  };
+
+  const handleApproveAndGenerate = () => {
+    setApproved(true);
+    toast.success('Plan approved. Generating content…');
+    if (typeof setTab === 'function') setTab('content');
+  };
 
   // Today line position
   const originDate  = new Date(planStart);
@@ -586,7 +612,6 @@ export default function PlanTab() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      {/* Shimmer animation */}
       <style>{`
         @keyframes planShimmer {
           0%   { left: -60%; }
@@ -595,7 +620,6 @@ export default function PlanTab() {
         .plan-shimmer { animation: planShimmer 2s linear infinite; }
       `}</style>
 
-      {/* Task detail slide-in panel */}
       <TaskDetailPanel
         task={selectedTask}
         phases={phases}
@@ -605,6 +629,91 @@ export default function PlanTab() {
         onNotesChange={(id, val)  => setTaskNotes(p    => ({ ...p, [id]: val }))}
         onClose={() => setSelectedTask(null)}
       />
+
+      {/* ── AI-generated plan header + type + approve ───────── */}
+      <div style={{
+        padding: S[5],
+        backgroundColor: C.surface2,
+        borderBottom: `1px solid ${C.border}`,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: S[4],
+      }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: S[4] }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: S[2], marginBottom: S[1] }}>
+              <span style={{
+                fontFamily: F.mono,
+                fontSize: '10px',
+                fontWeight: 700,
+                color: C.primary,
+                backgroundColor: C.primaryGlow,
+                padding: '2px 8px',
+                borderRadius: R.pill,
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+              }}>
+                AI-generated campaign plan
+              </span>
+            </div>
+            <h2 style={{ fontFamily: F.display, fontSize: '18px', fontWeight: 800, color: C.textPrimary, margin: '0 0 4px', letterSpacing: '-0.02em' }}>
+              {title}
+            </h2>
+            <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: 0 }}>
+              {totalDays} days · {phases.length} phases · {CAMPAIGN_PLAN.start} → {CAMPAIGN_PLAN.end}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleApproveAndGenerate}
+            disabled={approved}
+            style={{
+              ...btn.primary,
+              fontSize: '14px',
+              padding: `${S[3]} ${S[5]}`,
+              opacity: approved ? 0.7 : 1,
+            }}
+          >
+            {approved ? 'Approved — go to Content' : 'Approve & generate content'}
+          </button>
+        </div>
+
+        <div>
+          <div style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.textSecondary, marginBottom: S[2] }}>
+            Plan type — modify and ARIA will update the plan
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: S[2] }}>
+            {PLAN_TYPES.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => handlePlanTypeChange(t.id)}
+                disabled={ariaModifying}
+                style={{
+                  padding: `${S[2]} ${S[4]}`,
+                  fontFamily: F.body,
+                  fontSize: '13px',
+                  fontWeight: planType === t.id ? 600 : 500,
+                  color: planType === t.id ? C.primary : C.textSecondary,
+                  backgroundColor: planType === t.id ? C.primaryGlow : C.surface3,
+                  border: `1px solid ${planType === t.id ? C.primary : C.border}`,
+                  borderRadius: R.button,
+                  cursor: ariaModifying ? 'wait' : 'pointer',
+                  opacity: ariaModifying ? 0.8 : 1,
+                  textAlign: 'left',
+                }}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+          {ariaModifying && (
+            <p style={{ fontFamily: F.body, fontSize: '12px', color: C.primary, marginTop: S[2], marginBottom: 0 }}>
+              ARIA is updating the plan…
+            </p>
+          )}
+        </div>
+      </div>
 
       {/* ── Toolbar ─────────────────────────── */}
       <div style={{

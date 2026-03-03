@@ -1,6 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { C, F, R, S, T, shadows, Z } from '../../tokens';
+import { C, F, R, S, T, shadows, Z, LAYOUT } from '../../tokens';
+import ContentIDChip from '../ui/ContentIDChip';
+import ARIAActionApproval from './ARIAActionApproval';
+import AriaPanelHistory from './AriaPanelHistory';
+import useToast from '../../hooks/useToast';
+import useStore from '../../store/useStore';
+import { getRoleConfig } from '../../config/roleConfig';
 
 // ── Contextual page actions ───────────────────
 const PAGE_ACTIONS = {
@@ -79,6 +85,7 @@ const CANNED = {
   'Write new variant': {
     text: "Here's a high-performing subject line variant based on your top emails.",
     type: 'content',
+    contentId: 'CAMP-001-EMAIL-004',
     variant: {
       subject: 'Is your team leaving $2M on the table? [CFO Read]',
       preview: 'We analyzed 400+ finance leaders who reduced overhead by 34%...',
@@ -144,7 +151,14 @@ const CANNED = {
   },
   'Boost budget': {
     text: "I'll increase the daily budget by 20% for the top-performing ad sets.",
-    type: 'confirm',
+    type: 'actionApproval',
+    action: {
+      action: 'boost_budget',
+      label: 'Boost +20%',
+      payload: { budget: 600, monthly_budget: 2800 },
+      budgetAmount: 600,
+      description: "Increase daily budget by 20% for top-performing ad sets. Budget impact: $600. Requires strategy and budget approval.",
+    },
     confirmLabel: 'Boost +20%',
     cancelLabel:  'Cancel',
   },
@@ -186,7 +200,7 @@ const CANNED = {
       { sev: 'high', text: 'Marcus V: "CTR anomaly — should we pause?"',           time: '1h ago'  },
       { sev: 'med',  text: 'James O: "New prospect replied, warm lead"',           time: '2h ago'  },
     ],
-    actions: [{ label: 'Open Inbox', path: '/inbox' }],
+    actions: [{ label: 'Open Company Social Inbox', path: '/inbox' }],
   },
   'Draft replies': {
     text: "I've drafted responses to your 3 most recent unanswered messages.",
@@ -203,6 +217,7 @@ const CANNED = {
   'Generate variant': {
     text: "Here's a new email subject variant optimized for open rate.",
     type: 'content',
+    contentId: 'CAMP-001-EMAIL-005',
     variant: {
       subject: 'How CFOs at $10M+ companies cut SaaS spend by 41%',
       preview: 'A data-backed playbook from 300 finance leaders...',
@@ -391,9 +406,15 @@ function MiniFunnel({ stages }) {
   );
 }
 
-function MiniContent({ variant }) {
+function MiniContent({ variant, contentId }) {
+  const navigate = useNavigate();
   return (
     <div style={{ marginTop: '8px', padding: '10px 12px', backgroundColor: C.bg, borderRadius: R.md, border: `1px solid ${C.border}` }}>
+      {contentId && (
+        <div style={{ marginBottom: '6px' }}>
+          <ContentIDChip contentId={contentId} size="sm" onClick={() => navigate('/content')} />
+        </div>
+      )}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
         <div style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Subject Line</div>
         <div style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, color: C.primary }}>Score {variant.score}</div>
@@ -452,7 +473,7 @@ function ActionButtons({ actions }) {
 }
 
 // ── Message bubble ────────────────────────────
-function MessageBubble({ msg }) {
+function MessageBubble({ msg, toast }) {
   const isUser = msg.role === 'user';
   const bubbleStyle = {
     alignSelf: isUser ? 'flex-end' : 'flex-start',
@@ -485,16 +506,30 @@ function MessageBubble({ msg }) {
         <div style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: C.primary, marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>ARIA</div>
       )}
       <div>{formatText(msg.text)}</div>
+      {isUser && msg.attachments?.length > 0 && (
+        <div style={{ marginTop: '6px', fontFamily: F.mono, fontSize: '10px', color: C.textMuted }}>
+          Attached: {msg.attachments.join(', ')}
+        </div>
+      )}
       {msg.type === 'alerts'  && <MiniAlerts  data={msg.data}/>}
       {msg.type === 'table'   && <MiniTable   headers={msg.headers} rows={msg.rows}/>}
       {msg.type === 'stats'   && <MiniStats   data={msg.data}/>}
       {msg.type === 'funnel'  && <MiniFunnel  stages={msg.stages}/>}
-      {msg.type === 'content' && <MiniContent variant={msg.variant}/>}
+      {msg.type === 'content' && <MiniContent variant={msg.variant} contentId={msg.contentId}/>}
       {msg.type === 'confirm' && (
         <MiniConfirm
           confirmLabel={msg.confirmLabel}
           cancelLabel={msg.cancelLabel}
           confirmPath={msg.confirmPath}
+        />
+      )}
+      {msg.type === 'actionApproval' && msg.action && (
+        <ARIAActionApproval
+          action={msg.action}
+          onStrategyApprove={() => {}}
+          onBudgetApprove={() => {}}
+          onDecline={() => {}}
+          onExecute={() => toast?.success('Budget boost executed')}
         />
       )}
       <ActionButtons actions={msg.actions}/>
@@ -532,9 +567,9 @@ function FloatChips({ actions, onSend }) {
 }
 
 // ── ARIA Float Button ─────────────────────────
-function AriaFloatBtn({ open, onOpen, onSend, page }) {
+function AriaFloatBtn({ open, onOpen, onSend, page, actions: actionsProp }) {
   const [hovered, setHovered] = useState(false);
-  const actions = getActions(page);
+  const actions = actionsProp ?? getActions(page);
   if (open) return null;
 
   const fabStyle = {
@@ -556,7 +591,7 @@ function AriaFloatBtn({ open, onOpen, onSend, page }) {
 
   return (
     <div
-      style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: Z.overlay + 10, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}
+      style={{ position: 'fixed', bottom: `${24 + (LAYOUT?.footerHeightPx ?? 0)}px`, right: '24px', zIndex: Z.overlay + 10, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -578,7 +613,7 @@ function AriaFloatBtn({ open, onOpen, onSend, page }) {
 }
 
 // ── ARIA Panel (slide-in drawer) ──────────────
-const WELCOME = {
+const DEFAULT_WELCOME = {
   role: 'aria',
   id: 'welcome',
   text: "Hi, I'm **ARIA** — your AI co-pilot. I monitor your campaigns, explain performance data, draft content, and take actions on your behalf. What would you like to do?",
@@ -586,25 +621,134 @@ const WELCOME = {
 };
 
 export default function AriaPanel({ open, onOpen, onClose, page }) {
-  const [messages, setMessages] = useState([WELCOME]);
+  const toast = useToast();
+  const currentRole = useStore((s) => s.currentRole);
+  const ariaChats = useStore((s) => s.ariaChats) || [];
+  const ariaCurrentChatId = useStore((s) => s.ariaCurrentChatId);
+  const addAriaChat = useStore((s) => s.addAriaChat);
+  const updateAriaChatMessages = useStore((s) => s.updateAriaChatMessages);
+  const setAriaCurrentChatId = useStore((s) => s.setAriaCurrentChatId);
+
+  const roleConfig = getRoleConfig(currentRole);
+  const welcomeMessage = {
+    role: 'aria',
+    id: 'welcome',
+    text: roleConfig.ariaOpening ?? DEFAULT_WELCOME.text,
+    type: 'text',
+  };
+
+  const currentChat = ariaCurrentChatId ? ariaChats.find((c) => c.id === ariaCurrentChatId) : null;
+  const messages = currentChat?.messages?.length
+    ? currentChat.messages
+    : [welcomeMessage];
+
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [input, setInput] = useState('');
   const [typing, setTyping] = useState(false);
+  const [attachments, setAttachments] = useState([]);
+  const [listening, setListening] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
-  const actions = getActions(page ?? '/');
+  const fileInputRef = useRef(null);
+  const recognitionRef = useRef(null);
 
-  // External send (from float chips)
-  const sendMessage = (text) => {
-    if (!text.trim()) return;
-    setMessages((m) => [...m, { role: 'user', id: Date.now(), text }]);
+  const pageActions = getActions(page ?? '/');
+  const roleActions = roleConfig.ariaQuickActions ?? [];
+  const actions = roleActions.length > 0 ? roleActions : pageActions;
+
+  // When panel opens, if we have only the welcome message (new chat), welcome text is already from roleConfig
+  useEffect(() => {
+    if (!open) return;
+  }, [open, currentRole]);
+
+  const handleNewChat = () => {
+    setAriaCurrentChatId(null);
     setInput('');
+    setAttachments([]);
+    setHistoryOpen(false);
+  };
+
+  const handleSelectChat = (chatId) => {
+    setAriaCurrentChatId(chatId);
+    setInput('');
+    setAttachments([]);
+    setHistoryOpen(false);
+  };
+
+  const sendMessage = (textOrEmpty) => {
+    const trimmed = (typeof textOrEmpty === 'string' ? textOrEmpty : input).trim();
+    if (!trimmed && !attachments.length) return;
+
+    const userMsg = { role: 'user', id: Date.now(), text: trimmed || '(Attachments only)' };
+    if (attachments.length) userMsg.attachments = attachments.map((a) => a.name);
+
+    let chatId = ariaCurrentChatId;
+    let nextMessages;
+
+    if (!chatId) {
+      const title = trimmed ? trimmed.slice(0, 40) + (trimmed.length > 40 ? '…' : '') : `Attached: ${attachments.map((a) => a.name).join(', ').slice(0, 35)}…`;
+      chatId = addAriaChat({ title, messages: [welcomeMessage, userMsg] });
+      nextMessages = [welcomeMessage, userMsg];
+    } else {
+      nextMessages = [...(currentChat?.messages || []), userMsg];
+      updateAriaChatMessages(chatId, nextMessages);
+    }
+
+    setInput('');
+    setAttachments([]);
     setTyping(true);
+
+    const replyPrompt = trimmed || `User attached ${attachments.length} file(s).`;
     setTimeout(() => {
-      const resp = getResponse(text);
+      const resp = getResponse(replyPrompt);
+      const ariaMsg = { role: 'aria', id: Date.now() + 1, ...resp };
+      const withReply = [...nextMessages, ariaMsg];
+      updateAriaChatMessages(chatId, withReply);
       setTyping(false);
-      setMessages((m) => [...m, { role: 'aria', id: Date.now() + 1, ...resp }]);
     }, 1100);
   };
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+    const rec = new SpeechRecognition();
+    rec.continuous = false;
+    rec.interimResults = false;
+    rec.lang = 'en-US';
+    rec.onresult = (e) => {
+      const t = e.results[e.results.length - 1];
+      const transcript = t[0]?.transcript ?? '';
+      if (transcript.trim()) setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
+    };
+    rec.onerror = () => setListening(false);
+    rec.onend = () => setListening(false);
+    recognitionRef.current = rec;
+    return () => { rec.abort(); };
+  }, []);
+
+  const toggleVoice = () => {
+    if (!recognitionRef.current) {
+      toast.info('Voice input is not supported in this browser. Try Chrome or Edge.');
+      return;
+    }
+    if (listening) {
+      recognitionRef.current.stop();
+      setListening(false);
+    } else {
+      recognitionRef.current.start();
+      setListening(true);
+      toast.info('Listening... Speak now.');
+    }
+  };
+
+  const handleFileSelect = (e) => {
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    setAttachments((prev) => [...prev, ...files.map((f) => ({ id: `${f.name}-${Date.now()}`, name: f.name, file: f }))]);
+    e.target.value = '';
+  };
+
+  const removeAttachment = (id) => setAttachments((prev) => prev.filter((a) => a.id !== id));
 
   // Scroll to bottom whenever messages/typing changes
   useEffect(() => {
@@ -619,16 +763,16 @@ export default function AriaPanel({ open, onOpen, onClose, page }) {
   const panelStyle = {
     position: 'fixed',
     top: 0,
-    right: open ? 0 : '-410px',
-    width: '390px',
-    height: '100vh',
+    right: open ? 0 : (historyOpen ? '-730px' : '-510px'),
+    width: historyOpen ? '730px' : '510px',
+    height: `calc(100vh - ${LAYOUT.footerHeightPx}px)`,
     backgroundColor: C.surface,
     borderLeft: `1px solid ${C.border}`,
     boxShadow: open ? '-8px 0 40px rgba(0,0,0,0.6)' : 'none',
     zIndex: Z.overlay + 5,
     display: 'flex',
     flexDirection: 'column',
-    transition: 'right 0.28s cubic-bezier(0.4, 0, 0.2, 1)',
+    transition: 'right 0.28s cubic-bezier(0.4, 0, 0.2, 1), width 0.2s ease',
     overflow: 'hidden',
   };
 
@@ -638,7 +782,7 @@ export default function AriaPanel({ open, onOpen, onClose, page }) {
       {open && (
         <div
           onClick={onClose}
-          style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(7,13,9,0.55)', zIndex: Z.overlay + 4 }}
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: LAYOUT.footerHeightPx ? `${LAYOUT.footerHeightPx}px` : 0, backgroundColor: 'rgba(7,13,9,0.55)', zIndex: Z.overlay + 4 }}
         />
       )}
 
@@ -647,6 +791,16 @@ export default function AriaPanel({ open, onOpen, onClose, page }) {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${S[4]}`, height: '52px', borderBottom: `1px solid ${C.border}`, flexShrink: 0, backgroundColor: C.surface2 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
+            <button
+              type="button"
+              onClick={() => setHistoryOpen((v) => !v)}
+              title={historyOpen ? 'Close history' : 'History & projects'}
+              style={{ width: '28px', height: '28px', backgroundColor: historyOpen ? C.primaryGlow : 'transparent', border: `1px solid ${historyOpen ? C.primary : C.border}`, borderRadius: R.button, color: historyOpen ? C.primary : C.textSecondary, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 2h10v2H2V2ZM2 6h10v2H2V6ZM2 10h6v2H2v-2Z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+              </svg>
+            </button>
             <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: C.primaryGlow, border: `1.5px solid ${C.primary}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <circle cx="7" cy="7" r="5.5" stroke={C.primary} strokeWidth="1.2"/>
@@ -669,6 +823,17 @@ export default function AriaPanel({ open, onOpen, onClose, page }) {
           </button>
         </div>
 
+        <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
+          {historyOpen && (
+            <div style={{ width: '180px', flexShrink: 0 }}>
+              <AriaPanelHistory
+                onSelectChat={handleSelectChat}
+                onNewChat={handleNewChat}
+                onClose={() => setHistoryOpen(false)}
+              />
+            </div>
+          )}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden' }}>
         {/* Quick action chips */}
         <div style={{ padding: `${S[2]} ${S[4]}`, borderBottom: `1px solid ${C.border}`, display: 'flex', gap: '6px', flexWrap: 'wrap', flexShrink: 0, backgroundColor: C.surface }}>
           {actions.map((a) => (
@@ -685,15 +850,100 @@ export default function AriaPanel({ open, onOpen, onClose, page }) {
         {/* Messages */}
         <div style={{ flex: 1, overflowY: 'auto', padding: `${S[4]}`, display: 'flex', flexDirection: 'column', gap: '10px', scrollbarWidth: 'thin', scrollbarColor: `${C.border} transparent` }}>
           {messages.map((msg) => (
-            <MessageBubble key={msg.id} msg={msg}/>
+            <MessageBubble key={msg.id} msg={msg} toast={toast}/>
           ))}
           {typing && <TypingIndicator/>}
           <div ref={messagesEndRef}/>
         </div>
 
         {/* Input area */}
-        <div style={{ padding: `${S[3]} ${S[4]}`, borderTop: `1px solid ${C.border}`, backgroundColor: C.surface2, flexShrink: 0 }}>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
+        <div
+          style={{
+            padding: `${S[3]} ${S[4]} ${Math.max(LAYOUT.footerHeightPx, 48)}px ${S[4]}`,
+            borderTop: `1px solid ${C.border}`,
+            backgroundColor: C.surface2,
+            flexShrink: 0,
+          }}
+        >
+          {attachments.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
+              {attachments.map((a) => (
+                <span
+                  key={a.id}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 8px', backgroundColor: C.bg, border: `1px solid ${C.border}`, borderRadius: R.pill, fontFamily: F.body, fontSize: '11px', color: C.textSecondary }}
+                >
+                  <svg width="12" height="12" viewBox="0 0 14 14"><path d="M4 2h7l4 4v10H4V2Z" fill="none" stroke="currentColor" strokeWidth="1.2"/></svg>
+                  {a.name}
+                  <button type="button" onClick={() => removeAttachment(a.id)} style={{ marginLeft: '2px', padding: 0, border: 'none', background: 'transparent', color: C.textMuted, cursor: 'pointer', display: 'flex' }} aria-label="Remove">
+                    <svg width="12" height="12" viewBox="0 0 14 14"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" strokeWidth="1.5"/></svg>
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-end', minWidth: 0 }}>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              onChange={handleFileSelect}
+              style={{ display: 'none' }}
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              title="Attach file"
+              style={{
+                width: '32px',
+                height: '32px',
+                minWidth: '32px',
+                backgroundColor: 'transparent',
+                color: C.textMuted,
+                border: `1px solid ${C.border}`,
+                borderRadius: R.button,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                transition: T.color,
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = C.primary; e.currentTarget.style.borderColor = C.primary; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = C.textMuted; e.currentTarget.style.borderColor = C.border; }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={toggleVoice}
+              title={listening ? 'Stop listening' : 'Voice input'}
+              style={{
+                width: '32px',
+                height: '32px',
+                minWidth: '32px',
+                backgroundColor: listening ? C.red : 'transparent',
+                color: listening ? C.textInverse : C.textMuted,
+                border: `1px solid ${listening ? C.red : C.border}`,
+                borderRadius: R.button,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                transition: T.color,
+              }}
+              onMouseEnter={(e) => { if (!listening) { e.currentTarget.style.color = C.primary; e.currentTarget.style.borderColor = C.primary; } }}
+              onMouseLeave={(e) => { if (!listening) { e.currentTarget.style.color = C.textMuted; e.currentTarget.style.borderColor = C.border; } }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="22"/>
+                <line x1="8" y1="22" x2="16" y2="22"/>
+              </svg>
+            </button>
             <textarea
               ref={inputRef}
               value={input}
@@ -701,12 +951,27 @@ export default function AriaPanel({ open, onOpen, onClose, page }) {
               onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input); } }}
               placeholder="Ask ARIA anything..."
               rows={2}
-              style={{ flex: 1, backgroundColor: C.bg, color: C.textPrimary, border: `1px solid ${C.border}`, borderRadius: R.md, padding: '8px 10px', fontFamily: F.body, fontSize: '13px', resize: 'none', outline: 'none', lineHeight: 1.5, scrollbarWidth: 'thin' }}
+              style={{
+                flex: 1,
+                minWidth: 0,
+                width: '100%',
+                backgroundColor: C.bg,
+                color: C.textPrimary,
+                border: `1px solid ${C.border}`,
+                borderRadius: R.md,
+                padding: '8px 12px',
+                fontFamily: F.body,
+                fontSize: '13px',
+                resize: 'none',
+                outline: 'none',
+                lineHeight: 1.5,
+                scrollbarWidth: 'thin',
+              }}
             />
             <button
               onClick={() => sendMessage(input)}
-              disabled={!input.trim()}
-              style={{ width: '36px', height: '36px', backgroundColor: input.trim() ? C.primary : C.surface3, color: input.trim() ? C.textInverse : C.textMuted, border: 'none', borderRadius: R.button, cursor: input.trim() ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: T.color }}
+              disabled={!input.trim() && !attachments.length}
+              style={{ width: '32px', height: '32px', minWidth: '32px', backgroundColor: (input.trim() || attachments.length) ? C.primary : C.surface3, color: (input.trim() || attachments.length) ? C.textInverse : C.textMuted, border: 'none', borderRadius: R.button, cursor: (input.trim() || attachments.length) ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: T.color }}
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -714,13 +979,34 @@ export default function AriaPanel({ open, onOpen, onClose, page }) {
             </button>
           </div>
           <div style={{ fontFamily: F.body, fontSize: '10px', color: C.textMuted, marginTop: '6px', textAlign: 'center' }}>
-            Enter to send · Shift+Enter for new line · Responses are simulated
+            Enter to send · Shift+Enter for new line · Attach files · Use mic for voice
+          </div>
+          <div
+            style={{
+              marginTop: S[2],
+              paddingTop: S[2],
+              borderTop: `1px solid ${C.border}`,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontFamily: F.body,
+              fontSize: '10px',
+              color: C.textMuted,
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, color: C.amber }} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 9v2M12 17h.01"/>
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            </svg>
+            <span>ARIA can make mistakes. Verify important decisions and data before taking action.</span>
+          </div>
+        </div>
           </div>
         </div>
       </div>
 
       {/* Float button (only shown when panel is closed) */}
-      <AriaFloatBtn open={open} onOpen={onOpen} onSend={sendMessage} page={page ?? '/'}/>
+      <AriaFloatBtn open={open} onOpen={onOpen} onSend={sendMessage} page={page ?? '/'} actions={actions}/>
     </>
   );
 }

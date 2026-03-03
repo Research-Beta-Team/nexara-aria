@@ -354,6 +354,66 @@ export function IconLock({ color = 'currentColor', width = size, height = size }
   );
 }
 
+export function IconClose({ color = 'currentColor', width = size, height = size }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M4 4l10 10M14 4L4 14" stroke={color} strokeWidth={stroke} strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+export function IconTrash({ color = 'currentColor', width = size, height = size }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M3 5h12M6 5V4a1 1 0 011-1h4a1 1 0 011 1v1M7 8v5M9 8v5M11 8v5M5 5l1 10a1 1 0 001 1h6a1 1 0 001-1L15 5" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+export function IconStar({ color = 'currentColor', width = size, height = size, filled = false }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M9 2l2.2 4.5 4.9.7-3.5 3.4.8 4.9L9 13.2l-4.4 2.3.8-4.9L2 7.2l4.9-.7L9 2z" stroke={color} strokeWidth={stroke} strokeLinejoin="round" fill={filled ? color : 'none'}/>
+    </svg>
+  );
+}
+
+export function IconBell({ color = 'currentColor', width = size, height = size }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M9 3a4 4 0 014 4v2a4 4 0 002 3.5H3a4 4 0 002-3.5V7a4 4 0 014-4z" stroke={color} strokeWidth={stroke} strokeLinejoin="round"/>
+      <path d="M7 15a2 2 0 004 0" stroke={color} strokeWidth={stroke} strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+export function IconUsers({ color = 'currentColor', width = size, height = size }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <circle cx="6" cy="5" r="2.5" stroke={color} strokeWidth={stroke}/>
+      <path d="M2 15c0-2.2 1.8-4 4-4s4 1.8 4 4M12 6a2.5 2.5 0 11 0 5 2.5 2.5 0 010-5z" stroke={color} strokeWidth={stroke} strokeLinecap="round"/>
+      <path d="M16 15c0-1.7-1-3.2-2.4-3.9" stroke={color} strokeWidth={stroke} strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+export function IconLightbulb({ color = 'currentColor', width = size, height = size }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M9 2a5 5 0 013.5 8.5v2H5.5v-2A5 5 0 019 2z" stroke={color} strokeWidth={stroke} strokeLinejoin="round"/>
+      <path d="M7 14h4M8 16h2" stroke={color} strokeWidth={stroke} strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+export function IconCircleEmpty({ color = 'currentColor', width = size, height = size }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <circle cx="9" cy="9" r="6" stroke={color} strokeWidth={stroke}/>
+    </svg>
+  );
+}
+
 export const FEATURE_ICON_MAP = {
   competitiveIntel:      IconTarget,
   intentSignals:          IconCompass,

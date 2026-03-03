@@ -1,7 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { C, F, R, S, T, btn, badge, shadows, scrollbarStyle } from '../tokens';
 import useToast from '../hooks/useToast';
+import useStore from '../store/useStore';
+import { useRoleView } from '../hooks/useRoleView';
+import { filterContentItems } from '../utils/roleViews';
 import ContentPreviewModal from '../components/campaign/ContentPreviewModal';
+import ApprovalStatusBadge from '../components/approvals/ApprovalStatusBadge';
+import ContentIDChip from '../components/ui/ContentIDChip';
 import { contentItems, CONTENT_TYPE_COLORS } from '../data/content';
 
 /* ─── constants ──────────────────────────────────────────── */
@@ -23,6 +28,14 @@ const STATUS_COLORS = {
   pending:  C.amber,
   draft:    C.textMuted,
   archived: '#6B7280',
+};
+
+/** Map content library status to approval workflow status for ApprovalStatusBadge */
+const APPROVAL_STATUS_MAP = {
+  approved: 'approved',
+  pending:  'in_review',
+  draft:    'draft',
+  archived: 'draft',
 };
 
 /* ─── TypeIcon ──────────────────────────────────────────── */
@@ -72,18 +85,8 @@ function ScoreBar({ score }) {
 
 /* ─── StatusBadge ────────────────────────────────────────── */
 function StatusBadge({ status }) {
-  const color = STATUS_COLORS[status] ?? C.textMuted;
-  return (
-    <span style={{
-      ...badge.base,
-      color,
-      backgroundColor: `${color}18`,
-      border: `1px solid ${color}33`,
-      textTransform: 'capitalize',
-    }}>
-      {status}
-    </span>
-  );
+  const approvalStatus = APPROVAL_STATUS_MAP[status] ?? 'draft';
+  return <ApprovalStatusBadge status={approvalStatus} compact />;
 }
 
 /* ─── TypeBadge ──────────────────────────────────────────── */
@@ -124,8 +127,11 @@ function ContentListRow({ item, onOpen }) {
     >
       <TypeIcon type={item.type} size={16} />
       <div style={{ minWidth: 0 }}>
-        <div style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {item.name}
+        <div style={{ display: 'flex', alignItems: 'center', gap: S[2], flexWrap: 'wrap' }}>
+          <div style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {item.name}
+          </div>
+          {item.contentId && <ContentIDChip contentId={item.contentId} size="sm" onClick={() => onOpen(item)} />}
         </div>
         {item.preview && (
           <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '1px' }}>
@@ -173,7 +179,10 @@ function ContentGridCard({ item, onOpen }) {
       onClick={() => onOpen(item)}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <TypeBadge type={item.type} />
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: S[2] }}>
+          <TypeBadge type={item.type} />
+          {item.contentId && <ContentIDChip contentId={item.contentId} size="sm" onClick={() => onOpen(item)} />}
+        </div>
         <StatusBadge status={item.status} />
       </div>
 
@@ -303,25 +312,46 @@ function FilterPill({ label, active, onClick, count }) {
 /* ─── Main Page ──────────────────────────────────────────── */
 export default function ContentLibrary() {
   const toast = useToast();
+  const currentRole = useStore((s) => s.currentRole);
+  const roleConfig = useRoleView('content-library');
+  const {
+    layout,
+    defaultFilterStatus,
+    defaultView,
+    showAgentFilter,
+    showCampaignFilter,
+    showTypeFilter,
+    showStatusFilter,
+  } = roleConfig;
 
-  const [view, setView]                   = useState('List');
+  const [view, setView]                   = useState(defaultView || 'List');
   const [search, setSearch]               = useState('');
   const [filterType, setFilterType]       = useState('All');
-  const [filterStatus, setFilterStatus]   = useState('All');
+  const [filterStatus, setFilterStatus]   = useState(defaultFilterStatus || 'All');
   const [filterCampaign, setFilterCampaign] = useState('All');
   const [filterAgent, setFilterAgent]     = useState('All');
   const [preview, setPreview]             = useState(null);
 
+  useEffect(() => {
+    setView(defaultView || 'List');
+    setFilterStatus(defaultFilterStatus || 'All');
+  }, [defaultView, defaultFilterStatus]);
+
+  const itemsForRole = useMemo(
+    () => filterContentItems(contentItems, currentRole, roleConfig),
+    [currentRole, roleConfig]
+  );
+
   const campaigns = useMemo(() => {
     const map = {};
-    contentItems.forEach((i) => { if (i.campaign) map[i.campaign] = i.campaignName; });
+    itemsForRole.forEach((i) => { if (i.campaign) map[i.campaign] = i.campaignName; });
     return Object.entries(map).map(([id, name]) => ({ id, name }));
-  }, []);
+  }, [itemsForRole]);
 
-  const agents = useMemo(() => [...new Set(contentItems.map((i) => i.agent).filter(Boolean))], []);
+  const agents = useMemo(() => [...new Set(itemsForRole.map((i) => i.agent).filter(Boolean))], [itemsForRole]);
 
   const filtered = useMemo(() => {
-    let items = contentItems;
+    let items = itemsForRole;
     if (search.trim()) {
       const q = search.toLowerCase();
       items = items.filter((i) =>
@@ -336,7 +366,7 @@ export default function ContentLibrary() {
     if (filterCampaign !== 'All') items = items.filter((i) => i.campaign === filterCampaign);
     if (filterAgent !== 'All')    items = items.filter((i) => i.agent === filterAgent);
     return items;
-  }, [search, filterType, filterStatus, filterCampaign, filterAgent]);
+  }, [itemsForRole, search, filterType, filterStatus, filterCampaign, filterAgent]);
 
   const byType = useMemo(() => {
     const groups = {};
@@ -355,17 +385,17 @@ export default function ContentLibrary() {
 
   const typeCounts = useMemo(() => {
     const c = {};
-    contentItems.forEach((i) => { c[i.type] = (c[i.type] ?? 0) + 1; });
+    itemsForRole.forEach((i) => { c[i.type] = (c[i.type] ?? 0) + 1; });
     return c;
-  }, []);
+  }, [itemsForRole]);
 
   const statusCounts = useMemo(() => {
     const c = {};
-    contentItems.forEach((i) => { c[i.status] = (c[i.status] ?? 0) + 1; });
+    itemsForRole.forEach((i) => { c[i.status] = (c[i.status] ?? 0) + 1; });
     return c;
-  }, []);
+  }, [itemsForRole]);
 
-  const hasFilters = filterType !== 'All' || filterStatus !== 'All' || filterCampaign !== 'All' || filterAgent !== 'All' || search.trim();
+  const hasFilters = (filterType !== 'All') || (filterStatus !== 'All') || (showCampaignFilter && filterCampaign !== 'All') || (showAgentFilter && filterAgent !== 'All') || search.trim();
 
   const clearFilters = () => { setSearch(''); setFilterType('All'); setFilterStatus('All'); setFilterCampaign('All'); setFilterAgent('All'); };
 
@@ -381,10 +411,12 @@ export default function ContentLibrary() {
         {/* Page header */}
         <div style={{ marginBottom: S[6] }}>
           <h1 style={{ fontFamily: 'Syne, sans-serif', fontSize: '24px', fontWeight: 800, color: C.textPrimary, margin: 0, letterSpacing: '-0.03em' }}>
-            Content Library
+            {layout === 'client' ? 'Your approvals' : 'Content Library'}
           </h1>
           <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: `${S[1]} 0 0` }}>
-            {contentItems.length} assets across {campaigns.length} campaigns — review, approve, and export ARIA-generated content.
+            {layout === 'client'
+              ? `${itemsForRole.length} item${itemsForRole.length !== 1 ? 's' : ''} waiting for your review — approve or request changes.`
+              : `${itemsForRole.length} assets across ${campaigns.length} campaigns — review, approve, and export ARIA-generated content.`}
           </p>
         </div>
 
@@ -423,6 +455,7 @@ export default function ContentLibrary() {
             </div>
 
             {/* Campaign */}
+            {showCampaignFilter && (
             <select
               value={filterCampaign}
               onChange={(e) => setFilterCampaign(e.target.value)}
@@ -437,8 +470,10 @@ export default function ContentLibrary() {
               <option value="All">All Campaigns</option>
               {campaigns.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
+            )}
 
             {/* Agent */}
+            {showAgentFilter && (
             <select
               value={filterAgent}
               onChange={(e) => setFilterAgent(e.target.value)}
@@ -453,6 +488,7 @@ export default function ContentLibrary() {
               <option value="All">All Agents</option>
               {agents.map((a) => <option key={a} value={a}>{a}</option>)}
             </select>
+            )}
 
             <div style={{ flex: 1 }} />
 
@@ -478,19 +514,29 @@ export default function ContentLibrary() {
           </div>
 
           {/* Row 2: type pills + status pills */}
+          {(showTypeFilter || showStatusFilter) && (
           <div style={{ display: 'flex', gap: S[2], flexWrap: 'wrap', alignItems: 'center' }}>
-            <FilterPill label="All Types" active={filterType === 'All'} count={contentItems.length} onClick={() => setFilterType('All')} />
-            {TYPES.filter((t) => typeCounts[t]).map((t) => (
-              <FilterPill key={t} label={t} active={filterType === t} count={typeCounts[t]} onClick={() => setFilterType(filterType === t ? 'All' : t)} />
-            ))}
-
-            <div style={{ width: '1px', height: '16px', backgroundColor: C.border, flexShrink: 0 }} />
-
-            <FilterPill label="All Status" active={filterStatus === 'All'} onClick={() => setFilterStatus('All')} />
-            {STATUSES.filter((s) => statusCounts[s]).map((s) => (
-              <FilterPill key={s} label={s} active={filterStatus === s} count={statusCounts[s]} onClick={() => setFilterStatus(filterStatus === s ? 'All' : s)} />
-            ))}
+            {showTypeFilter && (
+              <>
+                <FilterPill label="All Types" active={filterType === 'All'} count={itemsForRole.length} onClick={() => setFilterType('All')} />
+                {TYPES.filter((t) => typeCounts[t]).map((t) => (
+                  <FilterPill key={t} label={t} active={filterType === t} count={typeCounts[t]} onClick={() => setFilterType(filterType === t ? 'All' : t)} />
+                ))}
+              </>
+            )}
+            {showTypeFilter && showStatusFilter && (
+              <div style={{ width: '1px', height: '16px', backgroundColor: C.border, flexShrink: 0 }} />
+            )}
+            {showStatusFilter && (
+              <>
+                <FilterPill label="All Status" active={filterStatus === 'All'} onClick={() => setFilterStatus('All')} />
+                {STATUSES.filter((s) => statusCounts[s]).map((s) => (
+                  <FilterPill key={s} label={s} active={filterStatus === s} count={statusCounts[s]} onClick={() => setFilterStatus(filterStatus === s ? 'All' : s)} />
+                ))}
+              </>
+            )}
           </div>
+          )}
 
           {/* Active filter summary */}
           {hasFilters && (

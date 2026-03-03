@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import useToast from '../../hooks/useToast';
+import useStore from '../../store/useStore';
 import { C, F, R, S, T } from '../../tokens';
 
 // ARIA icon
@@ -14,7 +15,7 @@ function AriaIcon() {
   );
 }
 
-export default function AriaInsightStrip({ insights = [], onAskAria }) {
+export default function AriaInsightStrip({ insights = [], personaLabel, greeting, onAskAria }) {
   const [expanded, setExpanded] = useState(false);
   const toast = useToast();
 
@@ -22,7 +23,8 @@ export default function AriaInsightStrip({ insights = [], onAskAria }) {
     if (onAskAria) {
       onAskAria(insight);
     } else {
-      toast.info('ARIA AI assistant coming soon');
+      toast.info('Opening ARIA…');
+      useStore.getState().toggleAria?.();
     }
   };
 
@@ -59,8 +61,8 @@ export default function AriaInsightStrip({ insights = [], onAskAria }) {
     fontSize: '12px',
     fontWeight: 700,
     color: C.primary,
-    backgroundColor: 'rgba(61,220,132,0.12)',
-    border: `1px solid rgba(61,220,132,0.2)`,
+    backgroundColor: C.primaryDim,
+    border: `1px solid ${C.primaryGlow}`,
     borderRadius: '4px',
     padding: `1px ${S[2]}`,
     marginLeft: S[1],
@@ -78,11 +80,24 @@ export default function AriaInsightStrip({ insights = [], onAskAria }) {
       {/* Header — always visible */}
       <div style={headerStyle} onClick={() => setExpanded((e) => !e)}>
         <AriaIcon />
-        <span style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary, flex: 1 }}>
-          ARIA has
-          <span style={countStyle}>{insights.length}</span>
-          {' '}insights that need attention
-        </span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {personaLabel && (
+            <div style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '2px' }}>
+              {personaLabel}
+            </div>
+          )}
+          {greeting ? (
+            <span style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary }}>
+              {greeting}
+            </span>
+          ) : (
+            <span style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary }}>
+              ARIA has
+              <span style={countStyle}>{insights.length}</span>
+              {' '}insights that need attention
+            </span>
+          )}
+        </div>
         <div style={pulseStyle}/>
         {/* Chevron */}
         <svg
@@ -135,8 +150,8 @@ export default function AriaInsightStrip({ insights = [], onAskAria }) {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: S[1],
-                  backgroundColor: 'rgba(61,220,132,0.08)',
-                  border: `1px solid rgba(61,220,132,0.25)`,
+                  backgroundColor: C.primaryDim,
+                  border: `1px solid ${C.primaryGlow}`,
                   borderRadius: '6px',
                   padding: `3px ${S[2]}`,
                   fontFamily: F.body,

@@ -1,4 +1,5 @@
 import { C, F, R, S, btn, badge, dividerStyle } from '../../tokens';
+import { IconClose } from '../ui/Icons';
 
 function formatCurrency(value) {
   if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
@@ -60,7 +61,7 @@ export default function DealDetailPanel({ deal, onClose, toast }) {
           <h2 style={{ fontFamily: F.display, fontSize: '18px', fontWeight: 700, color: C.textPrimary, margin: 0 }}>
             {company}
           </h2>
-          <button style={{ ...btn.icon }} onClick={onClose} aria-label="Close">✕</button>
+          <button style={{ ...btn.icon }} onClick={onClose} aria-label="Close"><IconClose color={C.textSecondary} width={18} height={18} /></button>
         </div>
         <div style={{ fontFamily: F.body, fontSize: '14px', color: C.textSecondary }}>{contact} · {title}</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: S[2], marginTop: S[3], flexWrap: 'wrap' }}>

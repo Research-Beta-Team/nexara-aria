@@ -68,14 +68,14 @@ export async function execute(toolName, input, store) {
       if (extractType === 'tables') {
         return {
           tables: [
-            { headers: ['Name', 'Company', 'Email'], rows: [['John Doe', 'Acme', 'john@acme.com'], ['Jane Smith', 'Beta', 'jane@beta.com']] },
+            { headers: ['Name', 'Company', 'Email'], rows: [['John Doe', 'Medglobal', 'john@medglobal.org'], ['Jane Smith', 'Beta', 'jane@beta.com']] },
           ],
         };
       }
       if (extractType === 'contacts') {
         return {
           contacts: [
-            { name: 'John Doe', title: 'CFO', company: 'Acme Corp', email: 'john@acme.com' },
+            { name: 'John Doe', title: 'CFO', company: 'Medglobal', email: 'john@medglobal.org' },
             { name: 'Jane Smith', title: 'VP Finance', company: 'Beta Inc', email: 'jane@beta.com' },
           ],
         };

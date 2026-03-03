@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import useToast from '../../hooks/useToast';
 import { C, F, R, S, btn, sectionHeading } from '../../tokens';
+import { IconStar } from '../../components/ui/Icons';
 import { COMPETITORS } from '../../data/competitors';
 import CompetitorCard from '../../components/competitive/CompetitorCard';
 import BattleCard from '../../components/competitive/BattleCard';
@@ -67,9 +68,11 @@ function ReviewAnalysisTab({ competitors, selectedId, onSelect, toast }) {
       </div>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: S[5] }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: S[3] }}>
-          <span style={{ display: 'flex', gap: '2px' }}>
+          <span style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
             {[1, 2, 3, 4, 5].map((i) => (
-              <span key={i} style={{ color: i <= Math.floor(g2Rating) ? C.amber : C.border, fontSize: '18px' }}>★</span>
+              <span key={i} style={{ color: i <= Math.floor(g2Rating) ? C.amber : C.border }}>
+                <IconStar color={i <= Math.floor(g2Rating) ? C.amber : C.border} width={18} height={18} filled={i <= Math.floor(g2Rating)} />
+              </span>
             ))}
           </span>
           <span style={{ fontFamily: F.mono, fontSize: '14px', color: C.textPrimary }}>{g2Rating}</span>

@@ -99,6 +99,11 @@ export const Z = {
   toast:   500,
 };
 
+// ── Layout (app shell) ────────────────────────
+export const LAYOUT = {
+  footerHeightPx: 48,
+};
+
 // ── Transitions ───────────────────────────────
 export const T = {
   fast:   'all 0.12s ease',
@@ -370,4 +375,14 @@ export const statLabel = {
   color: C.textSecondary,
   textTransform: 'uppercase',
   letterSpacing: '0.06em',
+};
+
+// ── Client Portal (light theme — literal hex for /client-portal routes) ──
+export const CLIENT_PORTAL_TOKENS = {
+  bg: '#F8FAF9',
+  surface: '#FFFFFF',
+  border: '#E2EBE6',
+  primary: '#1A5C35',
+  textPrimary: '#1A2E22',
+  textSecondary: '#4A6B58',
 };

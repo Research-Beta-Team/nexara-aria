@@ -10,7 +10,7 @@ const SUGGESTED_TYPES = [
 ];
 
 const SCOPE_OPTIONS = [
-  { value: 'workspace', label: 'Workspace', desc: 'Available to all campaigns' },
+  { value: 'workspace', label: 'Company', desc: 'Available to all campaigns' },
   { value: 'client',    label: 'Client',    desc: 'Scoped to a specific client' },
   { value: 'campaign',  label: 'Campaign',  desc: 'Used only in this campaign' },
 ];

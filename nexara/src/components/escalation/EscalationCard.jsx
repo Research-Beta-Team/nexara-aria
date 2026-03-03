@@ -31,7 +31,7 @@ function ConfidenceRing({ score }) {
 }
 
 /* ─── EscalationCard ─────────────────────────────────────── */
-export default function EscalationCard({ escalation, selected, onSelect, onApprove, onDeny, onSendAdvisor, resolved }) {
+export default function EscalationCard({ escalation, selected, onSelect, onApprove, onDeny, onSendAdvisor, resolved, readOnly }) {
   const [expanded, setExpanded]   = useState(false);
   const [animState, setAnimState] = useState(null); // 'approving' | 'denying' | null
 
@@ -199,8 +199,8 @@ export default function EscalationCard({ escalation, selected, onSelect, onAppro
           </div>
         )}
 
-        {/* Action footer */}
-        {!resolved && (
+        {/* Action footer — hidden when read-only (e.g. Analyst) */}
+        {!resolved && !readOnly && (
           <div style={{
             display: 'flex', justifyContent: 'flex-end', gap: S[2], alignItems: 'center',
             padding: `${S[3]} ${S[4]}`,

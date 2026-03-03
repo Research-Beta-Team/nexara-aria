@@ -25,7 +25,7 @@ function HealthBadge({ health }) {
   );
 }
 
-export default function CampaignHealthCard({ name, goal, current, health, spend, cpl, channels }) {
+export default function CampaignHealthCard({ name, goal, current, health, spend, cpl, channels, onPause }) {
   const toast = useToast();
   const pct = Math.min(100, Math.round((current / goal) * 100));
   const barColor = PROGRESS_COLOR[health] ?? C.primary;
@@ -144,7 +144,11 @@ export default function CampaignHealthCard({ name, goal, current, health, spend,
             color: health === 'at_risk' ? C.red : C.textSecondary,
             borderColor: health === 'at_risk' ? C.red : C.border,
           }}
-          onClick={() => toast.warning(`Campaign "${name}" paused`)}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onPause) onPause(e);
+            else toast.warning(`Campaign "${name}" paused`);
+          }}
         >
           Pause
         </button>

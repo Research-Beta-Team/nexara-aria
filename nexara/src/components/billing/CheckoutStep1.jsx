@@ -19,7 +19,7 @@ const FEAT_NAMES = {
   crossClientAnalytics:  'Cross-Client Analytics',
   subBilling:            'Sub-Billing for Clients',
   advancedAnalytics:     'Advanced Analytics',
-  unifiedInbox:          'Unified Inbox',
+  unifiedInbox:          'Company Social Inbox',
   clientPortal:          'Client Portals',
   ganttPlan:             'Gantt Timeline',
   outcomeBilling:        'Outcome-Based Billing',
@@ -31,7 +31,7 @@ const FEAT_NAMES = {
   linkedinAdsManagement: 'LinkedIn Ads Management',
   metaAdsManagement:     'Meta Ads Management',
   icpScoring:            'ICP Scoring',
-  queryManager:          'Query Manager',
+  queryManager:          'Team Query',
   roleBasedAccess:       'Role-Based Access',
 };
 

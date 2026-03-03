@@ -3,7 +3,7 @@ import useToast from '../../hooks/useToast';
 import useStore from '../../store/useStore';
 import { PLAN_ORDER } from '../../config/plans';
 import { C, F, R, S, T } from '../../tokens';
-import { IconWarning, IconMessage } from '../ui/Icons';
+import { IconWarning, IconMessage, IconStar } from '../ui/Icons';
 
 // ── Per-plan feature bullet lists ─────────────
 const PLAN_FEATURES = {
@@ -11,7 +11,6 @@ const PLAN_FEATURES = {
     '2 active campaigns',
     'Email outreach',
     'Meta Ads monitoring',
-    'ICP Builder (basic)',
     'Content Library & Knowledge Base',
     'Escalation queue',
     '3 team seats · 1 workspace',
@@ -19,10 +18,11 @@ const PLAN_FEATURES = {
   growth: [
     'Unlimited active campaigns',
     'Email + LinkedIn + WhatsApp outreach',
+    'ICP Builder + AI scoring',
     'ABM Engine — 50 named accounts',
     'Intent Signals — 500 tracked accounts',
     'Full Ads suite (Meta, Google, LinkedIn)',
-    'Unified Inbox + Query Manager',
+    'Company Social Inbox + Team Query',
     '10 team seats · 3 workspaces · 3 portals',
   ],
   scale: [
@@ -88,6 +88,8 @@ function CheckIcon() {
 export default function PlanCard({ plan, billing, currentPlanId, recommendedForYou }) {
   const toast         = useToast();
   const openCheckout  = useStore(s => s.openCheckout);
+  const setPlan       = useStore(s => s.setPlan);
+  const setCreditsIncluded = useStore(s => s.setCreditsIncluded);
   const [ctaHovered, setCtaHovered] = useState(false);
 
   const action         = getPlanAction(currentPlanId, plan.id);
@@ -123,7 +125,12 @@ export default function PlanCard({ plan, billing, currentPlanId, recommendedForY
     if (action.type === 'current')  return;
     if (action.type === 'agency')   { toast.info('Connecting you with our sales team — opening Calendly...'); return; }
     if (action.type === 'upgrade')  { openCheckout(plan.id); return; }
-    if (action.type === 'downgrade'){ toast.warning(`Switching to ${plan.displayName}... (mock)`); return; }
+    if (action.type === 'downgrade') {
+      setPlan(plan.id);
+      setCreditsIncluded(plan.credits?.included ?? 0);
+      toast.success(`Switched to ${plan.displayName}. Some features may now be limited.`);
+      return;
+    }
   };
 
   return (
@@ -163,12 +170,16 @@ export default function PlanCard({ plan, billing, currentPlanId, recommendedForY
           )}
           {plan.badge && (
             <span style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
               fontFamily: F.mono, fontSize: '10px', fontWeight: 700,
               color: C.amber, backgroundColor: C.amberDim,
               border: `1px solid ${C.amber}`, borderRadius: R.pill,
               padding: `2px ${S[2]}`, letterSpacing: '0.05em',
             }}>
-              ★ {plan.badge.toUpperCase()}
+              <IconStar color={C.amber} width={12} height={12} filled />
+              {plan.badge.toUpperCase()}
             </span>
           )}
           {isCurrent && (

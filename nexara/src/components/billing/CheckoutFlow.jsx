@@ -3,10 +3,12 @@ import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import useStore from '../../store/useStore';
 import useCheckout from '../../hooks/useCheckout';
+import { PLAN_ORDER } from '../../config/plans';
 import CheckoutStep1 from './CheckoutStep1';
 import CheckoutStep2 from './CheckoutStep2';
 import CheckoutStep3 from './CheckoutStep3';
 import CheckoutStep4 from './CheckoutStep4';
+import DowngradeFlow from './DowngradeFlow';
 import { C, F, R, S, T } from '../../tokens';
 
 // ── Progress dots ─────────────────────────────
@@ -165,7 +167,14 @@ export default function CheckoutFlow() {
 
   if (!checkoutOpen || !checkoutTargetPlan) return null;
 
+  const isDowngrade =
+    PLAN_ORDER.indexOf(currentPlanId) > PLAN_ORDER.indexOf(checkoutTargetPlan);
+
   const handleCloseRequest = () => {
+    if (isDowngrade) {
+      closeCheckout();
+      return;
+    }
     if (checkout.step === 1 || checkout.step === 4) {
       closeCheckout();
     } else {
@@ -221,8 +230,8 @@ export default function CheckoutFlow() {
         }}
         onClick={e => e.stopPropagation()}
       >
-        {/* Close X */}
-        {checkout.step !== 4 && (
+        {/* Close X — show for downgrade or when not on success step */}
+        {(isDowngrade || checkout.step !== 4) && (
           <button
             onClick={handleCloseRequest}
             style={{
@@ -238,15 +247,28 @@ export default function CheckoutFlow() {
           </button>
         )}
 
-        {/* Progress bar */}
-        <ProgressBar step={checkout.step} />
+        {/* Progress bar — hide for downgrade flow */}
+        {!isDowngrade && (
+          <ProgressBar step={checkout.step} />
+        )}
 
-        {/* Step content */}
+        {/* Step content — downgrade flow or normal steps */}
         <div style={{ overflowY: 'auto', flex: 1, scrollbarWidth: 'thin', scrollbarColor: `${C.border} transparent` }}>
-          {checkout.step === 1 && <CheckoutStep1 {...stepProps} />}
-          {checkout.step === 2 && <CheckoutStep2 {...stepProps} />}
-          {checkout.step === 3 && <CheckoutStep3 {...stepProps} />}
-          {checkout.step === 4 && <CheckoutStep4 {...stepProps} />}
+          {isDowngrade ? (
+            <DowngradeFlow
+              fromPlanId={currentPlanId}
+              toPlanId={checkoutTargetPlan}
+              onCancel={closeCheckout}
+              onConfirmSchedule={() => closeCheckout()}
+            />
+          ) : (
+            <>
+              {checkout.step === 1 && <CheckoutStep1 {...stepProps} />}
+              {checkout.step === 2 && <CheckoutStep2 {...stepProps} />}
+              {checkout.step === 3 && <CheckoutStep3 {...stepProps} />}
+              {checkout.step === 4 && <CheckoutStep4 {...stepProps} />}
+            </>
+          )}
         </div>
 
         {/* Close confirm overlay */}

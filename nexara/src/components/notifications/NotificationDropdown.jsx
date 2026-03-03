@@ -5,6 +5,7 @@ import useToast from '../../hooks/useToast';
 import { NOTIFICATIONS } from '../../data/notifications';
 import NotificationItem from './NotificationItem';
 import { C, F, R, S, T, Z, shadows } from '../../tokens';
+import { IconBell } from '../ui/Icons';
 
 const TABS = ['All', 'Unread', 'Critical'];
 
@@ -209,7 +210,7 @@ export default function NotificationDropdown({ open, onClose }) {
             fontFamily: F.body,
             fontSize:   '13px',
           }}>
-            <div style={{ fontSize: '24px', marginBottom: S[2] }}>🔔</div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: S[2] }}><IconBell color={C.textMuted} width={24} height={24} /></div>
             {activeTab === 'Unread'
               ? 'All caught up! No unread notifications.'
               : activeTab === 'Critical'

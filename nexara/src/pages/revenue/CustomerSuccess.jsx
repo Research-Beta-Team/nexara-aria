@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import useToast from '../../hooks/useToast';
 import { C, F, R, S, btn, sectionHeading } from '../../tokens';
+import { IconClose } from '../../components/ui/Icons';
 import { CUSTOMERS, CHURN_RISK_ALERTS, getCustomerStats } from '../../data/customers';
 import CustomerHealthGrid from '../../components/cs/CustomerHealthGrid';
 import ChurnRiskCard from '../../components/cs/ChurnRiskCard';
@@ -38,7 +39,7 @@ function CustomerDetailPanel({ customer, onClose }) {
         <h2 style={{ fontFamily: F.display, fontSize: '18px', fontWeight: 700, color: C.textPrimary, margin: 0 }}>
           {name}
         </h2>
-        <button style={{ ...btn.icon }} onClick={onClose} aria-label="Close">✕</button>
+        <button style={{ ...btn.icon }} onClick={onClose} aria-label="Close"><IconClose color={C.textSecondary} width={18} height={18} /></button>
       </div>
       <div style={{ fontFamily: F.mono, fontSize: '20px', fontWeight: 700, color: C.primary, marginBottom: S[4] }}>
         {formatMrr(mrr)} MRR

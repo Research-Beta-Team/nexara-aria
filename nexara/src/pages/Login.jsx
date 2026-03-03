@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { C, F, R, S, T, shadows } from '../tokens';
 import useStore from '../store/useStore';
@@ -41,10 +41,18 @@ function Field({ label, type, value, onChange, placeholder, focusField, setFocus
 export default function Login() {
   const navigate  = useNavigate();
   const login     = useStore((s) => s.login);
+  const isAuthenticated = useStore((s) => s.isAuthenticated);
+  const isOnboarded = useStore((s) => s.isOnboarded);
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
   const [error,    setError]    = useState('');
   const [focus,    setFocus]    = useState(null);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(isOnboarded ? '/' : '/onboarding/setup', { replace: true });
+    }
+  }, [isAuthenticated, isOnboarded, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -53,7 +61,8 @@ export default function Login() {
       return;
     }
     login();
-    navigate('/onboarding');
+    const nextPath = useStore.getState().isOnboarded ? '/' : '/onboarding/setup';
+    navigate(nextPath, { replace: true });
   };
 
   return (

@@ -5,6 +5,7 @@ import usePlan from '../hooks/usePlan';
 import useToast from '../hooks/useToast';
 import { C, F, R, S, T, btn, badge, flex, cardStyle, inputStyle, shadows } from '../tokens';
 import { campaigns } from '../data/campaigns';
+import NewCampaignChoice from '../components/campaign/NewCampaignChoice';
 
 // ── Status badge ──────────────────────────────
 const STATUS_BADGE = {
@@ -133,14 +134,6 @@ export default function CampaignList() {
     ? `${campaigns.length} campaigns · ${campaigns.filter(c => c.status === 'active').length} active`
     : `${activeCampaignsCount} / ${campaignLimit} campaigns · ${campaigns.filter(c => c.status === 'active').length} active`;
 
-  const handleNewCampaign = () => {
-    if (atCampaignLimit) {
-      openCheckout('growth', 'campaigns');
-      return;
-    }
-    navigate('/campaigns/new');
-  };
-
   const filtered = campaigns.filter((c) => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) ||
                         c.client.toLowerCase().includes(search.toLowerCase());
@@ -178,12 +171,10 @@ export default function CampaignList() {
           <button style={{ ...btn.secondary, fontSize: '13px' }} onClick={() => toast.info('Import campaign coming soon')}>
             Import
           </button>
-          <button style={{ ...btn.primary, fontSize: '13px' }} onClick={handleNewCampaign}>
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-              <path d="M6.5 1v11M1 6.5h11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-            {atCampaignLimit ? 'Upgrade to add more' : 'New Campaign'}
-          </button>
+          <NewCampaignChoice
+            atLimit={atCampaignLimit}
+            onUpgrade={() => openCheckout('growth', 'campaigns')}
+          />
         </div>
       </div>
 

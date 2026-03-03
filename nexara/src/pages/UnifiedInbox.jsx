@@ -1,7 +1,12 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CONVERSATIONS from '../data/inbox';
-import { C, F, R, S, T, shadows, scrollbarStyle } from '../tokens';
+import { C, F, R, S, T, btn, shadows, scrollbarStyle } from '../tokens';
 import useToast from '../hooks/useToast';
+import { useRoleView } from '../hooks/useRoleView';
+import { filterConversations } from '../utils/roleViews';
+import useStore from '../store/useStore';
+import ConnectAccountModal from '../components/social/ConnectAccountModal';
 
 // ── Channel config ────────────────────────────
 const CH = {
@@ -125,9 +130,9 @@ function ConvItem({ conv, selected, onClick }) {
   );
 }
 
-function LeftPanel({ convs, selected, onSelect, filter, onFilter, search, onSearch }) {
+function LeftPanel({ convs, selected, onSelect, filter, onFilter, search, onSearch, leftPanelWidth = 280 }) {
   return (
-    <div style={{ width: '280px', flexShrink: 0, borderRight: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', backgroundColor: C.surface, overflow: 'hidden' }}>
+    <div style={{ width: leftPanelWidth, flexShrink: 0, borderRight: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', backgroundColor: C.surface, overflow: 'hidden' }}>
       {/* Channel tabs */}
       <div style={{ padding: `${S[2]} ${S[3]}`, borderBottom: `1px solid ${C.border}`, display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
         {CHANNEL_TABS.map((tab) => (
@@ -506,22 +511,47 @@ function RightPanel({ conv, ariaMode, onAriaMode, onSendDraft, onEscalate }) {
 
 // ── Main ──────────────────────────────────────
 export default function UnifiedInbox() {
+  const navigate = useNavigate();
+  const toast = useToast();
+  const currentRole = useStore((s) => s.currentRole);
+  const connectedAccounts = useStore((s) => s.connectedAccounts);
+  const { access, filter: roleFilter, layout } = useRoleView('inbox');
+
   const [convs,         setConvs]         = useState(CONVERSATIONS);
   const [selected,      setSelected]      = useState(CONVERSATIONS[0] ?? null);
   const [filter,        setFilter]        = useState('All');
   const [search,        setSearch]        = useState('');
   const [reply,         setReply]         = useState('');
   const [ariaMode,      setAriaMode]      = useState('suggest');
-  const toast = useToast();
+  const [socialInviteDismissed, setSocialInviteDismissed] = useState(false);
+  const [socialConnectedDismissed, setSocialConnectedDismissed] = useState(false);
+  const [showConnectModal, setShowConnectModal] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
-  const filtered = convs.filter((c) => {
+  const roleConfig = useMemo(() => ({ filter: roleFilter }), [roleFilter]);
+  const convsForRole = useMemo(() => filterConversations(convs, currentRole, roleConfig), [convs, currentRole, roleConfig]);
+
+  const filtered = convsForRole.filter((c) => {
     const matchCh = filter === 'All' || c.channel === filter;
     const q = search.toLowerCase();
     const matchQ = !q || c.contact.toLowerCase().includes(q) || c.company.toLowerCase().includes(q) || c.lastMessage.toLowerCase().includes(q);
     return matchCh && matchQ;
   });
 
-  const unreadCount = convs.filter((c) => c.status === 'unread').length;
+  const unreadCount = convsForRole.filter((c) => c.status === 'unread').length;
+
+  if (access === false) {
+    return (
+      <div style={{ padding: S[6], display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: S[5], minHeight: '60vh' }}>
+        <h1 style={{ fontFamily: F.display, fontSize: '22px', fontWeight: 800, color: C.textPrimary, margin: 0 }}>Company Social Inbox</h1>
+        <p style={{ fontFamily: F.body, fontSize: '14px', color: C.textSecondary }}>Company Social Inbox is not available for your role.</p>
+        <button style={{ ...btn.primary }} onClick={() => navigate('/')}>Go to Dashboard</button>
+      </div>
+    );
+  }
+
+  const leftPanelWidth = layout === 'sdr' ? 350 : 280;
+  const hotCount = convsForRole.filter((c) => c.classification === 'Hot Lead' || (c.ariaClassification?.intent === 'Meeting Request')).length;
 
   const handleSelect = (conv) => {
     setSelected(conv);
@@ -553,14 +583,83 @@ export default function UnifiedInbox() {
     toast.success('ARIA draft sent!');
   };
 
+  const handleSync = () => {
+    setSyncing(true);
+    setTimeout(() => {
+      setSyncing(false);
+      toast.success('Inbox synced with connected accounts.');
+    }, 1500);
+  };
+
+  const hasSocialConnected = connectedAccounts.length > 0;
+
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <style>{`@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}`}</style>
 
+      {/* Not connected: empty state + connection method */}
+      {!hasSocialConnected && (
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: S[8], gap: S[5] }}>
+          <div style={{ textAlign: 'center', maxWidth: 420 }}>
+            <h1 style={{ fontFamily: F.display, fontSize: '22px', fontWeight: 800, color: C.textPrimary, margin: '0 0 8px', letterSpacing: '-0.02em' }}>
+              Company Social Inbox
+            </h1>
+            <p style={{ fontFamily: F.body, fontSize: '14px', color: C.textSecondary, margin: '0 0 24px', lineHeight: 1.5 }}>
+              Connect your social and messaging accounts to see conversations here. Without a connection, the inbox is empty.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: S[3], justifyContent: 'center' }}>
+              <button type="button" style={{ ...btn.primary, fontSize: '14px', padding: `${S[3]} ${S[5]}` }} onClick={() => setShowConnectModal(true)}>
+                Connect accounts
+              </button>
+              <button type="button" style={{ ...btn.ghost, fontSize: '14px', border: `1px solid ${C.border}` }} onClick={() => navigate('/social')}>
+                Open Social Media page
+              </button>
+            </div>
+          </div>
+          {showConnectModal && <ConnectAccountModal onClose={() => setShowConnectModal(false)} />}
+        </div>
+      )}
+
+      {/* Connected: full inbox with sync */}
+      {hasSocialConnected && (
+        <>
+      {layout === 'sdr' && (
+        <div style={{ padding: `${S[2]} ${S[5]}`, backgroundColor: C.surface2, borderBottom: `1px solid ${C.border}`, fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>
+          TODAY: {hotCount} hot replies · {unreadCount} unread · Your outreach conversations
+        </div>
+      )}
+
+      {/* Connected: connection + sync bar */}
+      {hasSocialConnected && (
+        <div style={{ padding: `${S[2]} ${S[4]}`, backgroundColor: C.surface2, borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: S[3], flexWrap: 'wrap' }}>
+          <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>
+            Connected: {connectedAccounts.map((a) => a.platform).join(', ')}
+          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
+            <button
+              type="button"
+              style={{ ...btn.ghost, fontSize: '12px', padding: `${S[1]} ${S[3]}`, border: `1px solid ${C.border}`, borderRadius: R.button }}
+              onClick={() => setShowConnectModal(true)}
+            >
+              Add account
+            </button>
+            <button
+              type="button"
+              style={{ ...btn.primary, fontSize: '12px', padding: `${S[1]} ${S[3]}`, opacity: syncing ? 0.8 : 1 }}
+              onClick={handleSync}
+              disabled={syncing}
+            >
+              {syncing ? 'Syncing…' : 'Sync inbox'}
+            </button>
+          </div>
+        </div>
+      )}
+      {showConnectModal && hasSocialConnected && <ConnectAccountModal onClose={() => setShowConnectModal(false)} />}
+
       {/* Page header */}
       <div style={{ padding: `${S[3]} ${S[5]}`, borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, backgroundColor: C.surface }}>
         <div>
-          <h1 style={{ fontFamily: F.display, fontSize: '18px', fontWeight: 700, color: C.textPrimary, margin: 0 }}>Unified Inbox</h1>
+          <h1 style={{ fontFamily: F.display, fontSize: '18px', fontWeight: 700, color: C.textPrimary, margin: 0 }}>Company Social Inbox</h1>
           <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, margin: 0, marginTop: '2px' }}>
             {unreadCount} unread across LinkedIn · Facebook · WhatsApp · Email
           </p>
@@ -572,7 +671,7 @@ export default function UnifiedInbox() {
               <span style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: C.amber, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Auto-approve ON</span>
             </div>
           )}
-          <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted }}>{convs.length} conversations</span>
+          <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted }}>{convsForRole.length} conversations</span>
         </div>
       </div>
 
@@ -586,6 +685,7 @@ export default function UnifiedInbox() {
           onFilter={setFilter}
           search={search}
           onSearch={setSearch}
+          leftPanelWidth={leftPanelWidth}
         />
         <CenterPanel
           conv={selected}
@@ -602,6 +702,8 @@ export default function UnifiedInbox() {
           onEscalate={() => {}}
         />
       </div>
+      </>
+      )}
     </div>
   );
 }

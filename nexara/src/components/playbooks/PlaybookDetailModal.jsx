@@ -1,5 +1,5 @@
 import { C, F, R, S, btn, Z } from '../../tokens';
-import { PLAYBOOK_ICON_MAP, IconClipboard, IconDocument } from '../ui/Icons';
+import { PLAYBOOK_ICON_MAP, IconClipboard, IconDocument, IconClose } from '../ui/Icons';
 
 const COLOR_MAP = {
   teal: C.secondary,
@@ -82,7 +82,7 @@ export default function PlaybookDetailModal({ playbook, onClose, onLaunch }) {
                   {name}
                 </h2>
               </div>
-              <button style={{ ...btn.icon }} onClick={onClose} aria-label="Close">✕</button>
+              <button style={{ ...btn.icon }} onClick={onClose} aria-label="Close"><IconClose color={C.textSecondary} width={18} height={18} /></button>
             </div>
             <p style={{ fontFamily: F.body, fontSize: '14px', color: C.textSecondary, lineHeight: 1.6, marginBottom: S[6] }}>
               {description}

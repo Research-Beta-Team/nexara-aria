@@ -22,7 +22,7 @@ const TYPE_COLOR = {
   website_visit: C.primary,
   g2_research: C.amber,
   job_posting: C.secondary,
-  linkedin_post: '#0A66C2',
+  linkedin_post: C.secondary,
   competitor_check: C.textMuted,
   funding_news: C.amber,
   tech_signal: C.primary,

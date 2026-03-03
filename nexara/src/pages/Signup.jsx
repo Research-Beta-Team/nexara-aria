@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { C, F, R, S, T, shadows } from '../tokens';
 import useStore from '../store/useStore';
@@ -37,10 +37,13 @@ function Field({ label, type, value, onChange, placeholder, focusField, setFocus
   );
 }
 
-// ── Signup page ───────────────────────────────
+// ── Signup page (company / admin–owner) ───────
 export default function Signup() {
   const navigate  = useNavigate();
   const login     = useStore((s) => s.login);
+  const isAuthenticated = useStore((s) => s.isAuthenticated);
+  const isOnboarded = useStore((s) => s.isOnboarded);
+  const [companyName, setCompanyName] = useState('');
   const [name,     setName]     = useState('');
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
@@ -48,9 +51,15 @@ export default function Signup() {
   const [error,    setError]    = useState('');
   const [focus,    setFocus]    = useState(null);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(isOnboarded ? '/' : '/onboarding/setup', { replace: true });
+    }
+  }, [isAuthenticated, isOnboarded, navigate]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!name.trim() || !email.trim() || !password.trim() || !confirm.trim()) {
+    if (!companyName.trim() || !name.trim() || !email.trim() || !password.trim() || !confirm.trim()) {
       setError('Please fill in all fields.');
       return;
     }
@@ -63,7 +72,7 @@ export default function Signup() {
       return;
     }
     login();
-    navigate('/onboarding');
+    navigate('/onboarding/setup', { replace: true });
   };
 
   return (
@@ -81,13 +90,14 @@ export default function Signup() {
 
           {/* Header */}
           <div style={{ padding: `${S[5]} ${S[5]} ${S[4]}`, borderBottom: `1px solid ${C.border}` }}>
-            <div style={{ fontFamily: F.display, fontSize: '20px', fontWeight: 700, color: C.textPrimary }}>Create account</div>
-            <div style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, marginTop: '4px' }}>Start your Nextara journey</div>
+            <div style={{ fontFamily: F.display, fontSize: '20px', fontWeight: 700, color: C.textPrimary }}>Sign up as company</div>
+            <div style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, marginTop: '4px' }}>Create your account as admin/owner to get started</div>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} style={{ padding: S[5], display: 'flex', flexDirection: 'column', gap: S[4] }}>
-            <Field label="Full Name" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Jane Smith" focusField={focus} setFocusField={setFocus} id="name" />
+            <Field label="Company name" type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Acme Inc." focusField={focus} setFocusField={setFocus} id="company" />
+            <Field label="Your full name" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Jane Smith" focusField={focus} setFocusField={setFocus} id="name" />
             <Field label="Work Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" focusField={focus} setFocusField={setFocus} id="email" />
             <Field label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min. 6 characters" focusField={focus} setFocusField={setFocus} id="password" />
             <Field label="Confirm Password" type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="••••••••" focusField={focus} setFocusField={setFocus} id="confirm" />

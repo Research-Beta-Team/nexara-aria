@@ -3,11 +3,12 @@
 // ─────────────────────────────────────────────
 
 // ── Campaign List ─────────────────────────────
-export const campaigns = [
+const campaignsList = [
   {
     id: 'c1',
+    clientId: 'medglobal',
     name: 'CFO Vietnam Q1',
-    client: 'Acme Corp',
+    client: 'Medglobal',
     status: 'active',       // active | paused | draft | completed
     health: 'on_track',
     goal: 120,
@@ -25,8 +26,9 @@ export const campaigns = [
   },
   {
     id: 'c2',
+    clientId: 'techbridge-consulting',
     name: 'APAC Brand Awareness',
-    client: 'TechVN Ltd',
+    client: 'TechBridge Consulting',
     status: 'active',
     health: 'ahead',
     goal: 60,
@@ -44,8 +46,9 @@ export const campaigns = [
   },
   {
     id: 'c3',
+    clientId: 'medglobal',
     name: 'SEA Demand Gen',
-    client: 'Acme Corp',
+    client: 'Medglobal',
     status: 'active',
     health: 'at_risk',
     goal: 80,
@@ -63,8 +66,9 @@ export const campaigns = [
   },
   {
     id: 'c4',
+    clientId: 'medglobal',
     name: 'ANZ Retargeting Q4',
-    client: 'BlueStar Pty',
+    client: 'Medglobal',
     status: 'paused',
     health: 'on_track',
     goal: 45,
@@ -81,6 +85,12 @@ export const campaigns = [
     description: 'Retargeting warm audiences in Australia and New Zealand.',
   },
 ];
+
+export const campaigns = campaignsList;
+
+export function getCampaignsForClient(clientId) {
+  return campaignsList.filter((c) => c.clientId === clientId);
+}
 
 // ── Campaign Detail — KPIs & Funnel (by id) ───
 export const campaignDetail = {
@@ -116,7 +126,7 @@ export const campaignDetail = {
 // ── Strategy (shared across campaigns for demo) ─
 export const strategyData = {
   brief: {
-    objective: "Generate 120 qualified CFO-level leads in Vietnam for Acme's enterprise SaaS.",
+    objective: "Generate 120 qualified CFO-level leads in Vietnam for Medglobal's enterprise SaaS.",
     targetRevenue: '$2.4M pipeline',
     timeline: 'Q1 2025 (Jan 6 – Mar 28)',
     budget: '$25,000 total · $18,420 spent',
@@ -164,21 +174,25 @@ export const contentItems = [
     opens: '34%',
     clicks: '8.2%',
     replies: '3.1%',
+    visuals: [
+      { id: 'v1', type: 'banner', name: 'CFO Hero Banner', url: null },
+      { id: 'v2', type: 'image', name: 'Product screenshot', url: null },
+    ],
     body: `Subject: Reducing multi-entity consolidation time for CFOs in Vietnam
 
 Hi {{first_name}},
 
-I noticed Acme Corp recently expanded its Vietnam operations — congratulations on the growth.
+I noticed Medglobal recently expanded its Vietnam operations — congratulations on the growth.
 
 Many CFOs I speak with at companies your size are spending 3–4 days per quarter on manual consolidation across entities. With local tax authority compliance on top, the reporting cycle becomes a serious bottleneck.
 
-We built Acme ERP specifically for this: AI-native financial consolidation that cuts reporting time by 60%, with built-in compliance for Vietnam's tax and accounting standards.
+We built Medglobal's platform specifically for this: AI-native financial consolidation that cuts reporting time by 60%, with built-in compliance for Vietnam's tax and accounting standards.
 
 Would a 20-minute call this week make sense? I can show you exactly how CFOs at [similar company] cut their Q close from 12 days to 4.
 
 Best,
 Jamie
-Acme Corp · GTM Team`,
+Medglobal · GTM Team`,
   },
   {
     id: 'ct2',
@@ -208,9 +222,12 @@ Jamie`,
     impressions: '48,200',
     ctr: '3.2%',
     cpl: '$182',
+    visuals: [
+      { id: 'v3', type: 'poster', name: 'Ad creative 1080x1080', url: null },
+    ],
     body: `Headline: CFOs in Vietnam: Close your books 60% faster
 
-Body: Multi-entity consolidation taking weeks? Acme ERP automates financial consolidation with built-in Vietnam tax compliance. See it in action.
+Body: Multi-entity consolidation taking weeks? Medglobal automates financial consolidation with built-in Vietnam tax compliance. See it in action.
 
 CTA: Book a Demo`,
   },
@@ -241,6 +258,10 @@ Vietnam's tax authority (GDT) requirements change regularly. If your ERP can't a
     impressions: '12,800',
     ctr: '5.8%',
     cpl: '$94',
+    visuals: [
+      { id: 'v4', type: 'banner', name: 'Demo CTA banner', url: null },
+      { id: 'v5', type: 'poster', name: 'Square creative', url: null },
+    ],
     body: `Headline: Still thinking it over?
 
 Body: See exactly how 120+ CFOs in Southeast Asia are closing books 60% faster. Book your personalized demo — 20 minutes, no pressure.

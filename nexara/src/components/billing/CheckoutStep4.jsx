@@ -45,7 +45,7 @@ const FEAT_NAMES = {
   crossClientAnalytics:  'Cross-Client Analytics',
   subBilling:            'Sub-Billing',
   advancedAnalytics:     'Advanced Analytics',
-  unifiedInbox:          'Unified Inbox',
+  unifiedInbox:          'Company Social Inbox',
   clientPortal:          'Client Portals',
   ganttPlan:             'Gantt Timeline',
   pipelineManager:       'Pipeline Manager',

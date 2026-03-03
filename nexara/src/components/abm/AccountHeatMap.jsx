@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { C, F, R, S, btn, badge } from '../../tokens';
+import { IconClose } from '../ui/Icons';
 
 const ROLE_LABEL = {
   champion: 'Champion',
@@ -123,7 +124,7 @@ export default function AccountHeatMap({ account, onSelectStakeholder, toast }) 
               style={{ ...btn.ghost, padding: S[1] }}
               onClick={() => setSelectedStakeholder(null)}
             >
-              ✕
+              <IconClose color={C.textSecondary} width={18} height={18} />
             </button>
           </div>
           <div style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary }}>{selectedStakeholder.title}</div>

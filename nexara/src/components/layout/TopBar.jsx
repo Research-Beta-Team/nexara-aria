@@ -1,12 +1,15 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Zap, X } from 'lucide-react';
 import useStore from '../../store/useStore';
 import useToast from '../../hooks/useToast';
 import useCredits from '../../hooks/useCredits';
 import usePlan from '../../hooks/usePlan';
+import usePlanAlerts from '../../hooks/usePlanAlerts';
 import NotificationDropdown from '../notifications/NotificationDropdown';
 import UpgradeModal from '../plan/UpgradeModal';
+import PlanExpiryWarning from '../plan/PlanExpiryWarning';
+import { getRoleDisplayName } from '../../pages/dev/RoleSwitcher';
 import { IconWarning } from '../ui/Icons';
 import { C, F, R, S, T, shadows } from '../../tokens';
 
@@ -18,6 +21,60 @@ const CAMPAIGNS = [
   'ANZ Retargeting',
   'Global Partner Enablement',
 ];
+
+// ── Breadcrumb from pathname ───────────────────
+function Breadcrumb() {
+  const location = useLocation();
+  const path = location.pathname.replace(/^\//, '') || 'dashboard';
+  const segments = path.split('/').filter(Boolean);
+  const labels = {
+    '': 'Dashboard',
+    campaigns: 'Campaigns',
+    agents: 'Agents',
+    content: 'Content',
+    knowledge: 'Knowledge base',
+    inbox: 'Company Social Inbox',
+    analytics: 'Analytics',
+    meta: 'Meta Ads Monitor',
+    escalations: 'Escalations',
+    querymanager: 'Team Query',
+    'notification-center': 'Notifications',
+    research: 'Research',
+    icp: 'ICP Builder',
+    intent: 'Intent Signals',
+    competitive: 'Competitive Intel',
+    abm: 'ABM Engine',
+    playbooks: 'Playbooks',
+    revenue: 'Revenue',
+    pipeline: 'Pipeline',
+    forecast: 'Forecast',
+    customers: 'Customer Success',
+    'customer-success': 'Customer Success',
+    settings: 'Settings',
+    aria: 'ARIA',
+    billing: 'Billing',
+    team: 'Team',
+    whitelabel: 'White-Label',
+    dev: 'Dev',
+    roles: 'Role Switcher',
+    new: 'New',
+    upgrade: 'Upgrade',
+  };
+  const title = segments.length > 0
+    ? (labels[segments[segments.length - 1]] ?? segments[segments.length - 1])
+    : 'Dashboard';
+  return (
+    <span style={{
+      fontFamily: F.body,
+      fontSize: '13px',
+      fontWeight: 500,
+      color: C.textSecondary,
+      textTransform: 'capitalize',
+    }}>
+      {title}
+    </span>
+  );
+}
 
 // ── Campaign selector ─────────────────────────
 function CampaignSelector() {
@@ -109,17 +166,28 @@ function CampaignSelector() {
   );
 }
 
-// ── Avatar / Role badge ───────────────────────
+// ── Mock user accounts (switch account) ───────
+const MOCK_ACCOUNTS = [
+  { id: 'main', label: 'Asif', email: 'asif@nexara.demo', current: true },
+  { id: 'work', label: 'Work account', email: 'asif.work@company.com', current: false },
+  { id: 'personal', label: 'Personal', email: 'asif.personal@gmail.com', current: false },
+];
+
+// ── Avatar / Account dropdown ─────────────────
 function AvatarButton() {
   const currentRole = useStore((s) => s.currentRole);
+  const logout = useStore((s) => s.logout);
   const navigate = useNavigate();
+  const toast = useToast();
+  const [open, setOpen] = useState(false);
+  const isDev = typeof import.meta !== 'undefined' && import.meta.env?.DEV === true;
 
   const avatarStyle = {
     width: '32px',
     height: '32px',
     borderRadius: '50%',
     backgroundColor: C.surface3,
-    border: `2px solid ${C.primary}`,
+    border: `2px solid ${open ? C.primary : C.border}`,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -132,8 +200,48 @@ function AvatarButton() {
     transition: T.base,
   };
 
+  const dropdownStyle = {
+    position: 'absolute',
+    top: 'calc(100% + 8px)',
+    right: 0,
+    minWidth: '240px',
+    backgroundColor: C.surface2,
+    border: `1px solid ${C.border}`,
+    borderRadius: R.card,
+    boxShadow: shadows.dropdown,
+    zIndex: 200,
+    overflow: 'hidden',
+    padding: `${S[2]} 0`,
+  };
+
+  const itemStyle = (active) => ({
+    display: 'flex',
+    alignItems: 'center',
+    gap: S[3],
+    width: '100%',
+    padding: `${S[2]} ${S[4]}`,
+    border: 'none',
+    background: active ? C.primaryGlow : 'transparent',
+    color: active ? C.primary : C.textPrimary,
+    fontFamily: F.body,
+    fontSize: '13px',
+    cursor: 'pointer',
+    textAlign: 'left',
+    transition: T.color,
+  });
+
+  const sectionLabelStyle = {
+    padding: `${S[1]} ${S[4]} ${S[1]}`,
+    fontFamily: F.mono,
+    fontSize: '10px',
+    fontWeight: 700,
+    color: C.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+  };
+
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
+    <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: S[2] }}>
       <span style={{
         fontFamily: F.mono,
         fontSize: '10px',
@@ -146,11 +254,88 @@ function AvatarButton() {
         borderRadius: R.pill,
         padding: `2px ${S[2]}`,
       }}>
-        {currentRole}
+        {getRoleDisplayName(currentRole)}
       </span>
-      <div style={avatarStyle} onClick={() => navigate('/settings')}>
+      <div
+        role="button"
+        tabIndex={0}
+        style={avatarStyle}
+        onClick={() => setOpen((o) => !o)}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen((o) => !o); } }}
+        aria-haspopup="true"
+        aria-expanded={open}
+      >
         NX
       </div>
+
+      {open && (
+        <>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 199 }} onClick={() => setOpen(false)} aria-hidden="true" />
+          <div style={dropdownStyle}>
+            {/* Accounts list */}
+            <div style={sectionLabelStyle}>Accounts</div>
+            {MOCK_ACCOUNTS.map((acc) => (
+              <button
+                key={acc.id}
+                type="button"
+                style={itemStyle(acc.current)}
+                onClick={() => {
+                  if (!acc.current) toast.info(`Switch to ${acc.label} (mock)`);
+                  setOpen(false);
+                }}
+              >
+                <span style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: acc.current ? C.primary : C.surface3, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: F.mono, fontSize: '10px', color: acc.current ? '#070D09' : C.textMuted }}>
+                  {acc.label.slice(0, 1)}
+                </span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 600 }}>{acc.label}{acc.current ? ' (current)' : ''}</div>
+                  <div style={{ fontSize: '11px', color: C.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{acc.email}</div>
+                </div>
+              </button>
+            ))}
+
+            <div style={{ height: 1, backgroundColor: C.border, margin: `${S[2]} 0` }} />
+
+            <button type="button" style={itemStyle()} onClick={() => { navigate('/settings'); setOpen(false); }}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 8.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.5 2.5l1 1M10.5 10.5l1 1M2.5 11.5l1-1M10.5 3.5l1-1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              Settings
+            </button>
+            <button type="button" style={itemStyle()} onClick={() => { toast.info('Accounts (mock)'); setOpen(false); }}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="4" r="2.5" stroke="currentColor" strokeWidth="1.2"/><path d="M1 12c0-2.5 2-4 6-4s6 1.5 6 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              Accounts
+            </button>
+            <button type="button" style={itemStyle()} onClick={() => { navigate('/settings'); setOpen(false); }}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/><path d="M5 6h4M5 8h3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              Manage accounts
+            </button>
+
+            <div style={{ height: 1, backgroundColor: C.border, margin: `${S[2]} 0` }} />
+            <button
+              type="button"
+              style={{ ...itemStyle(), color: C.red }}
+              onClick={() => {
+                setOpen(false);
+                logout();
+                navigate('/login');
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 12H3a1 1 0 01-1-1V3a1 1 0 011-1h2M9 10l3-3-3-3M6 7h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              Sign out
+            </button>
+
+            {isDev && (
+              <>
+                <div style={{ height: 1, backgroundColor: C.border, margin: `${S[2]} 0` }} />
+                <div style={sectionLabelStyle}>Dev</div>
+                <button type="button" style={itemStyle()} onClick={() => { navigate('/dev/roles'); setOpen(false); }}>
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v2M7 10v2M2 7h2M10 7h2M4.5 4.5l1.5 1.5M8 8l1.5 1.5M4.5 9.5l1.5-1.5M8 5l1.5-1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                  Role switching
+                </button>
+              </>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -396,10 +581,12 @@ function LowCreditBanner() {
 // ── TopBar ────────────────────────────────────
 export default function TopBar({ onAriaOpen }) {
   const [notifOpen, setNotifOpen] = useState(false);
+  const navigate = useNavigate();
   const notifications = useStore((s) => s.notifications);
+  const currentRole = useStore((s) => s.currentRole);
   const unread = notifications.filter((n) => !n.read).length;
   const toast = useToast();
-
+  const { expiryWarning } = usePlanAlerts();
   const barStyle = {
     height: '52px',
     backgroundColor: C.surface,
@@ -410,6 +597,30 @@ export default function TopBar({ onAriaOpen }) {
     padding: `0 ${S[6]}`,
     flexShrink: 0,
     gap: S[4],
+  };
+
+  const leftStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: S[4],
+    minWidth: 0,
+  };
+
+  const logoStyle = {
+    fontFamily: F.display,
+    fontSize: '18px',
+    fontWeight: 800,
+    color: C.textPrimary,
+    letterSpacing: '0.06em',
+    textTransform: 'uppercase',
+    flexShrink: 0,
+  };
+
+  const centerStyle = {
+    flex: 1,
+    display: 'flex',
+    justifyContent: 'center',
+    minWidth: 0,
   };
 
   const rightStyle = {
@@ -436,8 +647,16 @@ export default function TopBar({ onAriaOpen }) {
   return (
     <>
       <header style={barStyle}>
-        {/* Left: campaign selector */}
-        <CampaignSelector />
+        {/* Left: logo + client switcher (owner/csm) or campaign selector */}
+        <div style={leftStyle}>
+          <span style={logoStyle}>NEXARA</span>
+          <CampaignSelector />
+        </div>
+
+        {/* Center: breadcrumb */}
+        <div style={centerStyle}>
+          <Breadcrumb />
+        </div>
 
         {/* Right: search, aria, theme, notif, credit chip, divider, avatar */}
         <div style={rightStyle}>
@@ -521,6 +740,21 @@ export default function TopBar({ onAriaOpen }) {
           <AvatarButton />
         </div>
       </header>
+
+      {expiryWarning && (
+        <div style={{ padding: `0 ${S[6]}`, flexShrink: 0 }}>
+          <PlanExpiryWarning
+            kind={expiryWarning.kind}
+            renewDate={expiryWarning.renewDate}
+            amount={expiryWarning.amount}
+            cardLast4={expiryWarning.cardLast4}
+            daysLeft={expiryWarning.daysLeft}
+            compact
+            onReviewPlan={() => navigate('/billing')}
+            onUpdatePayment={() => toast.info('Update payment method (mock)')}
+          />
+        </div>
+      )}
 
       <LowCreditBanner />
     </>

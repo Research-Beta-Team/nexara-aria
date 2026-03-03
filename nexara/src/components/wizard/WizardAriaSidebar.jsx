@@ -10,7 +10,7 @@ const ARIA_CONTENT = {
       { color: C.secondary, text: 'Demand Gen campaigns targeting VP/Director+ titles perform 34% better when deadline is 10+ weeks.' },
       { color: C.amber,     text: 'Budget below $12k limits multi-channel execution. Consider a focused single-channel approach instead.' },
     ],
-    tip: 'Name your campaign with client + market + quarter for easy tracking (e.g., "Acme VN CFO Q2").',
+    tip: 'Name your campaign with client + market + quarter for easy tracking (e.g., "Medglobal VN CFO Q2").',
   },
   2: {
     headline: 'ICP Optimization',

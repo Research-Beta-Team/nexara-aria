@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import useToast from '../../hooks/useToast';
 import { C, F, R, S, btn, sectionHeading } from '../../tokens';
 import { PIPELINE_STAGES, DEALS, getPipelineStats } from '../../data/pipeline';
@@ -23,13 +23,40 @@ const FORECAST_CHART_DATA = [
   { month: 'Mar 2026', closedWon: 100, likely: 185, atRisk: 35 },
 ];
 
+const STAGE_PROBABILITY = {
+  IQL: 5, MQL: 15, SQL: 25, 'Demo Booked': 40, 'Proposal Sent': 55,
+  Negotiation: 70, 'Closed Won': 100, 'Closed Lost': 0,
+};
+
 export default function PipelineManager() {
   const [view, setView] = useState('kanban');
   const [selectedDeal, setSelectedDeal] = useState(null);
+  const [deals, setDeals] = useState(() => [...DEALS]);
   const toast = useToast();
 
-  const stats = useMemo(() => getPipelineStats(DEALS), []);
-  const atRiskDeals = useMemo(() => DEALS.filter((d) => d.health === 'at_risk'), []);
+  const stats = useMemo(() => getPipelineStats(deals), [deals]);
+  const atRiskDeals = useMemo(() => deals.filter((d) => d.health === 'at_risk'), [deals]);
+
+  const handleDealStageChange = useCallback((dealId, newStage) => {
+    setDeals((prev) => {
+      const next = prev.map((d) =>
+        d.id === dealId
+          ? {
+              ...d,
+              stage: newStage,
+              probability: STAGE_PROBABILITY[newStage] ?? d.probability,
+              daysInStage: 0,
+            }
+          : d
+      );
+      return next;
+    });
+    const deal = deals.find((d) => d.id === dealId);
+    if (deal) {
+      setSelectedDeal((s) => (s?.id === dealId ? { ...s, stage: newStage, probability: STAGE_PROBABILITY[newStage] ?? s.probability, daysInStage: 0 } : s));
+      toast.success(`${deal.company} moved to ${newStage}`);
+    }
+  }, [deals, toast]);
 
   return (
     <div style={{ padding: S[6], display: 'flex', flexDirection: 'column', gap: S[5], height: '100%', minHeight: 0 }}>
@@ -64,8 +91,9 @@ export default function PipelineManager() {
             <div style={{ flex: 1, minWidth: 0 }}>
               <KanbanBoard
                 stages={PIPELINE_STAGES}
-                deals={DEALS}
+                deals={deals}
                 onDealClick={setSelectedDeal}
+                onDealStageChange={handleDealStageChange}
               />
             </div>
             {selectedDeal && (
@@ -92,7 +120,7 @@ export default function PipelineManager() {
                   </tr>
                 </thead>
                 <tbody>
-                  {DEALS.map((d) => (
+                  {deals.map((d) => (
                     <tr
                       key={d.id}
                       onClick={() => setSelectedDeal(d)}

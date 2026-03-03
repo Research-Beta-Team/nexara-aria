@@ -332,7 +332,7 @@ export const DEALS = [
   },
   {
     id: 'd13',
-    company: 'Acme Manufacturing',
+    company: 'Medglobal',
     contact: 'Sarah Lee',
     title: 'CFO',
     value: 118000,

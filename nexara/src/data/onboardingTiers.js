@@ -19,7 +19,7 @@ const RECOMMENDATIONS = {
   },
   startup: {
     planId: 'growth',
-    reasons: ['Unlimited campaigns and unified Inbox.', 'Intent Signals and ABM for better targeting.', 'Pipeline and Gantt for execution.'],
+    reasons: ['Unlimited campaigns and Company Social Inbox.', 'Intent Signals and ABM for better targeting.', 'Pipeline and Gantt for execution.'],
   },
   agency: {
     planId: 'growth',

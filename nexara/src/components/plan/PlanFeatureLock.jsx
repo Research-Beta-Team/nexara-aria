@@ -20,7 +20,7 @@ const DISPLAY_NAME_OVERRIDES = {
   metaAdsManagement:    'Meta Ads Management',
   googleAdsManagement:  'Google Ads Management',
   linkedinAdsManagement:'LinkedIn Ads Management',
-  unifiedInbox:         'Unified Inbox',
+  unifiedInbox:         'Company Social Inbox',
   intentSignals:        'Intent Signals',
   competitiveIntel:     'Competitive Intel',
   predictiveForecasting:'Predictive Forecasting',

@@ -4,7 +4,7 @@ import useToast from '../hooks/useToast';
 import { NOTIFICATIONS, NOTIF_TYPES, NOTIF_SEVERITY_COLORS } from '../data/notifications';
 import NotificationItem from '../components/notifications/NotificationItem';
 import { C, F, R, S, T, Z, btn, shadows, flex, scrollbarStyle, sectionHeading } from '../tokens';
-import { NOTIF_TYPE_ICON_MAP } from '../components/ui/Icons';
+import { NOTIF_TYPE_ICON_MAP, IconBell } from '../components/ui/Icons';
 
 // ── Stat card ──────────────────────────────────
 function StatCard({ label, value, color, sublabel }) {
@@ -489,7 +489,7 @@ export default function NotificationCenter() {
               fontFamily: F.body,
               fontSize:   '14px',
             }}>
-              <div style={{ fontSize: '32px', marginBottom: S[3] }}>🔔</div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: S[3] }}><IconBell color={C.textMuted} width={32} height={32} /></div>
               <div style={{ fontWeight: 600, color: C.textSecondary, marginBottom: S[1] }}>No notifications match your filters</div>
               <div style={{ fontSize: '13px' }}>Try removing some filters to see more results</div>
               <button

@@ -2,10 +2,13 @@ import { useState } from 'react';
 import { PLANS, PLAN_ORDER } from '../../config/plans';
 import useStore from '../../store/useStore';
 import usePlan from '../../hooks/usePlan';
+import usePlanAlerts from '../../hooks/usePlanAlerts';
+import useToast from '../../hooks/useToast';
 import PlanCard from '../../components/billing/PlanCard';
 import FeatureMatrix from '../../components/billing/FeatureMatrix';
 import AddonsShop from '../../components/billing/AddonsShop';
 import OutcomePricing from '../../components/billing/OutcomePricing';
+import PlanExpiryWarning from '../../components/plan/PlanExpiryWarning';
 import { C, F, R, S, T } from '../../tokens';
 import { IconCheck } from '../../components/ui/Icons';
 
@@ -96,7 +99,9 @@ function TrustStrip() {
 // ── UpgradePage ───────────────────────────────
 export default function UpgradePage() {
   const [billing, setBilling] = useState('annual');
+  const toast = useToast();
   const { planId: currentPlanId } = usePlan();
+  const { expiryWarning } = usePlanAlerts();
   const onboardingSelectedPlanId = useStore((s) => s.onboardingSelectedPlanId);
 
   return (
@@ -109,6 +114,19 @@ export default function UpgradePage() {
       flexDirection: 'column',
       gap: S[12],
     }}>
+
+      {/* ── Expiry / renewal warning ── */}
+      {expiryWarning && (
+        <PlanExpiryWarning
+          kind={expiryWarning.kind}
+          renewDate={expiryWarning.renewDate}
+          amount={expiryWarning.amount}
+          cardLast4={expiryWarning.cardLast4}
+          daysLeft={expiryWarning.daysLeft}
+          onReviewPlan={() => {}}
+          onUpdatePayment={() => toast.info('Update payment method (mock)')}
+        />
+      )}
 
       {/* ── Page header ── */}
       <div style={{

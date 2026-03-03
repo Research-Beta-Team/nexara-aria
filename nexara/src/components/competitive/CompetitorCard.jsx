@@ -1,4 +1,5 @@
 import { C, F, R, S, btn, badge } from '../../tokens';
+import { IconStar } from '../ui/Icons';
 
 // ── Icons ─────────────────────────────────────
 function CheckIcon() {
@@ -82,7 +83,7 @@ export default function CompetitorCard({ competitor, onViewBattleCard, onViewAds
         <span style={{ ...badge.base, ...badge.muted, fontSize: '10px' }}>{pricingModel}</span>
         <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
           {stars.map((s, i) => (
-            <span key={i} style={{ color: C.amber, fontSize: '12px' }}>★</span>
+            <span key={i} style={{ color: C.amber, display: 'inline-flex' }}><IconStar color={C.amber} width={12} height={12} filled /></span>
           ))}
           <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.textSecondary, marginLeft: '2px' }}>
             {g2Rating} G2

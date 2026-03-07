@@ -13,7 +13,7 @@ export default function ClientWorkspaces() {
         Client Workspaces
       </h1>
       <p style={{ fontFamily: F.body, fontSize: '14px', color: C.textSecondary, marginBottom: S[6] }}>
-        Configure template, modules, agents, and ARIA per client.
+        Configure template, modules, agents, and Freya per client.
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: S[3] }}>

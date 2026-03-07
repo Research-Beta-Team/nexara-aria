@@ -15,7 +15,7 @@ export const MOCK_WEEKLY_BRIEF = {
     {
       id: 'ar2',
       text: 'Reply rate on Email Seq B dropped 40% vs last week — needs investigation',
-      actionLabel: 'Analyze with ARIA',
+      actionLabel: 'Analyze with Freya',
       actionPath: null,
     },
   ],

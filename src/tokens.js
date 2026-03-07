@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  NEXARA Design Tokens
+//  Antarious Design Tokens
 //  All color values resolve from CSS variables
 //  defined in index.css. Switching data-theme
 //  on <html> swaps the full palette instantly.
@@ -23,6 +23,7 @@ export const C = {
   primaryGlow:  'var(--c-primary-glow)',
   secondary:    'var(--c-secondary)',
   secondaryDim: 'var(--c-secondary-dim)',
+  sage:         'var(--c-sage)', // Freya / bridge accent (Antarious guideline)
 
   // Text
   textPrimary:   'var(--c-text-primary)',
@@ -43,20 +44,20 @@ export const C = {
   overlayHeavy: 'var(--c-overlay-heavy)',
 };
 
-// ── Typography ────────────────────────────────
+// ── Typography (Antarious Brand Guidelines) ──
 export const F = {
-  display: "'Syne', sans-serif",
-  body:    "'DM Sans', sans-serif",
+  display: "'Outfit', sans-serif",
+  body:    "'Plus Jakarta Sans', sans-serif",
   mono:    "'JetBrains Mono', monospace",
 };
 
-// ── Border Radius ─────────────────────────────
+// ── Border Radius (Antarious: r-sm 6, r-md 10, r-lg 14, r-xl 20) ──
 export const R = {
   sm:     '6px',
-  md:     '8px',
-  card:   '12px',
-  button: '7px',
-  input:  '8px',
+  md:     '10px',
+  card:   '14px',
+  button: '8px',
+  input:  '10px',
   pill:   '999px',
   full:   '50%',
 };
@@ -377,12 +378,12 @@ export const statLabel = {
   letterSpacing: '0.06em',
 };
 
-// ── Client Portal (light theme — literal hex for /client-portal routes) ──
+// ── Client Portal (light — literal hex for /client-portal) ──
 export const CLIENT_PORTAL_TOKENS = {
-  bg: '#F8FAF9',
+  bg: '#F7F5F0',
   surface: '#FFFFFF',
-  border: '#E2EBE6',
-  primary: '#1A5C35',
-  textPrimary: '#1A2E22',
-  textSecondary: '#4A6B58',
+  border: '#C8DDD8',
+  primary: '#4A7C6F',
+  textPrimary: '#1C2B27',
+  textSecondary: '#5A7168',
 };

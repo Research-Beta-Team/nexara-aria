@@ -40,8 +40,8 @@ const AGENT_LABELS = {
   forecasting: 'Forecasting',
   cs_success: 'Customer Success',
   meeting_intel: 'Meeting Intel',
-  aria_cs: 'ARIA CS',
-  aria_voice: 'ARIA Voice',
+  aria_cs: 'Freya CS',
+  aria_voice: 'Freya Voice',
 };
 
 // Mock existing KB docs
@@ -306,7 +306,7 @@ export default function WizardStep4({ data, onChange, hasFeature, hasAgent, open
             <path d="M4 22h20" stroke={C.textMuted} strokeWidth="1.5" strokeLinecap="round" />
           </svg>
           <div style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary }}>
-            Quick content upload — ARIA will read and tag
+            Quick content upload — Freya will read and tag
           </div>
           <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted, marginTop: '4px' }}>
             PDF, DOCX, CSV, PPTX · max 25 MB
@@ -324,7 +324,7 @@ export default function WizardStep4({ data, onChange, hasFeature, hasAgent, open
           padding: S[4],
         }}>
           <div style={{ fontFamily: F.display, fontSize: '12px', fontWeight: 700, color: C.primary, marginBottom: S[2], textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            ARIA Content Plan Preview
+            Freya Content Plan Preview
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: S[1] }}>
             {[

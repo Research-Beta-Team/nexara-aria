@@ -63,7 +63,7 @@ export default function CohortAnalysis({ cohorts = [], insight = '' }) {
             borderRadius: R.sm,
           }}
         >
-          <div style={{ fontFamily: F.mono, fontSize: '10px', color: C.primary, textTransform: 'uppercase', marginBottom: S[2] }}>ARIA insight</div>
+          <div style={{ fontFamily: F.mono, fontSize: '10px', color: C.primary, textTransform: 'uppercase', marginBottom: S[2] }}>Freya insight</div>
           <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textPrimary, margin: 0, lineHeight: 1.5 }}>{insight}</p>
         </div>
       )}

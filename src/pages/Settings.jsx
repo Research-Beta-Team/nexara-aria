@@ -227,7 +227,7 @@ function WorkspaceSection() {
         {[
           { label: 'Plan', value: 'Growth', highlight: true },
           { label: 'Active Seats', value: '4 / 10' },
-          { label: 'ARIA Agent Limit', value: '12 / 20' },
+          { label: 'Freya Agent Limit', value: '12 / 20' },
           { label: 'Renewal Date', value: 'April 1, 2026' },
         ].map(({ label, value, highlight }, i, arr) => (
           <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: `${S[3]} ${S[5]}`, borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : 'none' }}>
@@ -301,8 +301,8 @@ function AppearanceSection() {
           <div style={{ fontFamily: F.body, fontSize: '11px', fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Typography</div>
         </div>
         {[
-          { label: 'Syne',          role: 'Display / Headings',      sample: 'NEXARA' },
-          { label: 'DM Sans',       role: 'Body / UI Text',          sample: 'Campaign Intelligence' },
+          { label: 'Outfit',       role: 'Display / Headings',      sample: 'ANTARIOUS' },
+          { label: 'Plus Jakarta Sans', role: 'Body / UI Text',          sample: 'Campaign Intelligence' },
           { label: 'JetBrains Mono',role: 'Code / Data / Labels',    sample: '3DDC84 · v1.4 · 94%' },
         ].map(({ label, role, sample }, i, arr) => (
           <div key={label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `${S[3]} ${S[5]}`, borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : 'none' }}>
@@ -310,7 +310,7 @@ function AppearanceSection() {
               <div style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 500, color: C.textPrimary }}>{label}</div>
               <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted }}>{role}</div>
             </div>
-            <div style={{ fontFamily: label === 'JetBrains Mono' ? F.mono : label === 'Syne' ? F.display : F.body, fontSize: '13px', color: C.textSecondary }}>{sample}</div>
+            <div style={{ fontFamily: label === 'JetBrains Mono' ? F.mono : label === 'Outfit' ? F.display : F.body, fontSize: '13px', color: C.textSecondary }}>{sample}</div>
           </div>
         ))}
       </Card>
@@ -336,7 +336,7 @@ function NotificationsSection() {
   };
 
   const NOTIF_ROWS = [
-    { key: 'escalations',     label: 'Escalation Alerts',        desc: 'ARIA escalates a query or output for your review.' },
+    { key: 'escalations',     label: 'Escalation Alerts',        desc: 'Freya escalates a query or output for your review.' },
     { key: 'approvalRequired',label: 'Approval Required',        desc: 'An output requires your approval before publishing.' },
     { key: 'agentStatus',     label: 'Agent Status Changes',     desc: 'An agent goes active, paused, or encounters an error.' },
     { key: 'campaignUpdates', label: 'Campaign Updates',         desc: 'Milestone reached, budget alert, or strategy changes.' },
@@ -386,7 +386,7 @@ function ConnectionsSection() {
         {/* Company website */}
         <div style={{ padding: S[5], borderBottom: `1px solid ${C.border}` }}>
           <div style={{ fontFamily: F.body, fontSize: '14px', fontWeight: 500, color: C.textPrimary, marginBottom: '4px' }}>Company website</div>
-          <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, marginBottom: S[3] }}>We use this for ICP and ARIA context.</div>
+          <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, marginBottom: S[3] }}>We use this for ICP and Freya context.</div>
           {editingWebsite ? (
             <div style={{ display: 'flex', gap: S[2], alignItems: 'center' }}>
               <input

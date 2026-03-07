@@ -544,14 +544,14 @@ export default function ICPDefinitionPanel() {
           gap:             S[2],
         }}>
           <span style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: C.primary, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-            ARIA Commentary
+            Freya Commentary
           </span>
           <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, margin: 0, lineHeight: '1.6' }}>
             {ariaCommentary}
           </p>
           <button
             style={{ ...btn.ghost, fontSize: '11px', color: C.primary, padding: `${S[1]} 0`, justifyContent: 'flex-start' }}
-            onClick={() => toast.info('Opening detailed ARIA analysis…')}
+            onClick={() => toast.info('Opening detailed Freya analysis…')}
           >
             See detailed analysis →
           </button>

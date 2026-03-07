@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  NEXARA — Analytics (client-aware mock)
+//  Antarious — Analytics (client-aware mock)
 // ─────────────────────────────────────────────
 
 const analyticsByClient = {

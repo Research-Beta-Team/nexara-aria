@@ -115,7 +115,7 @@ export default function Onboarding() {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: S[5] }}>
           <div style={{ fontFamily: F.display, fontSize: '24px', fontWeight: 800, color: C.primary, letterSpacing: '-0.02em' }}>
-            NEXARA
+            ANTARIOUS
           </div>
           {stepId !== 'welcome' && stepId !== 'done' && (
             <button
@@ -157,7 +157,7 @@ export default function Onboarding() {
           {stepId === 'welcome' && (
             <>
               <h1 style={{ fontFamily: F.display, fontSize: '22px', fontWeight: 700, color: C.textPrimary, margin: `0 0 ${S[2]} 0` }}>
-                Let's set up NEXARA for you
+                Let's set up Antarious for you
               </h1>
               <p style={{ fontFamily: F.body, fontSize: '14px', color: C.textSecondary, margin: `0 0 ${S[5]} 0`, lineHeight: 1.5 }}>
                 Takes about 2 minutes. You can skip and configure later.
@@ -184,7 +184,7 @@ export default function Onboarding() {
                   onClick={() => navigate('/first-onboarding/aria')}
                   style={{ background: 'none', border: 'none', color: C.primary, cursor: 'pointer', fontWeight: 600, padding: 0, textDecoration: 'underline', textUnderlineOffset: 2 }}
                 >
-                  Or let ARIA build your first campaign →
+                  Or let Freya build your first campaign →
                 </button>
               </p>
             </>
@@ -408,7 +408,7 @@ export default function Onboarding() {
                   Go to Dashboard
                 </button>
                 <button type="button" onClick={handleDoneCreateCampaign} style={{ ...btn.secondary, width: '100%' }}>
-                  Create your first campaign with ARIA
+                  Create your first campaign with Freya
                 </button>
               </div>
             </>
@@ -416,7 +416,7 @@ export default function Onboarding() {
         </div>
 
         <p style={{ textAlign: 'center', fontFamily: F.body, fontSize: '12px', color: C.textMuted, marginTop: S[4] }}>
-          NEXARA · GTM AI OS
+          Antarious · GTM AI OS
         </p>
       </div>
     </div>

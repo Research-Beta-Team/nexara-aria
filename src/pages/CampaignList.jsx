@@ -4,6 +4,7 @@ import useStore from '../store/useStore';
 import usePlan from '../hooks/usePlan';
 import useToast from '../hooks/useToast';
 import { C, F, R, S, T, btn, badge, flex, cardStyle, inputStyle, shadows } from '../tokens';
+import { CHANNEL_COLORS as BRAND_CHANNEL_COLORS } from '../config/channelBrands';
 import { campaigns } from '../data/campaigns';
 import NewCampaignChoice from '../components/campaign/NewCampaignChoice';
 
@@ -16,7 +17,7 @@ const STATUS_BADGE = {
 };
 
 const HEALTH_COLOR = { on_track: C.primary, ahead: C.secondary, at_risk: C.red };
-const CHANNEL_COLORS = { LinkedIn: '#0A66C2', Meta: '#1877F2', Display: '#F5C842', Google: '#4285F4' };
+const CHANNEL_COLORS = { ...BRAND_CHANNEL_COLORS, Display: '#F5C842', Google: '#4285F4' };
 
 // ── Campaign Card ─────────────────────────────
 function CampaignCard({ campaign, onClick }) {

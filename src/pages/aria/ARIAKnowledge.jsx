@@ -54,7 +54,7 @@ export default function ARIAKnowledge() {
         fileType: payload.fileType ?? 'pdf',
       },
     ]);
-    toast.success(`ARIA has learned from ${payload.fileName}. ${payload.factsCount ?? 5} facts extracted.`);
+    toast.success(`Freya has learned from ${payload.fileName}. ${payload.factsCount ?? 5} facts extracted.`);
   }, [toast]);
 
   const handleFactAdded = useCallback((payload) => {
@@ -72,7 +72,7 @@ export default function ARIAKnowledge() {
       ],
     }));
     setAddingFactCategory(null);
-    toast.success("ARIA will remember this from now on.");
+    toast.success("Freya will remember this from now on.");
   }, []);
 
   const handleFactAddedInline = useCallback((categoryId, text) => {
@@ -109,10 +109,10 @@ export default function ARIAKnowledge() {
       <header style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: S[4], marginBottom: S[6], flexWrap: 'wrap' }}>
         <div>
           <h1 style={{ fontFamily: F.display, fontSize: '28px', fontWeight: 700, color: C.textPrimary, margin: 0 }}>
-            ARIA Knowledge Base
+            Freya Knowledge Base
           </h1>
           <p style={{ fontFamily: F.body, fontSize: '14px', color: C.textMuted, margin: `${S[2]} 0 0 0`, maxWidth: 520 }}>
-            Everything ARIA knows about your business. Upload documents or write facts directly — ARIA references this on every interaction.
+            Everything Freya knows about your business. Upload documents or write facts directly — Freya references this on every interaction.
           </p>
         </div>
         <button type="button" style={btn.primary} onClick={() => setModalOpen(true)}>
@@ -146,7 +146,7 @@ export default function ARIAKnowledge() {
               borderRadius: 0,
             }}
           >
-            ARIA's Beliefs
+            Freya's Beliefs
           </button>
         </div>
       </div>
@@ -264,7 +264,7 @@ export default function ARIAKnowledge() {
                           padding: 0,
                         }}
                       >
-                        + Add a rule for ARIA to follow
+                        + Add a rule for Freya to follow
                       </button>
                     )}
                   </div>

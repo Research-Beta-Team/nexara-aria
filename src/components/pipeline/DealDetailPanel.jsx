@@ -90,7 +90,7 @@ export default function DealDetailPanel({ deal, onClose, toast }) {
       <div style={{ padding: S[5], display: 'flex', flexDirection: 'column', gap: S[5] }}>
         <section>
           <h3 style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[2] }}>
-            ARIA Risk Assessment
+            Freya Risk Assessment
           </h3>
           <div style={{ padding: S[3], backgroundColor: C.surface2, border: `1px solid ${C.border}`, borderRadius: R.sm }}>
             <div style={{ fontFamily: F.mono, fontSize: '24px', fontWeight: 700, color: riskColor, marginBottom: S[2] }}>

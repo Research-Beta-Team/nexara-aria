@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Lock, Brain, GitBranch, UserCog } from 'lucide-react';
+import { Lock, Brain, GitBranch, UserCog, FilePenLine, Mail, ArrowRightCircle, Database } from 'lucide-react';
 import useStore from '../../store/useStore';
 import { PLANS } from '../../config/plans';
 import usePlan from '../../hooks/usePlan';
@@ -54,7 +54,7 @@ const FOUNDER_NAV_ITEMS = [
   { label: 'Content Queue', path: '/content', icon: <IconContent /> },
   { label: 'Outreach Pipeline', path: '/campaigns', icon: <IconOutreach /> },
   { label: 'Campaign Health', path: '/analytics', icon: <IconChart /> },
-  { label: 'ARIA', path: null, icon: <IconAria />, openAria: true },
+  { label: 'Freya', path: null, icon: <IconAria />, openAria: true },
 ];
 
 // ── Startup segment: simplified nav for startup companies ──
@@ -66,7 +66,7 @@ const STARTUP_NAV_ITEMS = [
   { label: 'Escalations', path: '/escalations', icon: <IconTasks /> },
   { label: 'Analytics', path: '/analytics', icon: <IconChart /> },
   { label: 'Founders', path: '/team', icon: <IconTasks /> },
-  { label: 'ARIA', path: null, icon: <IconAria />, openAria: true },
+  { label: 'Freya', path: null, icon: <IconAria />, openAria: true },
   { label: 'Settings', path: '/settings', icon: <IconTasks /> },
 ];
 
@@ -332,7 +332,7 @@ const NAV_SECTIONS = [
         label: 'Playbooks',
         path: '/playbooks',
         comingSoon: true,
-        description: 'Pre-built GTM playbooks by vertical and use case. Pick a playbook and ARIA customises it for your context. Launch campaigns in hours with sequences, content, and channels defined.',
+        description: 'Pre-built GTM playbooks by vertical and use case. Pick a playbook and Freya customises it for your context. Launch campaigns in hours with sequences, content, and channels defined.',
         moduleId: 'playbooks',
         icon: (
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -398,6 +398,27 @@ const NAV_SECTIONS = [
             <path d="M2 8h14M6 8v7M12 8v5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
           </svg>
         ),
+      },
+    ],
+  },
+
+  {
+    id: 'crm',
+    dividerBefore: true,
+    label: 'CRM',
+    collapsible: true,
+    items: [
+      {
+        label: 'MQL Handoff Center',
+        path: '/crm/handoff',
+        moduleId: 'crm-handoff',
+        icon: <ArrowRightCircle size={18} strokeWidth={1.5} />,
+      },
+      {
+        label: 'Lead Enrichment',
+        path: '/crm/enrichment',
+        moduleId: 'crm-enrichment',
+        icon: <Database size={18} strokeWidth={1.5} />,
       },
     ],
   },
@@ -475,9 +496,41 @@ const NAV_SECTIONS = [
   },
 
   {
+    id: 'analyticsReports',
+    dividerBefore: true,
+    label: 'ANALYTICS',
+    collapsible: true,
+    items: [
+      {
+        label: 'Attribution',
+        path: '/analytics/attribution',
+        moduleId: 'attribution',
+        icon: <GitBranch size={18} strokeWidth={1.5} />,
+      },
+      {
+        label: 'Executive Digest',
+        path: '/reports/digest',
+        moduleId: 'digest',
+        icon: <Mail size={18} strokeWidth={1.5} />,
+      },
+      {
+        label: 'Board Report',
+        path: '/reports/board',
+        moduleId: 'board-report',
+        icon: (
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <rect x="2" y="2" width="14" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+            <path d="M2 6h14M6 6v6M10 6v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        ),
+      },
+    ],
+  },
+
+  {
     id: 'ariaIntelligence',
     dividerBefore: true,
-    label: 'ARIA INTELLIGENCE',
+    label: 'FREYA INTELLIGENCE',
     collapsible: true,
     items: [
       {
@@ -493,7 +546,7 @@ const NAV_SECTIONS = [
         ),
       },
       {
-        label: 'ARIA Knowledge Base',
+        label: 'Freya Knowledge Base',
         path: '/aria/knowledge',
         icon: <Brain size={18} strokeWidth={1.5} />,
       },
@@ -501,6 +554,16 @@ const NAV_SECTIONS = [
         label: 'Workflow Center',
         path: '/aria/workflows',
         icon: <GitBranch size={18} strokeWidth={1.5} />,
+      },
+      {
+        label: 'Freya Memory',
+        path: '/aria/memory',
+        icon: <Brain size={18} strokeWidth={1.5} />,
+      },
+      {
+        label: 'Campaign Briefer',
+        path: '/campaigns/briefer',
+        icon: <FilePenLine size={18} strokeWidth={1.5} />,
       },
       {
         label: 'Persona Config',
@@ -609,11 +672,11 @@ const NAV_SECTIONS = [
   {
     id: 'aria',
     dividerBefore: true,
-    label: 'ARIA',
+    label: 'Freya',
     collapsible: true,
     items: [
       {
-        label: 'ARIA Intelligence',
+        label: 'Freya Intelligence',
         path: '/aria-brain',
         icon: (
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -646,7 +709,7 @@ function Logo({ collapsed }) {
         alignItems: 'center',
         justifyContent: 'center',
         flexShrink: 0,
-        boxShadow: `0 0 14px rgba(61,220,132,0.35)`,
+        boxShadow: '0 0 14px rgba(74, 124, 111, 0.35)',
       }}>
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
           <path d="M3 15V3L15 15V3" stroke={C.textInverse} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -662,11 +725,11 @@ function Logo({ collapsed }) {
             fontFamily: F.display,
             fontSize: '16px',
             fontWeight: 800,
-            color: C.textPrimary,
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
+            color: C.primary,
+            letterSpacing: '-0.02em',
+            textTransform: 'none',
           }}>
-            nexara
+            Antarious
           </span>
           <span style={{
             fontFamily: F.mono,
@@ -677,7 +740,7 @@ function Logo({ collapsed }) {
             textTransform: 'uppercase',
             marginTop: '2px',
           }}>
-            AI Platform
+            GTM AI OS
           </span>
         </div>
       )}
@@ -1048,7 +1111,7 @@ export default function Sidebar({ onOpenAria }) {
     return i >= 0 ? i : 999;
   };
 
-  const [openSections, setOpenSections] = useState({ research: true, revenue: true, campaigns: true, abmPlaybooks: true, content: true, teamManagement: true, socialMediaAds: true, aria: true, ariaIntelligence: true });
+  const [openSections, setOpenSections] = useState({ research: true, revenue: true, campaigns: true, abmPlaybooks: true, content: true, teamManagement: true, socialMediaAds: true, analyticsReports: true, crm: true, aria: true, ariaIntelligence: true });
 
   const toggleSection = (id) => {
     setOpenSections((prev) => ({ ...prev, [id]: !prev[id] }));

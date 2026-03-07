@@ -145,7 +145,7 @@ export default function FounderDailyBrief({ onTellAria }) {
           onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = C.surface3; e.currentTarget.style.borderColor = C.border; }}
         >
           <IconAria />
-          <span><strong>ARIA:</strong> {MOCK_STATS.ariaInsights}</span>
+          <span><strong>Freya:</strong> {MOCK_STATS.ariaInsights}</span>
         </button>
       </div>
 
@@ -162,7 +162,7 @@ export default function FounderDailyBrief({ onTellAria }) {
           letterSpacing: '0.06em',
           margin: `0 0 ${S[2]}`,
         }}>
-          Today ARIA recommends focusing on:
+          Today Freya recommends focusing on:
         </p>
         <p style={{
           fontFamily: F.body,
@@ -178,7 +178,7 @@ export default function FounderDailyBrief({ onTellAria }) {
           style={{ ...btn.primary, fontSize: '13px' }}
           onClick={handleTellAria}
         >
-          Tell ARIA
+          Tell Freya
         </button>
       </div>
     </div>

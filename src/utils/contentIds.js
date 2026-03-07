@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  NEXARA — Content ID utilities
+//  Antarious — Content ID utilities
 //  Format: CAMP-{campaignId}-{type}-{seq}
 //  e.g. CAMP-001-EMAIL-003, CAMP-001-LI-001
 // ─────────────────────────────────────────────
@@ -62,12 +62,12 @@ export function getContentIdColor(type) {
   const code = (type || '').toUpperCase();
   const raw = (type || '').toLowerCase();
   const colors = {
-    EMAIL:   'var(--c-primary)',      // mint
-    LI:      'var(--c-secondary)',   // teal
-    linkedin:'var(--c-secondary)',
-    AD:      'var(--c-amber)',        // amber
-    meta_ad: 'var(--c-amber)',
-    WA:      '#25D366',               // WhatsApp green
+    EMAIL:   'var(--c-primary)',
+    LI:      '#0A66C2',
+    linkedin:'#0A66C2',
+    AD:      '#1877F2',
+    meta_ad: '#1877F2',
+    WA:      '#25D366',
     whatsapp:'#25D366',
   STRAT:   'var(--c-text-secondary)',
   BRIEF:   'var(--c-text-secondary)',
@@ -75,7 +75,7 @@ export function getContentIdColor(type) {
   BLOG:    'var(--c-amber)',
   SEO:     'var(--c-amber)',
   LP:      'var(--c-secondary)',
-  LINKEDIN:'var(--c-secondary)',
+  LINKEDIN:'#0A66C2',
 };
   return colors[code] || colors[raw] || 'var(--c-text-secondary)';
 }

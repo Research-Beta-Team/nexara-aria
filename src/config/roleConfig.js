@@ -1,5 +1,5 @@
 /**
- * Role-adaptive design: single source of truth for role display, sidebar, ARIA, and access.
+ * Role-adaptive design: single source of truth for role display, sidebar, Freya (co-pilot), and access.
  * Used by Sidebar, AriaPanel, useRoleView, and RoleSwitcher.
  */
 
@@ -153,7 +153,7 @@ export function getAssignedClients(roleId) {
 }
 
 // ── Sidebar: which section ids to show per role ──
-const FULL_SIDEBAR_SECTIONS = ['core', 'ops', 'teamManagement', 'research', 'campaigns', 'abmPlaybooks', 'revenue', 'content', 'socialMediaAds', 'ariaIntelligence', 'admin', 'aria'];
+const FULL_SIDEBAR_SECTIONS = ['core', 'ops', 'teamManagement', 'research', 'campaigns', 'abmPlaybooks', 'revenue', 'crm', 'content', 'socialMediaAds', 'analyticsReports', 'ariaIntelligence', 'admin', 'aria'];
 
 export function getSidebarSections(roleId) {
   if (roleId === 'founder') return 'founder'; // special: FOUNDER_NAV_ITEMS
@@ -162,11 +162,11 @@ export function getSidebarSections(roleId) {
   if (variant === 'full') return FULL_SIDEBAR_SECTIONS;
   const map = {
     client: ['core', 'content', 'admin'],
-    sdr: ['core', 'ops', 'teamManagement', 'campaigns', 'admin'],
-    csm: ['core', 'revenue', 'content', 'admin'],
+    sdr: ['core', 'ops', 'teamManagement', 'campaigns', 'crm', 'admin'],
+    csm: ['core', 'revenue', 'crm', 'content', 'admin'],
     mediaBuyer: ['core', 'ops', 'teamManagement', 'revenue', 'content', 'socialMediaAds', 'admin'],
     contentStrategist: ['core', 'content', 'ariaIntelligence', 'admin'],
-    analyst: ['core', 'ops', 'teamManagement', 'research', 'revenue', 'admin'],
+    analyst: ['core', 'ops', 'teamManagement', 'research', 'revenue', 'analyticsReports', 'admin'],
   };
   return map[variant] ?? FULL_SIDEBAR_SECTIONS;
 }

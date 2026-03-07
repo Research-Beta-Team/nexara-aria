@@ -157,7 +157,9 @@ export class ARIAEngine {
       ...context,
       creditsRemaining: context.creditsRemaining ?? 25000,
     });
-    const systemPrompt = buildSystemPrompt(ariaMemory.buildContextForSystemPrompt());
+    const baseContext = ariaMemory.buildContextForSystemPrompt();
+    const fullContext = { ...baseContext, persistentMemory: context?.persistentMemory };
+    const systemPrompt = buildSystemPrompt(fullContext);
     const history = ariaMemory.getHistory();
     const messages = history.map((m) => ({
       role: m.role,

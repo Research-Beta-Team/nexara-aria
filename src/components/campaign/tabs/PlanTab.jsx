@@ -583,7 +583,7 @@ export default function PlanTab({ setTab }) {
     setTimeout(() => {
       setPlanType(typeId);
       setAriaModifying(false);
-      toast.success('ARIA has updated the plan.');
+      toast.success('Freya has updated the plan.');
     }, 1200);
   };
 
@@ -680,7 +680,7 @@ export default function PlanTab({ setTab }) {
 
         <div>
           <div style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.textSecondary, marginBottom: S[2] }}>
-            Plan type — modify and ARIA will update the plan
+            Plan type — modify and Freya will update the plan
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: S[2] }}>
             {PLAN_TYPES.map((t) => (
@@ -709,7 +709,7 @@ export default function PlanTab({ setTab }) {
           </div>
           {ariaModifying && (
             <p style={{ fontFamily: F.body, fontSize: '12px', color: C.primary, marginTop: S[2], marginBottom: 0 }}>
-              ARIA is updating the plan…
+              Freya is updating the plan…
             </p>
           )}
         </div>

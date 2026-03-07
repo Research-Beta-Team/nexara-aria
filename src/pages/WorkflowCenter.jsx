@@ -20,7 +20,7 @@ export default function WorkflowCenter() {
         Workflow Center
       </div>
       <div style={{ fontFamily: F.body, fontSize: '14px', color: C.textSecondary, textAlign: 'center', maxWidth: '360px' }}>
-        Manage ARIA workflows and automation. Coming soon.
+        Manage Freya workflows and automation. Coming soon.
       </div>
     </div>
   );

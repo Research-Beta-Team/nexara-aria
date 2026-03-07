@@ -78,7 +78,7 @@ export default function WhiteLabelConfig() {
             White-Label Configuration
           </h1>
           <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: 0 }}>
-            Rebrand NEXARA as your own platform. Your logo, your domain, your AI assistant name.
+            Rebrand Antarious as your own platform. Your logo, your domain, your AI assistant name.
           </p>
 
           <div style={{ marginTop: S[6], display: 'flex', flexDirection: 'column', gap: S[6] }}>
@@ -97,7 +97,7 @@ export default function WhiteLabelConfig() {
                   />
                 </div>
                 <div>
-                  <label style={labelStyle}>ARIA name (AI assistant)</label>
+                  <label style={labelStyle}>Freya name (AI assistant)</label>
                   <input
                     type="text"
                     value={config.ariaName}
@@ -258,7 +258,7 @@ export default function WhiteLabelConfig() {
                   <div style={{ display: 'flex', gap: S[4], alignItems: 'center' }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: S[2], fontFamily: F.body, fontSize: '13px', color: C.textPrimary, cursor: 'pointer' }}>
                       <input type="radio" name="poweredBy" checked={config.poweredByVisible} onChange={() => update('poweredByVisible', true)} />
-                      Show "Powered by NEXARA"
+                      Show "Powered by Antarious"
                     </label>
                     <label style={{ display: 'flex', alignItems: 'center', gap: S[2], fontFamily: F.body, fontSize: '13px', color: C.textPrimary, cursor: 'pointer' }}>
                       <input type="radio" name="poweredBy" checked={!config.poweredByVisible} onChange={() => update('poweredByVisible', false)} />

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXARA — Client Acquisition Cost (CAC)</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.5; max-width: 780px; margin: 2em auto; padding: 0 1em; }
+    h1 { font-size: 1.4em; border-bottom: 1px solid #ccc; padding-bottom: 0.25em; }
+    h2 { font-size: 1.15em; margin-top: 1.25em; }
+    table { border-collapse: collapse; width: 100%; margin: 0.75em 0; font-size: 0.95em; }
+    th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+    th { background: #f5f5f5; }
+    ul { margin: 0.5em 0; padding-left: 1.5em; }
+    p { margin: 0.5em 0; }
+    .meta { color: #666; font-size: 0.95em; margin-bottom: 1em; }
+    .formula { font-family: 'Courier New', monospace; background: #f5f5f5; padding: 0.25em 0.5em; }
+  </style>
+</head>
+<body>
+
+<h1>NEXARA — Client Acquisition Cost (CAC)</h1>
+<p class="meta"><strong>Version:</strong> 1.0 (Model) &nbsp;|&nbsp; <strong>Audience:</strong> CTO, Finance, Board, Marketing</p>
+<p>This document defines and models <strong>customer acquisition cost (CAC)</strong> for NEXARA: what it includes, how it's calculated, and how it evolves as the business scales.</p>
+
+<h2>1. Definition</h2>
+<p><strong>CAC (Customer Acquisition Cost)</strong> = total spend to acquire one new paying customer.</p>
+<ul>
+  <li><strong>Numerator:</strong> Sales &amp; Marketing (S&amp;M) spend: salaries (sales, marketing, SDRs), paid acquisition (ads, events, content), tools (CRM, attribution), and other acquisition-related costs.</li>
+  <li><strong>Denominator:</strong> New paying customers in the same period (net new + replacements for churn, or gross new — define consistently).</li>
+</ul>
+<p><strong>Formula:</strong> <span class="formula">CAC = S&amp;M spend (period) ÷ New customers acquired (period)</span></p>
+
+<h2>2. S&amp;M Spend and CAC (from Financial Projection)</h2>
+<table>
+  <tr><th>Year</th><th>S&amp;M ($K)</th><th>New customers (approx.)</th><th>CAC ($)</th></tr>
+  <tr><td>Y1</td><td>380</td><td>80 (launch year)</td><td><strong>~4,750</strong></td></tr>
+  <tr><td>Y2</td><td>680</td><td>140 net new</td><td><strong>~3,090</strong>*</td></tr>
+  <tr><td>Y3</td><td>1,080</td><td>260 net new</td><td><strong>~2,250</strong></td></tr>
+  <tr><td>Y4</td><td>1,400</td><td>340 net new</td><td><strong>~1,707</strong></td></tr>
+  <tr><td>Y5</td><td>1,720</td><td>380 net new</td><td><strong>~1,433</strong></td></tr>
+</table>
+<p>* Target CAC in model assumes improving efficiency over time (conversion, self-serve, brand).</p>
+<p><strong>Blended CAC (model):</strong> <strong>~$1,400–$4,800</strong> per new customer depending on year and channel mix.</p>
+
+<h2>3. What Drives Acquisition Cost</h2>
+<table>
+  <tr><th>Component</th><th>Typical share of S&amp;M</th><th>Notes</th></tr>
+  <tr><td>Sales (salaries, commissions)</td><td>40–60%</td><td>AE/CSM time, demos, proposals; higher for Growth/Scale/Agency.</td></tr>
+  <tr><td>Paid acquisition (ads, sponsorships)</td><td>20–35%</td><td>LinkedIn, Google, events, content; cost per lead then per customer.</td></tr>
+  <tr><td>Marketing (content, brand, tools)</td><td>15–25%</td><td>Website, content, CRM, attribution, marketing automation.</td></tr>
+  <tr><td>Other (events, partnerships)</td><td>5–15%</td><td>Webinars, conferences, partner referrals.</td></tr>
+</table>
+<p>Early years (Y1–Y2): more sales-led, higher CAC. As product and brand mature, more self-serve and inbound can lower blended CAC.</p>
+
+<h2>4. CAC by Plan (Directional)</h2>
+<table>
+  <tr><th>Plan</th><th>Relative CAC</th><th>Notes</th></tr>
+  <tr><td><strong>Starter</strong></td><td>Lowest</td><td>Self-serve signup, trial, or light-touch sales; target CAC &lt; $1,000.</td></tr>
+  <tr><td><strong>Growth</strong></td><td>Medium</td><td>Inbound + some outbound; demos and follow-up; target CAC $1,500–3,000.</td></tr>
+  <tr><td><strong>Scale</strong></td><td>Higher</td><td>Multi-threaded sales, security/review, longer cycle; target CAC $3,000–6,000.</td></tr>
+  <tr><td><strong>Agency</strong></td><td>Highest</td><td>Enterprise-style sales, procurement, dedicated CSM intro; target CAC $5,000–15,000+.</td></tr>
+</table>
+
+<h2>5. Payback and LTV:CAC</h2>
+<ul>
+  <li><strong>Payback (months)</strong> = CAC ÷ Gross margin per customer per month. Example: CAC $3,000, gross margin/customer/mo $500 → payback = 6 months.</li>
+  <li><strong>LTV:CAC</strong> = LTV (e.g. gross margin × 36 months) ÷ CAC. From financial projection: LTV:CAC improves from <strong>3.7x (Y1)</strong> to <strong>21.8x (Y5)</strong>.</li>
+</ul>
+<p><strong>Target:</strong> Payback &lt; 18 months; LTV:CAC &gt; 3x (healthy SaaS). NEXARA model has LTV:CAC &gt; 3x from Y1.</p>
+
+<h2>6. Levers to Improve CAC</h2>
+<ul>
+  <li><strong>Self-serve and product-led growth:</strong> Free trial or freemium → signup → upgrade; reduces cost per acquired Starter/Growth.</li>
+  <li><strong>Inbound and brand:</strong> SEO, content, community; lower cost per lead and per customer over time.</li>
+  <li><strong>Conversion rate:</strong> Improve signup→trial→paid to get more customers from same S&amp;M spend.</li>
+  <li><strong>Channel mix:</strong> Shift toward channels with lower cost per customer (referrals, partners, organic).</li>
+  <li><strong>Sales efficiency:</strong> Shorter cycles, higher win rate, clear qualification for higher-tier plans.</li>
+</ul>
+
+<h2>7. Summary for Board</h2>
+<ul>
+  <li><strong>CAC</strong> = S&amp;M spend ÷ new customers; model uses <strong>~$1,400–$4,800</strong> per customer (blended) by year.</li>
+  <li><strong>Components:</strong> Sales, paid acquisition, marketing, events; early years more sales-led, then more efficient.</li>
+  <li><strong>By plan:</strong> Starter lowest (self-serve), Agency highest (enterprise sales); track by plan and channel when possible.</li>
+  <li><strong>Unit economics:</strong> Payback and LTV:CAC stay healthy in the projection; monitor CAC and conversion as you scale.</li>
+</ul>
+<p><em>Replace S&amp;M and new-customer counts with actuals and refine CAC by plan and channel as data becomes available.</em></p>
+
+</body>
+</html>

@@ -30,7 +30,7 @@ export const INIT_ACTIVE = [
     status: 'pending',
     situation: 'CFO Nguyen Minh Duc at Dragon Capital responded to touch-3 email with: "Remove me from your list immediately. If I receive another email I will report this to my legal team." Dragon Capital is a top-tier prospect (lead score 94).',
     recommendation: 'Immediately suppress Nguyen Minh Duc and all Dragon Capital contacts from outreach. Send a one-time apology email from account owner. Do not remove from CRM — flag as "Do Not Contact" with date and reason.',
-    reasoning: `Compliance risk assessment: CRITICAL\n\n• Legal threat received — immediate suppression mandatory\n• Vietnam Personal Data Protection Decree (PDPD) Article 11: opt-out must be honored within 24 hours\n• Dragon Capital has 3 other active contacts in pipeline — suppression should be targeted to this individual only unless company-wide opt-out is explicitly stated\n\nRecommended template:\nSubject: Removing you from our list — apology\n"Hi [name], I've removed you from all NEXARA communications immediately. I apologize for the inconvenience..."`,
+    reasoning: `Compliance risk assessment: CRITICAL\n\n• Legal threat received — immediate suppression mandatory\n• Vietnam Personal Data Protection Decree (PDPD) Article 11: opt-out must be honored within 24 hours\n• Dragon Capital has 3 other active contacts in pipeline — suppression should be targeted to this individual only unless company-wide opt-out is explicitly stated\n\nRecommended template:\nSubject: Removing you from our list — apology\n"Hi [name], I've removed you from all Antarious communications immediately. I apologize for the inconvenience..."`,
   },
   {
     id: 'e3',
@@ -42,8 +42,8 @@ export const INIT_ACTIVE = [
     confidence: 71,
     timing: 'Respond within 48 hrs',
     status: 'pending',
-    situation: 'LinkedIn ad variant A ("10× Campaign Velocity") has 2.4% CTR vs variant B ("Let ARIA Execute") at 2.1% CTR. After 4,200 impressions each, the difference is not statistically significant at 95% confidence (p=0.18). Campaign needs a winner to scale budget.',
-    recommendation: 'Run a third variant C combining elements of both ("10× velocity, executed by ARIA") for 3 more days. If no winner by Day 15, default to variant A as frontrunner and scale by 40%.',
+    situation: 'LinkedIn ad variant A ("10× Campaign Velocity") has 2.4% CTR vs variant B ("Let Freya Execute") at 2.1% CTR. After 4,200 impressions each, the difference is not statistically significant at 95% confidence (p=0.18). Campaign needs a winner to scale budget.',
+    recommendation: 'Run a third variant C combining elements of both ("10× velocity, executed by Freya") for 3 more days. If no winner by Day 15, default to variant A as frontrunner and scale by 40%.',
     reasoning: `Statistical analysis:\n• Variant A: 101 clicks / 4,200 impressions = 2.405% CTR\n• Variant B: 88 clicks / 4,200 impressions = 2.095% CTR\n• Required significance: p < 0.05 | Current p-value: 0.18\n• Minimum detectable effect at 80% power: 0.5% CTR\n\nOptions ranked by expected outcome:\n1. Variant C (hybrid) — highest upside, 3-day delay\n2. Default to A — conservative, low regret decision\n3. Extend test — requires 2,400 more impressions, 5-day delay`,
   },
   // ─── Dual-approval: Reallocate $800 Meta → LinkedIn (both pending)
@@ -58,7 +58,7 @@ export const INIT_ACTIVE = [
     timing: 'Respond within 4 hrs',
     status: 'pending',
     situation: 'CPL on Meta Set 3 is 18% above target. LinkedIn is performing 12% below CPL target with room to scale. Reallocating $800 from Meta to LinkedIn is expected to improve blended CPL.',
-    recommendation: 'ARIA recommends: Approve — CPL is 18% below target on LinkedIn, reallocating $800 will likely improve performance.',
+    recommendation: 'Freya recommends: Approve — CPL is 18% below target on LinkedIn, reallocating $800 will likely improve performance.',
     reasoning: 'Meta Set 3 CPL $212 vs target $180. LinkedIn CPL $164 vs target $185. Reallocation keeps total campaign budget unchanged.',
     budgetApprovalRequired: true,
     budgetAmount: 800,
@@ -72,7 +72,7 @@ export const INIT_ACTIVE = [
       changeLabel: '+$800 to LinkedIn',
       newTotal: 5800,
     },
-    ariaRecommendation: 'ARIA recommends: Approve — CPL is 18% below target, reallocating $800 to LinkedIn will likely improve performance.',
+    ariaRecommendation: 'Freya recommends: Approve — CPL is 18% below target, reallocating $800 to LinkedIn will likely improve performance.',
   },
   // ─── Dual-approval: Increase Meta budget $2K → $2.8K (strategy approved, budget pending)
   {
@@ -100,7 +100,7 @@ export const INIT_ACTIVE = [
       changeLabel: '+$800 increase',
       newTotal: 2800,
     },
-    ariaRecommendation: 'ARIA recommends: Approve — ROAS is above target, scale is justified.',
+    ariaRecommendation: 'Freya recommends: Approve — ROAS is above target, scale is justified.',
   },
   // ─── Dual-approval: New ABM campaign BGMEA $1,500 (both pending)
   {
@@ -128,7 +128,7 @@ export const INIT_ACTIVE = [
       changeLabel: 'New campaign $1,500/mo',
       newTotal: 1500,
     },
-    ariaRecommendation: 'ARIA recommends: Approve — segment shows strong intent; pilot budget is appropriate for test.',
+    ariaRecommendation: 'Freya recommends: Approve — segment shows strong intent; pilot budget is appropriate for test.',
   },
   {
     id: 'e4',
@@ -140,9 +140,9 @@ export const INIT_ACTIVE = [
     confidence: 85,
     timing: 'Respond within 24 hrs',
     status: 'pending',
-    situation: 'Helen Tan, VP People at SEA Tech (lead score 88) replied to touch-2: "This looks interesting. Can someone from your team reach out for a demo?" This is a qualified inbound signal. ARIA\'s reply handler is configured for objection handling only, not demo booking.',
-    recommendation: 'Approve ARIA to send a demo scheduling email with Calendly link. Alternatively, assign to human AE for personal outreach within 2 hours.',
-    reasoning: `Lead qualification:\n• Helen Tan, VP People, SEA Tech\n• Company: 800 employees, $45M revenue, Series C\n• Lead score: 88 (threshold for demo: 70)\n• Engagement: opened 3/3 emails, clicked product link twice\n\nSLA risk: Demo intent replies should be followed up within 2 hours for optimal conversion. Current time since reply: 47 minutes.\n\nARIA can handle scheduling if approved — estimated booking probability 62% based on historical data.`,
+    situation: 'Helen Tan, VP People at SEA Tech (lead score 88) replied to touch-2: "This looks interesting. Can someone from your team reach out for a demo?" This is a qualified inbound signal. Freya\'s reply handler is configured for objection handling only, not demo booking.',
+    recommendation: 'Approve Freya to send a demo scheduling email with Calendly link. Alternatively, assign to human AE for personal outreach within 2 hours.',
+    reasoning: `Lead qualification:\n• Helen Tan, VP People, SEA Tech\n• Company: 800 employees, $45M revenue, Series C\n• Lead score: 88 (threshold for demo: 70)\n• Engagement: opened 3/3 emails, clicked product link twice\n\nSLA risk: Demo intent replies should be followed up within 2 hours for optimal conversion. Current time since reply: 47 minutes.\n\nFreya can handle scheduling if approved — estimated booking probability 62% based on historical data.`,
   },
   {
     id: 'e5',
@@ -155,7 +155,7 @@ export const INIT_ACTIVE = [
     timing: 'Respond within 24 hrs',
     status: 'pending',
     situation: 'Email touch-4 "CFO Case Study" has been in "Pending Approval" status for 72 hours. This is blocking the email sequence from advancing for 47 prospects who are due for touch-4. Without approval, the sequence will fall behind cadence.',
-    recommendation: 'Approve touch-4 email as-is (brand score 91, no compliance issues detected). Or, send a reminder to the approver. ARIA can auto-approve if no response in 24 hours if you grant standing approval for brand score >85.',
+    recommendation: 'Approve touch-4 email as-is (brand score 91, no compliance issues detected). Or, send a reminder to the approver. Freya can auto-approve if no response in 24 hours if you grant standing approval for brand score >85.',
     reasoning: `Content review:\n• Brand score: 91/100 ✓\n• Compliance check: passed ✓\n• Spam score: 2.1/10 (low) ✓\n• Personalization tokens: validated ✓\n\nImpact of continued delay:\n• 47 prospects overdue for touch-4\n• Average sequence completion drops 18% per day of delay\n• Estimated MQL loss: 2–3 if not sent by tomorrow`,
   },
   {
@@ -169,7 +169,7 @@ export const INIT_ACTIVE = [
     timing: 'No urgency',
     status: 'pending',
     situation: 'Weekly performance digest for W7 2025 is ready. All 3 active campaigns are tracking above target. Medglobal VN CFO Q2: 24 MQLs vs 15 target (160%). APAC Brand: 34% branded search growth vs 40% target (85%). SEA Demand Gen: 8 SQLs vs 10 target (80%).',
-    recommendation: 'Approve and deliver to all campaign stakeholders. ARIA will send via the standard client digest email template.',
+    recommendation: 'Approve and deliver to all campaign stakeholders. Freya will send via the standard client digest email template.',
     reasoning: `Digest contents:\n• Executive summary: 3 campaigns, all green\n• Highlight: Medglobal VN CFO Q2 exceeding MQL target by 60%\n• Watch: SEA Demand Gen SQL rate trailing — recommend ICP refinement\n• Budget: $31,200 of $42,000 total budget consumed (74%)\n\nDelivery list: 4 client contacts + 2 internal stakeholders`,
   },
 ];

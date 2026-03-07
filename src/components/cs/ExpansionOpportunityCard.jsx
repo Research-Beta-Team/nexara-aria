@@ -59,7 +59,7 @@ export default function ExpansionOpportunityCard({ customer, toast }) {
         }}
       >
         <div style={{ fontFamily: F.mono, fontSize: '10px', color: C.secondary, textTransform: 'uppercase', marginBottom: S[2] }}>
-          ARIA upsell recommendation
+          Freya upsell recommendation
         </div>
         <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textPrimary, margin: 0 }}>
           {recommendation}
@@ -67,7 +67,7 @@ export default function ExpansionOpportunityCard({ customer, toast }) {
       </div>
       <button
         style={{ ...btn.primary, fontSize: '13px' }}
-        onClick={() => toast?.info('ARIA is generating your expansion proposal…')}
+        onClick={() => toast?.info('Freya is generating your expansion proposal…')}
       >
         Generate expansion proposal
       </button>

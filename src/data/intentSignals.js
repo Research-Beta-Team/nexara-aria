@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  NEXARA — Intent Signals Mock Data
+//  Antarious — Intent Signals Mock Data
 //  Dark funnel: buying signals before prospects contact us
 // ─────────────────────────────────────────────
 

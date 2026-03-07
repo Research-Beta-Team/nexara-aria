@@ -1,27 +1,14 @@
-# NEXARA GTM AI OS — Claude Code Context
+# Antarious GTM AI OS — Claude Code Context
 
 ## Project Overview
-NEXARA is a dark-mode GTM AI Operating System for marketing agencies. Think: Bloomberg Terminal meets Notion meets a GTM agency dashboard.
+Antarious is a dark-mode GTM AI Operating System for marketing agencies. Think: Bloomberg Terminal meets Notion meets a GTM agency dashboard.
 
-## Design System (NON-NEGOTIABLE — never deviate)
-- Background: #070D09
-- Surface: #0C1510
-- Surface2: #111B14
-- Surface3: #162019
-- Border: #1C2E22
-- Primary accent: #3DDC84 (mint green)
-- Secondary: #5EEAD4 (teal)
-- Text primary: #DFF0E8
-- Text secondary: #6B9478
-- Text muted: #3A5242
-- Red/error: #FF6E7A
-- Amber/warning: #F5C842
-- Font display: 'Syne', sans-serif
-- Font body: 'DM Sans', sans-serif
-- Font mono: 'JetBrains Mono', monospace
-- Card border-radius: 12px
-- Button border-radius: 7px
-- Input border-radius: 8px
+## Design System (Antarious Brand Guidelines v1.1 — never deviate)
+- **Product UI (default dark):** Marketing palette. Background: ink #1C2B27. Surfaces: #2D3F3B, #364a44, #3e554d. Primary: sage #4A7C6F. Secondary: sage-light #6BA396. Borders: sage-border rgba. Text: cream #FAF8F3, secondary #C8DDD8, muted #8B9E98. Text-inverse: ink #1C2B27.
+- **Light theme:** Cream #F7F5F0, surfaces white/FAF8F3/EEF5F3. Primary: sage #4A7C6F. Ink text #1C2B27, #5A7168, #8B9E98. Borders #C8DDD8.
+- **Semantic:** Red #EF4444, Amber #FBBF24, Green #10B981.
+- **Font display:** 'Outfit', sans-serif. **Font body:** 'Plus Jakarta Sans', sans-serif. **Font mono:** 'JetBrains Mono', monospace.
+- **Radius:** sm 6px, md 10px, card 14px, button 8px, input 10px.
 
 ## Tech Stack
 - React 19 with hooks (no class components)
@@ -52,7 +39,7 @@ NEXARA is a dark-mode GTM AI Operating System for marketing agencies. Think: Blo
 
 ## Current Build Stage
 [UPDATE THIS as you build each module]
-Completed: tokens, store, toast, router, layout (AppLayout), sidebar, topbar, dashboard, campaigns (list, detail, all 8 tabs, outreach detail), agents (roster, detail), meta monitor, escalations, analytics, inbox, content library, knowledge base, query manager, notification center, settings, research (ICP builder, competitive intel), ABM engine, vertical playbooks, revenue (pipeline, customer success, forecast engine), ARIA Intelligence (ARIABrain), workspace (white-label config), dev (role switcher), client portal, onboarding, billing/upgrade, login, signup
+Completed: tokens, store, toast, router, layout (AppLayout), sidebar, topbar, dashboard, campaigns (list, detail, all 8 tabs, outreach detail), agents (roster, detail), meta monitor, escalations, analytics, inbox, content library, knowledge base, query manager, notification center, settings, research (ICP builder, competitive intel), ABM engine, vertical playbooks, revenue (pipeline, customer success, forecast engine), ARIA Intelligence (ARIABrain), workspace (white-label config), dev (role switcher), client portal, onboarding, billing/upgrade, login, signup. Gap Mitigation (Sessions 1–8): ARIA Memory, Content Approval, MQL Handoff, Multi-Touch Attribution, Executive Digest, Campaign Briefer, Lead Enrichment, Board Report — all 8 pages implemented.
 In Progress: —
 Not Started: —
 
@@ -87,6 +74,14 @@ Not Started: —
 - `/aria-brain` — ARIA Intelligence
 - `/aria/knowledge` — ARIA Knowledge Base
 - `/aria/workflows` — Workflow Center
+- `/aria/memory` — ARIA Memory Engine (4 namespaces, health score, test chat)
+- `/campaigns/approvals` — Content Approval Workflow (5-stage chain, queue tabs, comments, history)
+- `/campaigns/briefer` — ARIA Campaign Briefer (goal input → generation → brief doc with budget, KPIs, checklist)
+- `/crm/handoff` — MQL Handoff Center (live queue, lead brief, SDR assign, ARIA draft, handoff timeline)
+- `/crm/enrichment` — Lead Enrichment Center (health dash, queue/duplicates/incomplete tabs, intent feed, detail modal)
+- `/analytics/attribution` — Multi-Touch Attribution (5 models, channel chart, deal journey, ARIA insights)
+- `/reports/digest` — Weekly Executive Digest (narrative, 6 KPIs, anomalies, priority actions, schedule config)
+- `/reports/board` — Board Report Generator (configure → generate → preview with slide nav, narrative editor, export PDF/PPTX)
 - `/workspace/whitelabel` — White-Label Config
 - `/whitelabel` — White-Label Config (same page)
 - `/dev/roles` — Role Switcher (dev only)
@@ -117,6 +112,7 @@ Standalone routes: `/client-portal`, `/for_startups` (landing), `/for_startups/o
 - ClientPortal
 - Onboarding
 - ARIAKnowledge, WorkflowCenter, ARIAPersonaConfig (stubs)
+- ARIAMemoryEngine, ContentApprovalWorkflow, MQLHandoffCenter, MultiTouchAttribution, WeeklyExecutiveDigest, ARIACampaignBriefer, LeadEnrichmentCenter, BoardReportGenerator
 - UpgradePage (billing)
 - Login, Signup
 - NotFound, ComingSoon (stubs)
@@ -136,7 +132,7 @@ Standalone routes: `/client-portal`, `/for_startups` (landing), `/for_startups/o
 - Global state: src/store/useStore.js (Zustand)
 
 ## Plan Gate System (T1–T4 Pages)
-Every page that uses gated features must use the NEXARA plan gate system. At the start of each new feature session, apply this pattern.
+Every page that uses gated features must use the Antarious plan gate system. At the start of each new feature session, apply this pattern.
 
 **Imports (top of every new page component):**
 ```js
@@ -178,6 +174,7 @@ const { creditsRemaining, canAffordAction, isLow, isCritical } = useCredits();
 | crossClientAnalytics, subBilling | Agency only |
 
 ## ARIA Configuration
+- **Co-pilot display name:** Freya (per Antarious Brand Guidelines). User-facing copy uses "Freya"; code/keys remain `aria` (e.g. ariaOpening, src/aria/).
 - Anthropic API key: import.meta.env.VITE_ANTHROPIC_API_KEY (optional — demo mode when missing)
 - Model: claude-sonnet-4-20250514
 - ARIA engine: src/aria/ARIAEngine.js (singleton export: aria)
@@ -207,6 +204,32 @@ Use this flow so ARIA has full context and content follows the approval model. I
 ## Content & approval patterns
 - **Content IDs:** Format `CAMP-{campaignId}-{type}-{seq}`; assigned to all generated content (e.g. emails, ads, copy).
 - **Approval states:** Content moves through: `draft` → `in_review` → `revision_requested` → `approved` → `published`.
+
+## New patterns (Gap Mitigation — Sessions 1–8)
+- **Memory context injection:** Persistent ARIA memory (brand, audience, campaigns, performance) in store; `buildSystemPrompt(context)` appends "ARIA MEMORY CONTEXT" when `context.persistentMemory` is passed by callers of `aria.chat()`.
+- **Approval state flow:** Content approval chain `draft` → `legal` → `brand` → `cmo` → `published`; compliance score; comments and history per item; BulkApproveBar for multi-select.
+- **MQL urgency colors:** Mint &lt;1h, amber 1–4h, red/OVERDUE 4h+; handoff metrics (avg handoff time vs target, queue, assigned today, response rate); lead brief + SDR assign + ARIA first-touch draft.
+- **Attribution models:** `first_touch` | `last_touch` | `linear` | `w_shaped` (default) | `time_decay`; channel revenue/pipeline chart; deal journey touchpoint timeline; ARIA insight cards.
+- **Board slides light theme:** Slide canvas uses light background `#F8F9FA`; Antarious app shell stays dark; narrative teal underline for ARIA-generated; export PDF/PPTX prominent.
+- **Enrichment sources:** Clearbit, LinkedIn, Bombora, G2; data quality score ring; completeness bar mint/amber/red; duplicate match fields highlighted; intent feed with optional surge banner.
+- **Memory namespaces:** brand, audience, campaigns, performance (Session 1).
+- **MQL states:** `raw` → `enriched` → `scored` → `mql` → `assigned` → `contacted`.
+
+## Gap Mitigation — Post-build summary
+All 8 CMO-validated gap sessions are implemented. Routes and one-line descriptions:
+
+| Route | Page | Description |
+|-------|------|-------------|
+| `/aria/memory` | ARIAMemoryEngine | ARIA Memory Engine: 4 namespaces, health score, test chat. |
+| `/campaigns/approvals` | ContentApprovalWorkflow | Content Approval: 5-stage chain, queue tabs, comments, history. |
+| `/crm/handoff` | MQLHandoffCenter | MQL Handoff: live queue, lead brief, SDR assign, ARIA draft, handoff timeline. |
+| `/analytics/attribution` | MultiTouchAttribution | Multi-Touch Attribution: 5 models, channel chart, deal journey, ARIA insights. |
+| `/reports/digest` | WeeklyExecutiveDigest | Executive Digest: narrative, 6 KPIs, anomalies, priority actions, schedule config. |
+| `/campaigns/briefer` | ARIACampaignBriefer | Campaign Briefer: goal input → generation → brief with budget, KPIs, checklist. |
+| `/crm/enrichment` | LeadEnrichmentCenter | Lead Enrichment: health dash, queue/duplicates/incomplete tabs, intent feed, detail modal. |
+| `/reports/board` | BoardReportGenerator | Board Report: configure → generate → preview, slide nav, narrative editor, export PDF/PPTX. |
+
+**Gaps closed:** All 8 critical CMO gaps from the Gap Mitigation plan are addressed. Target: CMO readiness score 7.5+/10 (memory, approvals, handoff speed, attribution, digest, briefer, enrichment, board reporting).
 
 ## Role-Adaptive Design
 - Same URL, different experience per role. Eight roles: **owner**, **founder**, **advisor**, **csm**, **mediaBuyer**, **contentStrategist**, **sdr**, **analyst**, **client**.

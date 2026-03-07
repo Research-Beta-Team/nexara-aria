@@ -234,10 +234,10 @@ export default function SignalFeed({ signals = [], onAddToSequence, onViewAccoun
                     style={{ ...btn.ghost, fontSize: '12px', color: C.primary }}
                     onClick={() => {
                       onAskAria?.(signal);
-                      toast?.info('Ask ARIA');
+                      toast?.info('Ask Freya');
                     }}
                   >
-                    Ask ARIA
+                    Ask Freya
                   </button>
                 </div>
               </div>

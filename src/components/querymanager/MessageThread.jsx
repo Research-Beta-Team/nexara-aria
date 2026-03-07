@@ -4,7 +4,7 @@ import { C, F, R, S, shadows } from '../../tokens';
 /* ─── Avatars ─────────────────────────────────────────────── */
 function Avatar({ initials, isAria = false, size = 28 }) {
   if (isAria) return (
-    <div style={{ width: size, height: size, borderRadius: '50%', flexShrink: 0, backgroundColor: C.primaryGlow, border: `1.5px solid rgba(61,220,132,0.4)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ width: size, height: size, borderRadius: '50%', flexShrink: 0, backgroundColor: C.primaryGlow, border: `1.5px solid ${C.primary}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <svg width={size * 0.55} height={size * 0.55} viewBox="0 0 14 14" fill="none">
         <circle cx="7" cy="7" r="6" stroke={C.primary} strokeWidth="1" strokeDasharray="2 1.5"/>
         <circle cx="7" cy="7" r="3" stroke={C.primary} strokeWidth="1"/>
@@ -41,7 +41,7 @@ function AriaMessage({ msg }) {
       <Avatar isAria={true} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', gap: S[2], alignItems: 'baseline', marginBottom: '4px' }}>
-          <span style={{ fontFamily: F.mono, fontSize: '12px', fontWeight: 700, color: C.primary }}>ARIA</span>
+          <span style={{ fontFamily: F.mono, fontSize: '12px', fontWeight: 700, color: C.primary }}>Freya</span>
           <span style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted }}>{msg.time}</span>
         </div>
         <div style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>{msg.body}</div>
@@ -103,7 +103,7 @@ function EscalationCard({ msg }) {
       <Avatar isAria={true} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', gap: S[2], alignItems: 'baseline', marginBottom: '4px' }}>
-          <span style={{ fontFamily: F.mono, fontSize: '12px', fontWeight: 700, color: C.primary }}>ARIA</span>
+          <span style={{ fontFamily: F.mono, fontSize: '12px', fontWeight: 700, color: C.primary }}>Freya</span>
           <span style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted }}>escalation reference · {msg.time}</span>
         </div>
         <div style={{
@@ -224,7 +224,7 @@ export default function MessageThread({ thread, messages, onTaskToggle }) {
             <div style={{ display: 'flex' }}>
               {thread.participants.map((p, i) => (
                 <div key={p} style={{ marginLeft: i > 0 ? '-6px' : 0, zIndex: thread.participants.length - i }}>
-                  {p === 'ARIA' ? (
+                  {p === 'ARIA' || p === 'Freya' ? (
                     <div style={{ width: 26, height: 26, borderRadius: '50%', backgroundColor: C.primaryGlow, border: `2px solid ${C.surface}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                         <circle cx="6" cy="6" r="5" stroke={C.primary} strokeWidth="1" strokeDasharray="2 1.5"/>

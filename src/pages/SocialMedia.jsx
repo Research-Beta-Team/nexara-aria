@@ -21,11 +21,13 @@ import {
 } from '../data/social';
 import ConnectAccountModal from '../components/social/ConnectAccountModal';
 import DisconnectAccountModal from '../components/social/DisconnectAccountModal';
+import { IconLinkedIn, IconFacebook, IconInstagram, IconWhatsApp } from '../components/ui/Icons';
 
 const CHANNEL_COLORS = {
   LinkedIn: C.primary,
   Meta: C.secondary,
   Instagram: C.amber,
+  WhatsApp: '#25D366',
 };
 
 function MetricCard({ label, value, sub, change }) {
@@ -169,20 +171,20 @@ export default function SocialMedia() {
                   width: '36px',
                   height: '36px',
                   borderRadius: R.full,
-                  backgroundColor: C.surface3,
+                  backgroundColor: CHANNEL_COLORS[acc.platform] || C.surface3,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontFamily: F.mono,
-                  fontSize: '14px',
-                  fontWeight: 700,
-                  color: C.primary,
+                  color: '#fff',
                 }}>
-                  {acc.platform.charAt(0)}
+                  {acc.platform === 'LinkedIn' && <IconLinkedIn color="#fff" width={20} height={20} />}
+                  {(acc.platform === 'Meta' || acc.platform === 'Facebook') && <IconFacebook color="#fff" width={20} height={20} />}
+                  {acc.platform === 'Instagram' && <IconInstagram color="#fff" width={20} height={20} />}
+                  {acc.platform === 'WhatsApp' && <IconWhatsApp color="#fff" width={20} height={20} />}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary }}>{acc.name}</div>
-                  <div style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted }}>{acc.platform} · {acc.followers?.toLocaleString()} followers</div>
+                  <div style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted }}>{acc.platform} · {acc.followers != null ? `${acc.followers.toLocaleString()} followers` : 'Business'}</div>
                 </div>
                 <span style={{ ...badge.base, ...badge.green, flexShrink: 0 }}>Connected</span>
                 {canManageSocialAccounts && (

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXARA — Cost Pre-Revenue</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.5; max-width: 760px; margin: 2em auto; padding: 0 1em; }
+    h1 { font-size: 1.4em; border-bottom: 1px solid #ccc; padding-bottom: 0.25em; }
+    h2 { font-size: 1.15em; margin-top: 1.25em; }
+    table { border-collapse: collapse; width: 100%; margin: 0.75em 0; font-size: 0.95em; }
+    th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+    th { background: #f5f5f5; }
+    ul { margin: 0.5em 0; padding-left: 1.5em; }
+    p { margin: 0.5em 0; }
+    .meta { color: #666; font-size: 0.95em; margin-bottom: 1em; }
+  </style>
+</head>
+<body>
+
+<h1>NEXARA — Cost Pre-Revenue</h1>
+<p class="meta"><strong>Version:</strong> 1.0 (Model) &nbsp;|&nbsp; <strong>Audience:</strong> Board, Investors, Finance</p>
+<p>This document estimates <strong>costs before first revenue</strong>: the period from start (or last funding) until first paying customers. No ARIA variable cost from customers; no support for payers. Focus is build, launch, and early go-to-market.</p>
+
+<h2>1. Scope of "Pre-Revenue"</h2>
+<ul>
+  <li><strong>Start:</strong> Incorporation / start of build (or post–seed raise).</li>
+  <li><strong>End:</strong> First paying customer(s) and first MRR.</li>
+  <li><strong>Typical length:</strong> 6–18 months depending on team size and scope (prototype → production → first sales).</li>
+</ul>
+
+<h2>2. Cost Buckets (Pre-Revenue)</h2>
+<p>There is <strong>no cost of revenue</strong> (no ARIA usage from payers, no support for payers, no Stripe on customer payments). Only <strong>operating expenses</strong> and <strong>minimal infra</strong> for dev/staging.</p>
+<p><strong>Developer rate (reference):</strong> <strong>$200–500/month</strong> per developer.</p>
+<table>
+  <tr><th>Category</th><th>What it includes</th><th>Typical monthly (USD)</th></tr>
+  <tr><td><strong>R&D</strong></td><td>Engineering: 2–4 devs × $200–500 each; product/tools if any</td><td>$0.4K–2.5K</td></tr>
+  <tr><td><strong>S&M</strong></td><td>Founder or first sales/marketing, minimal ads, website, tools</td><td>$8K–25K</td></tr>
+  <tr><td><strong>G&A</strong></td><td>Legal, accounting, insurance, office/admin</td><td>$3K–12K</td></tr>
+  <tr><td><strong>Infra</strong></td><td>Hosting (staging/dev), dev tools, optional ARIA for demos</td><td>$0.5K–3K</td></tr>
+  <tr><td><strong>Total burn (monthly)</strong></td><td></td><td><strong>~$12K–43K</strong></td></tr>
+</table>
+<p>No COGS in this phase: ARIA for demos can be capped (e.g. &lt;$500/mo); no customer-driven ARIA or support.</p>
+
+<h2>3. Example Pre-Revenue Budget (12 months)</h2>
+<p>Assumes a <strong>lean build</strong> toward production launch and first customers by month 12. <strong>Developer rate:</strong> $200–500/month per developer. Example: 2–3 devs in first half, 3–4 in second half.</p>
+<table>
+  <tr><th>Category</th><th>Months 1–6 ($K)</th><th>Months 7–12 ($K)</th><th>Full year ($K)</th></tr>
+  <tr><td>R&D</td><td>7 (2–3 devs × $200–500 × 6)</td><td>12 (3–4 devs × $200–500 × 6)</td><td>19</td></tr>
+  <tr><td>S&M</td><td>60</td><td>180</td><td>240</td></tr>
+  <tr><td>G&A</td><td>36</td><td>72</td><td>108</td></tr>
+  <tr><td>Infra</td><td>6</td><td>12</td><td>18</td></tr>
+  <tr><td><strong>Total</strong></td><td><strong>109</strong></td><td><strong>276</strong></td><td><strong>385</strong></td></tr>
+</table>
+<p><strong>Average burn:</strong> ~$32K/month. <strong>If first revenue at month 12:</strong> Pre-revenue total cost ≈ <strong>$385K</strong> (with $200–500/month dev rate).</p>
+
+<h2>4. Runway (Pre-Revenue)</h2>
+<table>
+  <tr><th>Opening cash</th><th>Monthly burn</th><th>Runway (months)</th></tr>
+  <tr><td>$100K</td><td>$15K</td><td>~7</td></tr>
+  <tr><td>$200K</td><td>$25K</td><td>~8</td></tr>
+  <tr><td>$400K</td><td>$32K</td><td>~12</td></tr>
+  <tr><td>$600K</td><td>$35K</td><td>~17</td></tr>
+</table>
+<p><strong>Runway</strong> = Opening cash ÷ Monthly burn. Plan to raise or reach first revenue before runway runs out; buffer 2–3 months for slippage. <em>Burn assumes developer rate $200–500/month and lean S&M/G&A.</em></p>
+
+<h2>5. What Changes at First Revenue</h2>
+<ul>
+  <li><strong>COGS appear:</strong> ARIA per customer, support allocation, infra share (see Cost to Serve 1 Customer).</li>
+  <li><strong>Stripe:</strong> Payment processing on revenue.</li>
+  <li><strong>Support:</strong> Any committed support for early customers.</li>
+</ul>
+<p>Pre-revenue, all cost is OPEX + minimal infra; after first revenue, cost of revenue is added per customer.</p>
+
+<h2>6. Summary for Board</h2>
+<ul>
+  <li><strong>Pre-revenue cost</strong> = R&D + S&M + G&A + minimal infra; <strong>no COGS</strong>.</li>
+  <li><strong>Developer rate:</strong> <strong>$200–500/month</strong> per developer. Typical burn ~$12K–43K/month; example ~$32K/month for a 12-month path with 2–4 devs at this rate.</li>
+  <li><strong>Example total pre-revenue (12 months):</strong> ~$385K (lean build, $200–500/month dev rate).</li>
+  <li><strong>Runway:</strong> Opening cash ÷ monthly burn; e.g. $400K at $32K burn ≈ 12 months.</li>
+</ul>
+<p><em>Adjust team size, monthly rates, and timeline to match your plan.</em></p>
+
+</body>
+</html>

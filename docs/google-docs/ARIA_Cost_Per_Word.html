@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXARA — ARIA Cost per Word (Input &amp; Output)</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; max-width: 720px; margin: 2em auto; padding: 0 1em; }
+    h1 { font-size: 1.35em; border-bottom: 1px solid #ccc; padding-bottom: 0.25em; }
+    h2 { font-size: 1.15em; margin-top: 1.25em; }
+    table { border-collapse: collapse; width: 100%; margin: 0.75em 0; font-size: 0.95em; }
+    th, td { border: 1px solid #ccc; padding: 8px 10px; text-align: left; }
+    th { background: #f5f5f5; }
+    p { margin: 0.6em 0; }
+    .meta { color: #666; font-size: 0.95em; margin-bottom: 1em; }
+    .highlight { background: #f0f8f0; padding: 0.5em 0.75em; border-radius: 6px; margin: 0.75em 0; }
+  </style>
+</head>
+<body>
+
+<h1>NEXARA — ARIA Cost per Word (Input &amp; Output)</h1>
+<p class="meta"><strong>Audience:</strong> Customers, CS, Finance — anyone who wants to know &ldquo;how much does ARIA cost per word?&rdquo;</p>
+
+<h2>1. How ARIA Is Priced (In the App)</h2>
+<p>In NEXARA you pay with <strong>credits</strong>, not per word. Your plan includes a set number of credits each month; each ARIA action (question, content generation, report) uses some credits. So the <strong>cost of using ARIA</strong> for you = your plan price (which covers included credits) + any top-up if you go over.</p>
+<p>This document answers: <strong>what is the underlying cost in words?</strong> — so you can reason in &ldquo;words in&rdquo; and &ldquo;words out&rdquo; instead of tokens.</p>
+
+<h2>2. Where the Cost Comes From</h2>
+<p>ARIA runs on <strong>Claude</strong> (Anthropic). Billing from the provider is <strong>per token</strong>, not per word. We use a standard conversion:</p>
+<ul>
+  <li><strong>1 token &asymp; 0.75 words</strong> (for typical English text).</li>
+</ul>
+<p>So 1,000 words &asymp; about <strong>1,333 tokens</strong>.</p>
+
+<h2>3. Cost per Word (Input vs Output)</h2>
+<p>We use <strong>Claude Sonnet 4</strong>. Example Anthropic pricing (check <a href="https://www.anthropic.com/pricing">Anthropic pricing</a> for current rates):</p>
+<table>
+  <tr><th></th><th>Per 1 million tokens</th><th>Per 1,000 words (&asymp;1,333 tokens)</th></tr>
+  <tr><td><strong>Input</strong> (what you send to ARIA)</td><td>$3.00</td><td><strong>&asymp; $0.004</strong></td></tr>
+  <tr><td><strong>Output</strong> (what ARIA writes back)</td><td>$15.00</td><td><strong>&asymp; $0.02</strong></td></tr>
+</table>
+<p>So:</p>
+<ul>
+  <li><strong>Input:</strong> about <strong>$0.004 per 1,000 words</strong> (half a cent per 1,000 words).</li>
+  <li><strong>Output:</strong> about <strong>$0.02 per 1,000 words</strong> (2 cents per 1,000 words).</li>
+</ul>
+<p>Output costs more than input because generating text is more compute-intensive.</p>
+
+<h2>4. Examples in Words</h2>
+<table>
+  <tr><th>Use case</th><th>Words in (approx)</th><th>Words out (approx)</th><th>Approx. cost (USD)</th></tr>
+  <tr><td>Short question (&ldquo;What&rsquo;s our top channel?&rdquo;)</td><td>~50</td><td>~100</td><td>~$0.002</td></tr>
+  <tr><td>One email or short post</td><td>~200</td><td>~150</td><td>~$0.004</td></tr>
+  <tr><td>Long reply or content piece</td><td>~500</td><td>~400</td><td>~$0.01</td></tr>
+  <tr><td>Full report or weekly brief</td><td>~1,500</td><td>~2,000</td><td>~$0.04</td></tr>
+  <tr><td>Campaign creation with ARIA (full flow)</td><td>~3,000+</td><td>~1,500+</td><td>~$0.08&ndash;0.15</td></tr>
+</table>
+<p>These are <strong>underlying API-style costs</strong> for illustration. Your real experience is in <strong>credits</strong>.</p>
+
+<h2>5. Quick Reference</h2>
+<table>
+  <tr><th>Question</th><th>Answer</th></tr>
+  <tr><td><strong>Cost of using ARIA (for me)?</strong></td><td>Your plan + credits. You don&rsquo;t pay per word in the app.</td></tr>
+  <tr><td><strong>Cost per 1,000 words INPUT?</strong></td><td>About <strong>$0.004</strong> (underlying model cost).</td></tr>
+  <tr><td><strong>Cost per 1,000 words OUTPUT?</strong></td><td>About <strong>$0.02</strong> (underlying model cost).</td></tr>
+  <tr><td><strong>Why &ldquo;words&rdquo; not &ldquo;tokens&rdquo;?</strong></td><td>Billing is per token; we use ~0.75 words per token so you can think in words.</td></tr>
+  <tr><td><strong>Where do these numbers come from?</strong></td><td>Anthropic&rsquo;s Claude Sonnet 4 pricing; confirm at anthropic.com/pricing.</td></tr>
+</table>
+
+<h2>6. For Your Team (Talking to Customers)</h2>
+<ul>
+  <li><strong>&ldquo;How much does ARIA cost?&rdquo;</strong> &rarr; &ldquo;You pay with credits on your plan. In terms of the AI itself: input is about half a cent per 1,000 words, output about 2 cents per 1,000 words.&rdquo;</li>
+  <li><strong>&ldquo;So a 500-word question and 200-word answer?&rdquo;</strong> &rarr; &ldquo;Roughly about one cent or less in underlying cost; in the app that&rsquo;s a small number of credits.&rdquo;</li>
+  <li><strong>&ldquo;Why is output more expensive?&rdquo;</strong> &rarr; &ldquo;Generating text uses more compute than reading it, so the provider charges more for output tokens.&rdquo;</li>
+</ul>
+<p><em>Exact credit rules and top-up prices are in the product and in PRICING_AND_MARGINS.</em></p>
+
+</body>
+</html>

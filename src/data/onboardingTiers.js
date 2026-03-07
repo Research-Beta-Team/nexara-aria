@@ -27,7 +27,7 @@ const RECOMMENDATIONS = {
   },
   enterprise: {
     planId: 'scale',
-    reasons: ['Custom agents and API access.', 'White-label and cross-client analytics.', 'ARIA Voice and dedicated support.'],
+    reasons: ['Custom agents and API access.', 'White-label and cross-client analytics.', 'Freya Voice and dedicated support.'],
   },
 };
 

@@ -88,7 +88,7 @@ function ReadingPhase({ filename }) {
 
       <div style={{ textAlign: 'center' }}>
         <div style={{ fontFamily: F.display, fontSize: '15px', fontWeight: 700, color: C.textPrimary, marginBottom: S[1] }}>
-          ARIA is reading this document
+          Freya is reading this document
         </div>
         <div style={{ fontFamily: F.mono, fontSize: '12px', color: C.textMuted }}>
           {filename}
@@ -129,7 +129,7 @@ function TagConfirmPhase({ file, suggested, onConfirm }) {
           <circle cx="8" cy="11.5" r="0.75" fill={C.primary}/>
         </svg>
         <div>
-          <div style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.primary }}>ARIA suggestions ready</div>
+          <div style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.primary }}>Freya suggestions ready</div>
           <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textSecondary }}>Review and confirm before adding to KB</div>
         </div>
       </div>
@@ -266,7 +266,7 @@ export default function UploadModal({ onClose, onAdded }) {
                 {phase === 'drop' ? 'Upload to Knowledge Base' : phase === 'reading' ? 'Reading Document' : 'Confirm Document Details'}
               </div>
               <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted, marginTop: '2px' }}>
-                {phase === 'drop' ? 'ARIA will extract and tag your content automatically' : phase === 'reading' ? 'ARIA is processing\u2026' : "Review ARIA\u2019s suggestions before saving"}
+                {phase === 'drop' ? 'Freya will extract and tag your content automatically' : phase === 'reading' ? 'Freya is processing\u2026' : "Review Freya's suggestions before saving"}
               </div>
             </div>
             {phase !== 'reading' && (

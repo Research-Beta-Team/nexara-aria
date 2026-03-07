@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  NEXARA — App context (unified for enterprise & startup)
+//  Antarious — App context (unified for enterprise & startup)
 //  No workspace concept: one default layout. Role-based switching unchanged.
 // ─────────────────────────────────────────────
 

@@ -117,7 +117,7 @@ export default function WizardStep7({
           Review & Launch
         </h2>
         <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: 0 }}>
-          Everything looks good? Hit launch and ARIA will deploy your agents.
+          Everything looks good? Hit launch and Freya will deploy your agents.
         </p>
       </div>
 
@@ -167,7 +167,7 @@ export default function WizardStep7({
               <div key={role} style={{ display: 'flex', gap: S[3] }}>
                 <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted, width: '140px', flexShrink: 0 }}>{labels[role]}</span>
                 <span style={{ fontFamily: F.body, fontSize: '12px', color: team[role] ? C.textPrimary : C.textMuted }}>
-                  {team[role] || 'ARIA Agent (auto)'}
+                  {team[role] || 'Freya Agent (auto)'}
                 </span>
               </div>
             );
@@ -265,7 +265,7 @@ export default function WizardStep7({
         <div>
           <div style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.primary }}>Ready to Launch</div>
           <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>
-            ARIA will brief all agents and activate channels within 2–5 minutes of launch.
+            Freya will brief all agents and activate channels within 2–5 minutes of launch.
           </div>
         </div>
       </div>

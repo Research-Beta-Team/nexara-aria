@@ -1,7 +1,7 @@
 import { C, F, R, S } from '../../tokens';
 
 const APPROVAL_GATES = [
-  { id: 'contentApproval',   label: 'Content Approval Gate',       desc: 'All ARIA-generated emails, ads, and copy require human approval before sending.' },
+  { id: 'contentApproval',   label: 'Content Approval Gate',       desc: 'All Freya-generated emails, ads, and copy require human approval before sending.' },
   { id: 'budgetChanges',     label: 'Budget Change Alerts',         desc: 'Notify owner when AI agents propose bid changes exceeding 15%.' },
   { id: 'escalationAlerts',  label: 'Escalation Alerts',            desc: 'Notify owner when CPL exceeds target threshold or anomalies are detected.' },
   { id: 'weeklyReport',      label: 'Weekly Performance Report',    desc: 'Auto-generate a weekly summary report for all assigned team members.' },

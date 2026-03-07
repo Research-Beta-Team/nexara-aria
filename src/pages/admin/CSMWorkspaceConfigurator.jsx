@@ -211,7 +211,7 @@ export default function CSMWorkspaceConfigurator() {
 
           {/* ARIA */}
           <div style={cardStyle}>
-            <label style={labelStyle}>ARIA persona</label>
+            <label style={labelStyle}>Freya persona</label>
             <select
               style={{ ...inputStyle, maxWidth: '240px' }}
               value={persona}
@@ -261,7 +261,7 @@ export default function CSMWorkspaceConfigurator() {
             <div><span style={{ color: C.textMuted, fontSize: '12px' }}>Modules </span><span style={{ fontWeight: 600 }}>{summary.moduleCount}</span></div>
             <div><span style={{ color: C.textMuted, fontSize: '12px' }}>Active agents </span><span style={{ fontWeight: 600 }}>{summary.activeAgentCount}</span></div>
             <div><span style={{ color: C.textMuted, fontSize: '12px' }}>Primary agent </span><span style={{ fontWeight: 600 }}>{summary.primaryAgent}</span></div>
-            <div><span style={{ color: C.textMuted, fontSize: '12px' }}>ARIA persona </span><span style={{ fontWeight: 600 }}>{summary.persona}</span></div>
+            <div><span style={{ color: C.textMuted, fontSize: '12px' }}>Freya persona </span><span style={{ fontWeight: 600 }}>{summary.persona}</span></div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: S[2], marginTop: S[5] }}>
             <button style={{ ...btn.primary, width: '100%' }} onClick={handleSave}>

@@ -18,7 +18,7 @@ const GROUPS = [
     rows: [
       { key: 'credits',          label: 'Agent credits / month',  source: 'credits' },
       { key: 'customAgents',     label: 'Custom agents',          source: 'feature' },
-      { key: 'ariaVoiceMinutes', label: 'ARIA Voice minutes',     source: 'limit' },
+      { key: 'ariaVoiceMinutes', label: 'Freya Voice minutes',     source: 'limit' },
       { key: 'verticalPlaybooks',label: 'Vertical playbooks',     source: 'feature' },
     ],
   },

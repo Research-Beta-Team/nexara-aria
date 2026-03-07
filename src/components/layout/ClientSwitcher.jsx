@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  NEXARA — Client Switcher (owner/csm only)
+//  Antarious — Client Switcher (owner/csm only)
 //  Dropdown: client initial + name + template badge + status dot
 // ─────────────────────────────────────────────
 

@@ -47,7 +47,7 @@ export default function ForStartupsLanding() {
       </div>
 
       <p style={{ textAlign: 'center', fontFamily: F.body, fontSize: '12px', color: C.textMuted, marginTop: S[10] }}>
-        NEXARA · GTM AI OS · For Startups
+        Antarious · GTM AI OS · For Startups
       </p>
     </div>
   );

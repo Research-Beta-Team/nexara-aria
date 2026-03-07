@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  NEXARA — Default layout (enterprise & startup, same design)
+//  Antarious — Default layout (enterprise & startup, same design)
 //  No workspace concept: one unified module list and sidebar order.
 //  Role-based visibility is still applied via roleConfig.
 // ─────────────────────────────────────────────

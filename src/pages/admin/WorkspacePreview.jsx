@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  NEXARA — Workspace Preview (admin "view as client")
+//  Antarious — Workspace Preview (admin "view as client")
 //  Sets store to view as the given client and redirects to dashboard.
 //  Banner and Exit are handled in AppLayout.
 // ─────────────────────────────────────────────

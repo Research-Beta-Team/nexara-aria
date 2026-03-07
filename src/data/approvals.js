@@ -25,7 +25,7 @@ export const APPROVABLE_CONTENT = [
       { reviewerId: 'rev2', status: 'pending' },
     ],
     comments: [
-      { id: 'c1', authorId: 'rev2', body: 'The opening line is too generic. Can ARIA make it more specific to Vietnam textile industry?', timestamp: '2026-02-12T10:00:00', actionTag: 'changes_requested' },
+      { id: 'c1', authorId: 'rev2', body: 'The opening line is too generic. Can Freya make it more specific to Vietnam textile industry?', timestamp: '2026-02-12T10:00:00', actionTag: 'changes_requested' },
       { id: 'c2', authorId: 'aria', body: 'Revised first line to: "Vietnam\'s textile export sector grew 8% last quarter — and your Q1 pricing decisions will determine if that translates to margin." Does this work?', timestamp: '2026-02-12T10:15:00', actionTag: 'replied_to_aria', ariaReply: true },
       { id: 'c3', authorId: 'rev2', body: 'Much better. Approve this version.', timestamp: '2026-02-12T11:00:00', actionTag: 'approved' },
       { id: 'c4', authorId: 'rev1', body: 'Approved ✓', timestamp: '2026-02-12T11:30:00', actionTag: 'approved' },
@@ -47,7 +47,7 @@ export const APPROVABLE_CONTENT = [
     statusUpdatedAt: '2026-02-12',
     reviewers: [{ reviewerId: 'rev2', status: 'changes_requested' }],
     comments: [
-      { id: 'c5', authorId: 'rev2', body: 'Tone feels too salesy. Ask ARIA to soften and add one Vietnam-specific stat.', timestamp: '2026-02-12T09:00:00', actionTag: 'changes_requested' },
+      { id: 'c5', authorId: 'rev2', body: 'Tone feels too salesy. Ask Freya to soften and add one Vietnam-specific stat.', timestamp: '2026-02-12T09:00:00', actionTag: 'changes_requested' },
     ],
     createdAt: '2026-02-11',
     submittedAt: '2026-02-11',

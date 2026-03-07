@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  NEXARA — Client Workspace Profiles (mock)
+//  Antarious — Client Workspace Profiles (mock)
 //  Layer 2: CSM-configured overrides per client
 // ─────────────────────────────────────────────
 

@@ -127,7 +127,7 @@ export default function PositioningRadar({ dimensions, scores, insight }) {
             color: C.textPrimary,
           }}
         >
-          NEXARA leads on AI Capability and Integration depth. We&apos;re at parity on Ease of Use — this is where to invest product effort.
+          Antarious leads on AI Capability and Integration depth. We&apos;re at parity on Ease of Use — this is where to invest product effort.
         </div>
       )}
     </div>

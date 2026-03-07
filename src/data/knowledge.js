@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  NEXARA — Knowledge Base (client-aware)
+//  Antarious — Knowledge Base (client-aware)
 // ─────────────────────────────────────────────
 
 const docsByClient = {

@@ -1,18 +1,14 @@
 import { useState, useRef } from 'react';
 import useToast from '../../hooks/useToast';
 import { C, F, R, S, Z, btn, flex, shadows } from '../../tokens';
+import { TYPE_COLORS as CHANNEL_TYPE_COLORS } from '../../config/channelBrands';
+import { IconLinkedIn, IconFacebook } from '../ui/Icons';
 
 /* ─── helpers ─────────────────────────────────────────────── */
 function getTypeColor(type) {
-  const map = {
-    'Email':        C.primary,
-    'LinkedIn Ad':  '#0A66C2',
-    'Meta Ad':      '#1877F2',
-    'SEO Article':  C.amber,
-    'Blog':         '#A78BFA',
-    'Landing Page': '#F472B6',
-  };
-  return map[type] ?? C.textSecondary;
+  if (CHANNEL_TYPE_COLORS[type]) return CHANNEL_TYPE_COLORS[type];
+  const other = { 'Email': C.primary, 'SEO Article': C.amber, 'Blog': '#A78BFA', 'Landing Page': '#F472B6' };
+  return other[type] ?? C.textSecondary;
 }
 
 /* ─── ScoreRing ───────────────────────────────────────────── */
@@ -164,7 +160,7 @@ function ContentRenderer({ item, editMode, editBody, onEditChange, visuals = [] 
 
   if (item.type === 'LinkedIn Ad' || item.type === 'Meta Ad') {
     const platform = item.type === 'LinkedIn Ad' ? 'LinkedIn' : 'Meta';
-    const platColor = item.type === 'LinkedIn Ad' ? '#0A66C2' : '#1877F2';
+    const platColor = getTypeColor(item.type);
     const creativeVisual = visuals.length > 0 ? visuals[0] : null;
     return (
       <div style={{ border: `1px solid ${C.border}`, borderRadius: R.card, overflow: 'hidden', maxWidth: '400px', margin: '0 auto' }}>

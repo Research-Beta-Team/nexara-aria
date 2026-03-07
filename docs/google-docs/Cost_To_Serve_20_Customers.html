@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXARA — Total Cost to Serve 20 Customers</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.5; max-width: 860px; margin: 2em auto; padding: 0 1em; }
+    h1 { font-size: 1.4em; border-bottom: 1px solid #ccc; padding-bottom: 0.25em; }
+    h2 { font-size: 1.15em; margin-top: 1.25em; }
+    h3 { font-size: 1.05em; margin-top: 1em; }
+    table { border-collapse: collapse; width: 100%; margin: 0.75em 0; font-size: 0.95em; }
+    th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; }
+    th { background: #f5f5f5; }
+    ul { margin: 0.5em 0; padding-left: 1.5em; }
+    p { margin: 0.5em 0; }
+    .meta { color: #666; font-size: 0.95em; margin-bottom: 1em; }
+  </style>
+</head>
+<body>
+
+<h1>NEXARA — Total Cost to Serve 20 Customers (Production-Ready)</h1>
+<p class="meta"><strong>Version:</strong> 1.0 (Model) &nbsp;|&nbsp; <strong>Audience:</strong> CTO, Finance, Board &nbsp;|&nbsp; <strong>Scope:</strong> Production-ready NEXARA + ARIA for 20 paying customers.</p>
+
+<h2>1. Assumptions</h2>
+<h3>Customer mix (20 customers)</h3>
+<table>
+  <tr><th>Plan</th><th>Customers</th><th>Revenue/customer/mo (annual)</th><th>Monthly revenue</th></tr>
+  <tr><td>Starter</td><td>6</td><td>$149</td><td>$894</td></tr>
+  <tr><td>Growth</td><td>10</td><td>$499</td><td>$4,990</td></tr>
+  <tr><td>Scale</td><td>3</td><td>$1,499</td><td>$4,497</td></tr>
+  <tr><td>Agency</td><td>1</td><td>$3,999</td><td>$3,999</td></tr>
+  <tr><td><strong>Total</strong></td><td><strong>20</strong></td><td>—</td><td><strong>$14,380</strong></td></tr>
+</table>
+<p><strong>Annual revenue (20 customers):</strong> ~$172,560.</p>
+
+<h3>ARIA / credit usage</h3>
+<ul>
+  <li><strong>Cost per credit (NEXARA side):</strong> ~$0.0105 per ARIA request (from Anthropic; adjust with actual pricing).</li>
+  <li><strong>Utilization:</strong> Assume customers use <strong>60%</strong> of included credits on average.</li>
+  <li><strong>Credits per plan (included):</strong> Starter 5k, Growth 25k, Scale 100k, Agency 500k.</li>
+</ul>
+
+<h2>2. Variable Costs (ARIA / Anthropic)</h2>
+<table>
+  <tr><th>Plan</th><th>Customers</th><th>Credits included</th><th>60% usage (credits/mo)</th><th>Monthly ARIA cost</th></tr>
+  <tr><td>Starter</td><td>6</td><td>5,000</td><td>3,000</td><td>6 × $31.50 = $189</td></tr>
+  <tr><td>Growth</td><td>10</td><td>25,000</td><td>15,000</td><td>10 × $157.50 = $1,575</td></tr>
+  <tr><td>Scale</td><td>3</td><td>100,000</td><td>60,000</td><td>3 × $630 = $1,890</td></tr>
+  <tr><td>Agency</td><td>1</td><td>500,000</td><td>300,000</td><td>1 × $3,150 = $3,150</td></tr>
+  <tr><td><strong>Total</strong></td><td><strong>20</strong></td><td>—</td><td>—</td><td><strong>$6,804</strong></td></tr>
+</table>
+<p><strong>Variable (ARIA) total:</strong> <strong>~$6,800/month</strong> at 60% utilization. If utilization is 40%: ~$4,535/mo. If 80%: ~$9,070/mo.</p>
+
+<h2>3. Fixed Costs (Infrastructure & Ops)</h2>
+<table>
+  <tr><th>Item</th><th>Monthly cost (USD)</th><th>Notes</th></tr>
+  <tr><td>Hosting (backend + DB)</td><td>$350–600</td><td>1–2 app instances + managed Postgres.</td></tr>
+  <tr><td>Frontend (static)</td><td>$0–50</td><td>Vercel/Netlify.</td></tr>
+  <tr><td>Stripe</td><td>~$420</td><td>~2.9% + $0.30 on ~$14,380 revenue.</td></tr>
+  <tr><td>Auth (optional IdP)</td><td>$0–75</td><td>Auth0 or custom.</td></tr>
+  <tr><td>Monitoring / errors</td><td>$50–100</td><td>Sentry + metrics.</td></tr>
+  <tr><td>Email / transactional</td><td>$20–50</td><td>SendGrid or similar.</td></tr>
+  <tr><td>Misc</td><td>$30–50</td><td>Domains, secrets, backup.</td></tr>
+  <tr><td><strong>Subtotal infra</strong></td><td><strong>~$1,100/mo</strong></td><td>Midpoint.</td></tr>
+</table>
+
+<h2>4. Support & Customer Success</h2>
+<table>
+  <tr><th>Plan</th><th>Customers</th><th>Support type</th><th>Estimated allocation (monthly)</th></tr>
+  <tr><td>Starter</td><td>6</td><td>Community</td><td>$0 or $50 shared</td></tr>
+  <tr><td>Growth</td><td>10</td><td>Email, 4h SLA</td><td>$400–600</td></tr>
+  <tr><td>Scale</td><td>3</td><td>Slack, 1h SLA</td><td>$600–900</td></tr>
+  <tr><td>Agency</td><td>1</td><td>Dedicated CSM</td><td>$1,500–2,500</td></tr>
+  <tr><td><strong>Total support</strong></td><td><strong>20</strong></td><td>—</td><td><strong>~$3,300/mo</strong> (midpoint)</td></tr>
+</table>
+
+<h2>5. Cost to Serve 1 Customer</h2>
+<p>Two views: <strong>incremental</strong> (platform already running) and <strong>standalone</strong> (only one customer).</p>
+
+<h3>5a. Incremental cost per customer (platform already running)</h3>
+<table>
+  <tr><th>Plan</th><th>ARIA (60% util.)</th><th>Support (allocation)</th><th>Infra share</th><th>Total per customer/mo</th></tr>
+  <tr><td>Starter</td><td>~$32</td><td>$0–8</td><td>~$55</td><td><strong>~$87–95</strong></td></tr>
+  <tr><td>Growth</td><td>~$158</td><td>$40–60</td><td>~$55</td><td><strong>~$253–273</strong></td></tr>
+  <tr><td>Scale</td><td>~$630</td><td>$200–300</td><td>~$55</td><td><strong>~$885–985</strong></td></tr>
+  <tr><td>Agency</td><td>~$3,150</td><td>$1,500–2,500</td><td>~$55</td><td><strong>~$4,705–5,705</strong></td></tr>
+</table>
+<p>Cost to serve 1 customer (incremental): <strong>~$90/mo (Starter)</strong> to <strong>~$5,200/mo (Agency)</strong>.</p>
+
+<h3>5b. If you have only 1 customer (standalone)</h3>
+<table>
+  <tr><th>Plan</th><th>ARIA</th><th>Support</th><th>Infra (solo)</th><th>Total/mo</th></tr>
+  <tr><td>Starter</td><td>~$32</td><td>$0–50</td><td>~$600</td><td><strong>~$632–682</strong></td></tr>
+  <tr><td>Growth</td><td>~$158</td><td>$400–600</td><td>~$600</td><td><strong>~$1,158–1,358</strong></td></tr>
+  <tr><td>Scale</td><td>~$630</td><td>$600–900</td><td>~$600</td><td><strong>~$1,830–2,130</strong></td></tr>
+  <tr><td>Agency</td><td>~$3,150</td><td>$1,500–2,500</td><td>~$600</td><td><strong>~$5,250–6,250</strong></td></tr>
+</table>
+<p><strong>One-sentence:</strong> Cost to serve 1 customer is <strong>~$90–$5,200/month</strong> incremental (by plan), or <strong>~$630–$6,250/month</strong> if that customer is the only one.</p>
+
+<h2>6. Total Cost to Serve (20 Customers — Monthly & Annual)</h2>
+<table>
+  <tr><th>Category</th><th>Monthly (USD)</th><th>Annual (USD)</th></tr>
+  <tr><td>Variable (ARIA)</td><td>~$6,800</td><td>~$81,600</td></tr>
+  <tr><td>Infrastructure</td><td>~$1,100</td><td>~$13,200</td></tr>
+  <tr><td>Support</td><td>~$3,300</td><td>~$39,600</td></tr>
+  <tr><td><strong>Total</strong></td><td><strong>~$11,200</strong></td><td><strong>~$134,400</strong></td></tr>
+</table>
+<p><strong>Revenue (20 customers, assumed mix):</strong> ~$14,380/mo → ~$172,560/year.</p>
+<p><strong>Gross margin (before G&A, sales, R&D):</strong> Revenue − Cost to serve = $14,380 − $11,200 ≈ <strong>$3,180/mo (~22%)</strong> or ~$38,160/year.</p>
+
+<h2>7. Sensitivity</h2>
+<ul>
+  <li><strong>ARIA utilization:</strong> 40% → total cost ~$8,935/mo. 80% → ~$13,470/mo.</li>
+  <li><strong>Support:</strong> If Agency gets shared CSM, support can drop to ~$1,500–2,000/mo; total cost ~$9,400–9,900/mo.</li>
+  <li><strong>Infra:</strong> Can be trimmed to ~$700–800/mo at 20 customers.</li>
+</ul>
+
+<h2>8. Summary for Board</h2>
+<ul>
+  <li><strong>Total cost to serve 20 production customers:</strong> ~$11,200/month (~$134,400/year) at assumed mix and 60% ARIA utilization.</li>
+  <li><strong>Largest bucket:</strong> ARIA (Anthropic) ~$6,800/mo; then support ~$3,300/mo; then infra ~$1,100/mo.</li>
+  <li><strong>Revenue at this mix:</strong> ~$14,380/mo (~$172,560/year); gross margin ~22% before company-level overhead.</li>
+  <li><strong>Levers:</strong> Reduce ARIA cost; scale support with automation; keep infra lean until growth justifies more spend.</li>
+</ul>
+
+</body>
+</html>

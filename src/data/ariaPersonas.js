@@ -1,5 +1,5 @@
 /**
- * ARIA Persona Configuration — persona definitions and preview responses.
+ * Freya Persona Configuration — persona definitions and preview responses.
  */
 
 export const PERSONAS = [
@@ -8,7 +8,7 @@ export const PERSONAS = [
     label: 'Chief Revenue Officer',
     icon: 'trophy',
     color: 'var(--c-primary)',
-    description: 'ARIA thinks at the revenue level. Every decision connects to pipeline and closed deals. Responses are strategic, data-led, executive-facing.',
+    description: 'Freya thinks at the revenue level. Every decision connects to pipeline and closed deals. Responses are strategic, data-led, executive-facing.',
     tag: 'Best for: Agency owners, solo founders, C-suite teams',
   },
   {
@@ -16,7 +16,7 @@ export const PERSONAS = [
     label: 'GTM Strategist',
     icon: 'map',
     color: 'var(--c-secondary)',
-    description: 'ARIA thinks in positioning, ICP, channels, and message-market fit. Deep go-to-market frameworks applied to every campaign.',
+    description: 'Freya thinks in positioning, ICP, channels, and message-market fit. Deep go-to-market frameworks applied to every campaign.',
     tag: 'Best for: Marketing leaders, consultants',
   },
   {
@@ -24,7 +24,7 @@ export const PERSONAS = [
     label: 'Campaign Manager',
     icon: 'settings',
     color: '#6B9478',
-    description: 'ARIA is execution-focused. Tracks tasks, timelines, and deliverables. Flags blockers, optimizes workflows, keeps campaigns on schedule.',
+    description: 'Freya is execution-focused. Tracks tasks, timelines, and deliverables. Flags blockers, optimizes workflows, keeps campaigns on schedule.',
     tag: 'Best for: Marketing managers, ops leads',
   },
   {
@@ -32,7 +32,7 @@ export const PERSONAS = [
     label: 'Business Analyst',
     icon: 'bar-chart',
     color: '#5EEAD4',
-    description: 'ARIA leads with data. Every recommendation comes with supporting numbers, confidence scores, and trade-off analysis.',
+    description: 'Freya leads with data. Every recommendation comes with supporting numbers, confidence scores, and trade-off analysis.',
     tag: 'Best for: Analysts, data-driven founders',
   },
   {
@@ -40,7 +40,7 @@ export const PERSONAS = [
     label: 'Cultural Strategist',
     icon: 'globe',
     color: '#B8FF35',
-    description: 'ARIA applies cultural and regional context to all outputs. Adapts tone, references, and approach for local markets (Bangladesh, South Asia, Gulf).',
+    description: 'Freya applies cultural and regional context to all outputs. Adapts tone, references, and approach for local markets (Bangladesh, South Asia, Gulf).',
     tag: 'Best for: Regional campaigns, localized GTM',
   },
   {
@@ -48,7 +48,7 @@ export const PERSONAS = [
     label: 'Custom Role',
     icon: 'pencil',
     color: 'var(--c-amber)',
-    description: "Define ARIA's exact role yourself. Paste a role description or title.",
+    description: "Define Freya's exact role yourself. Paste a role description or title.",
     tag: 'For advanced users',
   },
 ];
@@ -91,9 +91,9 @@ export function getPreviewResponse(personaId, questionId) {
       content: "Lead with an angle that resonates in the region: e.g. supply chain resilience, compliance with local and export standards, or how similar factories in South Asia have adopted the solution. Use a Vietnam or South Asia-specific stat or reference in the first line. Tone: professional, respectful, and locally relevant — not generic global B2B.",
     },
     custom: {
-      channel: "Based on your custom role settings, ARIA would tailor channel recommendations to your defined priorities — combining strategic fit, execution steps, and any regional or data constraints you've specified.",
-      pricing: "Your custom persona would frame pricing and commitment terms according to the role and rules you've configured, ensuring consistency with how you want ARIA to present recommendations.",
-      content: "With a custom role, ARIA would recommend content angles aligned to your stated focus — whether that's data, positioning, execution, or regional nuance — and apply your rules of engagement.",
+      channel: "Based on your custom role settings, Freya would tailor channel recommendations to your defined priorities — combining strategic fit, execution steps, and any regional or data constraints you've specified.",
+      pricing: "Your custom persona would frame pricing and commitment terms according to the role and rules you've configured, ensuring consistency with how you want Freya to present recommendations.",
+      content: "With a custom role, Freya would recommend content angles aligned to your stated focus — whether that's data, positioning, execution, or regional nuance — and apply your rules of engagement.",
     },
   };
   return responses[personaId]?.[questionId] || responses.cro[questionId] || '';

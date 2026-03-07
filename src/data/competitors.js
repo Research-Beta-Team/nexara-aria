@@ -92,7 +92,7 @@ export const COMPETITORS = [
       ],
       proofPoints: [
         { quote: 'We switched from Apollo and cut our bounce rate by half. Reply rates went up 2x in 60 days.', company: 'B2B SaaS, 45 reps' },
-        { quote: 'NEXARA replaced Apollo and Outreach for us. One platform, one source of truth.', company: 'Agency, 12 users' },
+        { quote: 'Antarious replaced Apollo and Outreach for us. One platform, one source of truth.', company: 'Agency, 12 users' },
       ],
     },
   },
@@ -158,7 +158,7 @@ export const COMPETITORS = [
     ourWinRate: 58,
     battleCard: {
       objectionHandlers: [
-        { prospectSaid: 'We use HubSpot for everything already.', youSay: 'HubSpot excels at inbound and full-funnel CRM. For outbound and GTM execution, we’re built specifically for that—deeper sequencing, ad sync, and AI that’s tuned for sales teams. Many of our customers keep HubSpot as CRM and use NEXARA for execution.' },
+        { prospectSaid: 'We use HubSpot for everything already.', youSay: 'HubSpot excels at inbound and full-funnel CRM. For outbound and GTM execution, we’re built specifically for that—deeper sequencing, ad sync, and AI that’s tuned for sales teams. Many of our customers keep HubSpot as CRM and use Antarious for execution.' },
         { prospectSaid: 'HubSpot has more features.', youSay: 'They have breadth; we have depth in GTM execution. If your priority is outbound performance, reply rates, and unified campaigns, we’re the specialist. We integrate with HubSpot so you keep your CRM.' },
         { prospectSaid: 'Our marketing team loves HubSpot.', youSay: 'No need to replace HubSpot for marketing. We integrate so sales and marketing share the same pipeline view. Sales gets best-in-class sequencing and ads; marketing keeps HubSpot. Best of both.' },
         { prospectSaid: 'Switching would be too disruptive.', youSay: 'We’re designed to sit alongside HubSpot—no big rip-and-replace. You can start with one team or use case and expand. We’ll show you a clear migration path.' },
@@ -173,8 +173,8 @@ export const COMPETITORS = [
         'Massive ecosystem, app marketplace, and community.',
       ],
       proofPoints: [
-        { quote: 'We kept HubSpot for CRM and added NEXARA for outbound. Reply rates and pipeline both up.', company: 'Mid-market SaaS' },
-        { quote: 'HubSpot was overkill for our sales motion. NEXARA gave us exactly what we needed at half the cost.', company: 'Agency, 8 reps' },
+        { quote: 'We kept HubSpot for CRM and added Antarious for outbound. Reply rates and pipeline both up.', company: 'Mid-market SaaS' },
+        { quote: 'HubSpot was overkill for our sales motion. Antarious gave us exactly what we needed at half the cost.', company: 'Agency, 8 reps' },
       ],
     },
   },
@@ -242,7 +242,7 @@ export const COMPETITORS = [
       objectionHandlers: [
         { prospectSaid: 'Clay gives us total control over our data.', youSay: 'Clay is great for data workflows. We give you that control plus built-in sequencing, ads, and analytics—so you don’t need to pipe Clay into another tool. One platform for data and execution.' },
         { prospectSaid: 'We need Clay’s integrations.', youSay: 'We have deep integrations too, and we’re built for the full GTM flow. If you’re using Clay to feed a sequencer, we can replace both with a single workflow and better predictability on cost.' },
-        { prospectSaid: 'Our team is technical; they love Clay.', youSay: 'Technical users love NEXARA’s flexibility as well. The difference is we also give you execution—sequences, ads, and AI—without stitching multiple tools. Same power, less complexity.' },
+        { prospectSaid: 'Our team is technical; they love Clay.', youSay: 'Technical users love Antarious’s flexibility as well. The difference is we also give you execution—sequences, ads, and AI—without stitching multiple tools. Same power, less complexity.' },
         { prospectSaid: 'Clay’s enrichment is best-in-class.', youSay: 'We agree they’re strong on enrichment. We focus on enrichment plus deliverability and execution. Our data quality and bounce rates are top tier, and you get sequencing and ads in one place.' },
       ],
       ourAdvantages: [
@@ -255,8 +255,8 @@ export const COMPETITORS = [
         'Strong adoption among technical and data-savvy teams.',
       ],
       proofPoints: [
-        { quote: 'We moved from Clay + Outreach to just NEXARA. Fewer tools, same quality, better deliverability.', company: 'B2B, 25 reps' },
-        { quote: 'Clay was powerful but we needed sequencing too. NEXARA did both and simplified our stack.', company: 'Startup, 6 reps' },
+        { quote: 'We moved from Clay + Outreach to just Antarious. Fewer tools, same quality, better deliverability.', company: 'B2B, 25 reps' },
+        { quote: 'Clay was powerful but we needed sequencing too. Antarious did both and simplified our stack.', company: 'Startup, 6 reps' },
       ],
     },
   },
@@ -337,7 +337,7 @@ export const COMPETITORS = [
         'Simple positioning and fast time-to-value for pure cold email.',
       ],
       proofPoints: [
-        { quote: 'We outgrew Instantly when we added LinkedIn and ads. NEXARA replaced three tools.', company: 'SMB SaaS' },
+        { quote: 'We outgrew Instantly when we added LinkedIn and ads. Antarious replaced three tools.', company: 'SMB SaaS' },
         { quote: 'Better deliverability and way more features than Instantly. Worth the step up.', company: 'Agency, 15 users' },
       ],
     },
@@ -364,10 +364,10 @@ export const POSITIONING_KEYS = [
   'integrations',
 ];
 
-// Scores 1–10 per dimension. Includes NEXARA + each competitor.
+// Scores 1–10 per dimension. Includes Antarious + each competitor.
 export const POSITIONING_SCORES = {
   nexara: {
-    name: 'NEXARA',
+    name: 'Antarious',
     dataQuality: 9,
     easeOfUse: 7,
     aiCapability: 9,

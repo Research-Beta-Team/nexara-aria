@@ -36,7 +36,7 @@ export default function VerticalPlaybooks() {
           Vertical Playbooks
         </h1>
         <p style={{ fontFamily: F.body, fontSize: '14px', color: C.textSecondary }}>
-          Pre-built GTM campaigns. Pick one, ARIA customises it for your context. Launch in hours.
+          Pre-built GTM campaigns. Pick one, Freya customises it for your context. Launch in hours.
         </p>
       </div>
 

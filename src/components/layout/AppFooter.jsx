@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { C, F, S } from '../../tokens';
+import AntariousLogo from '../ui/AntariousLogo';
 
 const FOOTER_HEIGHT_PX = 48;
 
@@ -21,10 +22,12 @@ export default function AppFooter() {
         zIndex: 350,
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: S[4] }}>
-        <span style={{ fontFamily: F.display, fontWeight: 700, color: C.primary, letterSpacing: '-0.02em' }}>Antarious</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: S[3] }}>
+        <AntariousLogo variant="dark" height={18} />
         <span style={{ color: C.border }}>·</span>
-        <span>GTM AI OS</span>
+        <span style={{ color: C.textSecondary }}>
+          Your GTM, now <em style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', color: C.primary }}>autonomous.</em>
+        </span>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: S[4] }}>
         <Link to="/settings" style={{ color: C.textMuted, textDecoration: 'none' }}>Settings</Link>

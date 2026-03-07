@@ -387,3 +387,29 @@ export const CLIENT_PORTAL_TOKENS = {
   textPrimary: '#1C2B27',
   textSecondary: '#5A7168',
 };
+
+// ── Auth/onboarding pages — Antarious brand palette (matches index.css :root) ──
+export const ANTARIOUS_AUTH = {
+  bg: '#1C2B27',
+  surface: '#2D3F3B',
+  surface2: '#364a44',
+  surface3: '#3e554d',
+  border: 'rgba(200, 221, 216, 0.12)',
+  primary: '#4A7C6F',
+  primaryGlow: 'rgba(74, 124, 111, 0.25)',
+  secondary: '#6BA396',
+  textPrimary: '#FAF8F3',
+  textSecondary: '#C8DDD8',
+  textMuted: '#8B9E98',
+  textInverse: '#1C2B27',
+  red: '#EF4444',
+  redDim: 'rgba(239, 68, 68, 0.15)',
+  amber: '#FBBF24',
+  amberDim: 'rgba(251, 191, 36, 0.15)',
+  fontDisplay: "'Outfit', sans-serif",
+  fontBody: "'Plus Jakarta Sans', sans-serif",
+  fontMono: "'JetBrains Mono', monospace",
+  radiusCard: '14px',
+  radiusButton: '8px',
+  radiusInput: '10px',
+};

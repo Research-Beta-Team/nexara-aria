@@ -11,6 +11,7 @@ import UpgradeModal from '../plan/UpgradeModal';
 import PlanExpiryWarning from '../plan/PlanExpiryWarning';
 import { getRoleDisplayName } from '../../pages/dev/RoleSwitcher';
 import { IconWarning } from '../ui/Icons';
+import AntariousLogo from '../ui/AntariousLogo';
 import { C, F, R, S, T, shadows } from '../../tokens';
 
 // ── Campaign options (mock) ───────────────────
@@ -607,16 +608,6 @@ export default function TopBar({ onAriaOpen }) {
     minWidth: 0,
   };
 
-  const logoStyle = {
-    fontFamily: F.display,
-    fontSize: '18px',
-    fontWeight: 800,
-    color: C.primary,
-    letterSpacing: '-0.02em',
-    textTransform: 'none',
-    flexShrink: 0,
-  };
-
   const centerStyle = {
     flex: 1,
     display: 'flex',
@@ -650,7 +641,7 @@ export default function TopBar({ onAriaOpen }) {
       <header style={barStyle}>
         {/* Left: logo + client switcher (owner/csm) or campaign selector */}
         <div style={leftStyle}>
-          <span style={logoStyle}>Antarious</span>
+          <AntariousLogo variant="dark" height={24} />
           <CampaignSelector />
         </div>
 

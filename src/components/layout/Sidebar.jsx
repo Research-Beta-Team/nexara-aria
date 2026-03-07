@@ -13,6 +13,7 @@ import UpgradeModal from '../plan/UpgradeModal';
 import FounderModeToggle from './FounderModeToggle';
 import { getSidebarSections } from '../../config/roleConfig';
 import { getTemplateById } from '../../data/workspaceTemplates';
+import AntariousLogo from '../ui/AntariousLogo';
 import { C, F, R, S, T, shadows } from '../../tokens';
 
 // ── Founder nav SVG icons (theme: currentColor) ──
@@ -696,52 +697,22 @@ function Logo({ collapsed }) {
       display: 'flex',
       alignItems: 'center',
       gap: S[3],
-      padding: `${S[5]} ${S[5]}`,
+      padding: collapsed ? `${S[3]} ${S[3]}` : `${S[5]} ${S[5]}`,
       borderBottom: `1px solid ${C.border}`,
       flexShrink: 0,
+      flexDirection: collapsed ? 'row' : 'column',
+      alignItems: collapsed ? 'center' : 'flex-start',
     }}>
-      <div style={{
-        width: '32px',
-        height: '32px',
-        borderRadius: R.md,
-        backgroundColor: C.primary,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-        boxShadow: '0 0 14px rgba(74, 124, 111, 0.35)',
-      }}>
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-          <path d="M3 15V3L15 15V3" stroke={C.textInverse} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-          <circle cx="3"  cy="3"  r="1.6" fill={C.textInverse}/>
-          <circle cx="3"  cy="15" r="1.6" fill={C.textInverse}/>
-          <circle cx="15" cy="3"  r="1.6" fill={C.textInverse}/>
-          <circle cx="15" cy="15" r="1.6" fill={C.textInverse}/>
-        </svg>
-      </div>
+      <AntariousLogo variant="dark" height={collapsed ? 28 : 26} showWordmark={!collapsed} />
       {!collapsed && (
-        <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
-          <span style={{
-            fontFamily: F.display,
-            fontSize: '16px',
-            fontWeight: 800,
-            color: C.primary,
-            letterSpacing: '-0.02em',
-            textTransform: 'none',
-          }}>
-            Antarious
-          </span>
-          <span style={{
-            fontFamily: F.mono,
-            fontSize: '9px',
-            fontWeight: 700,
-            color: C.textMuted,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            marginTop: '2px',
-          }}>
-            GTM AI OS
-          </span>
+        <div style={{
+          fontFamily: F.body,
+          fontSize: '11px',
+          color: C.textSecondary,
+          marginTop: '4px',
+          lineHeight: 1.3,
+        }}>
+          Your GTM, now <em style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', color: C.primary }}>autonomous.</em>
         </div>
       )}
     </div>

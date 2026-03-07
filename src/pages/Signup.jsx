@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { C, F, R, S, T, shadows } from '../tokens';
+import { R, S, T, shadows, ANTARIOUS_AUTH } from '../tokens';
 import useStore from '../store/useStore';
+import AntariousLogo from '../components/ui/AntariousLogo';
 
-// ── Shared field component ────────────────────
+const N = ANTARIOUS_AUTH;
+
+// ── Shared field component (Antarious palette) ────────────────────
 function Field({ label, type, value, onChange, placeholder, focusField, setFocusField, id }) {
   const isFocused = focusField === id;
   return (
     <div>
-      <label style={{ display: 'block', fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[1] }}>
+      <label style={{ display: 'block', fontFamily: N.fontBody, fontSize: '12px', fontWeight: 600, color: N.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[1] }}>
         {label}
       </label>
       <input
@@ -20,17 +23,17 @@ function Field({ label, type, value, onChange, placeholder, focusField, setFocus
         placeholder={placeholder}
         style={{
           width: '100%',
-          backgroundColor: C.surface2,
-          color: C.textPrimary,
-          border: `1px solid ${isFocused ? C.primary : C.border}`,
-          borderRadius: R.input,
+          backgroundColor: N.surface2,
+          color: N.textPrimary,
+          border: `1px solid ${isFocused ? N.primary : N.border}`,
+          borderRadius: N.radiusInput,
           padding: `${S[2]} ${S[3]}`,
-          fontFamily: F.body,
+          fontFamily: N.fontBody,
           fontSize: '14px',
           outline: 'none',
           boxSizing: 'border-box',
           transition: T.color,
-          boxShadow: isFocused ? `0 0 0 2px ${C.primaryGlow}` : 'none',
+          boxShadow: isFocused ? `0 0 0 2px ${N.primaryGlow}` : 'none',
         }}
       />
     </div>
@@ -76,22 +79,24 @@ export default function Signup() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: C.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: `${S[6]} ${S[4]}` }}>
+    <div style={{ minHeight: '100vh', backgroundColor: N.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: `${S[6]} ${S[4]}` }}>
       <div style={{ width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: S[5] }}>
 
         {/* Brand */}
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontFamily: F.display, fontSize: '30px', fontWeight: 800, color: C.primary, letterSpacing: '-0.03em' }}>NEXTARA</div>
-          <div style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, marginTop: '4px' }}>AI-Powered B2B Campaign Intelligence</div>
+          <AntariousLogo variant="dark" height={32} />
+          <div style={{ fontFamily: N.fontBody, fontSize: '15px', color: N.textSecondary, marginTop: '6px' }}>
+            Your GTM, now <em style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', color: N.primary }}>autonomous.</em>
+          </div>
         </div>
 
         {/* Card */}
-        <div style={{ backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card, boxShadow: shadows.modal, overflow: 'hidden' }}>
+        <div style={{ backgroundColor: N.surface, border: `1px solid ${N.border}`, borderRadius: N.radiusCard, boxShadow: shadows.modal, overflow: 'hidden' }}>
 
           {/* Header */}
-          <div style={{ padding: `${S[5]} ${S[5]} ${S[4]}`, borderBottom: `1px solid ${C.border}` }}>
-            <div style={{ fontFamily: F.display, fontSize: '20px', fontWeight: 700, color: C.textPrimary }}>Sign up as company</div>
-            <div style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, marginTop: '4px' }}>Create your account as admin/owner to get started</div>
+          <div style={{ padding: `${S[5]} ${S[5]} ${S[4]}`, borderBottom: `1px solid ${N.border}` }}>
+            <div style={{ fontFamily: N.fontDisplay, fontSize: '20px', fontWeight: 700, color: N.textPrimary }}>Sign up as company</div>
+            <div style={{ fontFamily: N.fontBody, fontSize: '13px', color: N.textSecondary, marginTop: '4px' }}>Create your account as admin/owner to get started</div>
           </div>
 
           {/* Form */}
@@ -103,34 +108,34 @@ export default function Signup() {
             <Field label="Confirm Password" type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="••••••••" focusField={focus} setFocusField={setFocus} id="confirm" />
 
             {error && (
-              <div style={{ fontFamily: F.body, fontSize: '13px', color: C.red, backgroundColor: C.redDim, border: `1px solid rgba(255,110,122,0.2)`, borderRadius: R.md, padding: `${S[2]} ${S[3]}` }}>
+              <div style={{ fontFamily: N.fontBody, fontSize: '13px', color: N.red, backgroundColor: N.redDim, border: `1px solid ${N.red}40`, borderRadius: R.md, padding: `${S[2]} ${S[3]}` }}>
                 {error}
               </div>
             )}
 
             <button
               type="submit"
-              style={{ width: '100%', padding: `${S[3]} ${S[4]}`, backgroundColor: C.primary, color: C.textInverse, border: 'none', borderRadius: R.button, fontFamily: F.body, fontSize: '14px', fontWeight: 700, cursor: 'pointer', transition: T.base }}
+              style={{ width: '100%', padding: `${S[3]} ${S[4]}`, backgroundColor: N.primary, color: N.textInverse, border: 'none', borderRadius: N.radiusButton, fontFamily: N.fontBody, fontSize: '14px', fontWeight: 700, cursor: 'pointer', transition: T.base }}
             >
               Create Account
             </button>
 
             {/* Terms note */}
-            <div style={{ textAlign: 'center', fontFamily: F.body, fontSize: '11px', color: C.textMuted, lineHeight: 1.5 }}>
+            <div style={{ textAlign: 'center', fontFamily: N.fontBody, fontSize: '11px', color: N.textMuted, lineHeight: 1.5 }}>
               By creating an account you agree to our Terms of Service and Privacy Policy.
             </div>
           </form>
         </div>
 
         {/* Log in link */}
-        <div style={{ textAlign: 'center', fontFamily: F.body, fontSize: '13px', color: C.textSecondary }}>
+        <div style={{ textAlign: 'center', fontFamily: N.fontBody, fontSize: '13px', color: N.textSecondary }}>
           Already have an account?{' '}
-          <Link to="/login" style={{ color: C.primary, fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
+          <Link to="/login" style={{ color: N.primary, fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
         </div>
 
         {/* Footer */}
-        <div style={{ textAlign: 'center', fontFamily: F.body, fontSize: '12px', color: C.textMuted }}>
-          Powered by Freya · Nextara AI Platform · All data simulated
+        <div style={{ textAlign: 'center', fontFamily: N.fontBody, fontSize: '12px', color: N.textMuted }}>
+          Powered by Freya · Antarious · All data simulated
         </div>
       </div>
     </div>

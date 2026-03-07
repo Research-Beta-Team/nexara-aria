@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  NEXARA — Workspace Industry Templates
+//  Antarious — Workspace Industry Templates
 //  Layer 1: Standard starting points per vertical
 // ─────────────────────────────────────────────
 

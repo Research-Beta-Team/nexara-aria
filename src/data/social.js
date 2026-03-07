@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  NEXARA — Social Media (mock data)
+//  Antarious — Social Media (mock data)
 //  Used by Social Media page and dashboard SocialReachWidget
 // ─────────────────────────────────────────────
 
@@ -7,6 +7,7 @@ export const CONNECTED_ACCOUNTS = [
   { id: 'li1', name: 'Medglobal', platform: 'LinkedIn', type: 'Company', status: 'connected', followers: 12400 },
   { id: 'meta1', name: 'Medglobal', platform: 'Meta', type: 'Page', status: 'connected', followers: 28500 },
   { id: 'ig1', name: '@medglobal.official', platform: 'Instagram', type: 'Business', status: 'connected', followers: 18200 },
+  { id: 'wa1', name: 'Medglobal', platform: 'WhatsApp', type: 'Business', status: 'connected', followers: null },
 ];
 
 export const SOCIAL_METRICS = {
@@ -76,4 +77,5 @@ export const AVAILABLE_PLATFORMS = [
   { id: 'LinkedIn', name: 'LinkedIn', description: 'Company page and personal profiles' },
   { id: 'Meta', name: 'Meta (Facebook)', description: 'Pages and ad accounts' },
   { id: 'Instagram', name: 'Instagram', description: 'Business accounts' },
+  { id: 'WhatsApp', name: 'WhatsApp', description: 'Business chat and campaigns' },
 ];

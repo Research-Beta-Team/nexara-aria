@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXARA — Cost to Serve 1 Customer</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.5; max-width: 720px; margin: 2em auto; padding: 0 1em; }
+    h1 { font-size: 1.4em; border-bottom: 1px solid #ccc; padding-bottom: 0.25em; }
+    h2 { font-size: 1.15em; margin-top: 1.25em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #ccc; padding: 8px 10px; text-align: left; }
+    th { background: #f5f5f5; }
+    p { margin: 0.6em 0; }
+    .meta { color: #666; font-size: 0.95em; margin-bottom: 1em; }
+    .summary { background: #f9f9f9; padding: 1em; border-radius: 6px; margin: 1em 0; }
+    .source { font-size: 0.9em; color: #666; margin-top: 1.5em; }
+  </style>
+</head>
+<body>
+
+<h1>NEXARA — Cost to Serve 1 Customer</h1>
+<p class="meta"><strong>Version:</strong> 1.0 &nbsp;|&nbsp; <strong>Audience:</strong> CTO, Finance, Board</p>
+<p>This document summarizes the cost to serve <strong>one customer</strong> in two scenarios: when the platform already exists (incremental) and when that customer is the only one (standalone).</p>
+
+<h2>Case 1: Incremental (platform already exists; you add one more customer)</h2>
+<p>When the platform is already running, each new customer adds <strong>ARIA cost + support allocation + a fair share of infrastructure</strong>. Infrastructure is shared (e.g. 1/20 of ~$1,100 ≈ <strong>$55/mo</strong> per customer at 20 customers).</p>
+<table>
+  <tr><th>Plan</th><th>Cost to serve 1 customer/month</th></tr>
+  <tr><td><strong>Starter</strong></td><td>~$87–95 (ARIA ~$32 + support ~$0–8 + infra share ~$55)</td></tr>
+  <tr><td><strong>Growth</strong></td><td>~$253–273 (ARIA ~$158 + support ~$40–60 + infra share ~$55)</td></tr>
+  <tr><td><strong>Scale</strong></td><td>~$885–985 (ARIA ~$630 + support ~$200–300 + infra share ~$55)</td></tr>
+  <tr><td><strong>Agency</strong></td><td>~$4,705–5,705 (ARIA ~$3,150 + support ~$1,500–2,500 + infra share ~$55)</td></tr>
+</table>
+<p><strong>Summary:</strong> Per customer (incremental): <strong>~$90/mo (Starter)</strong> to <strong>~$5,200/mo (Agency)</strong>.</p>
+
+<h2>Case 2: Standalone (only one customer in production)</h2>
+<p>When that customer is the <strong>only</strong> one, you still need a minimal production stack. Infrastructure is <strong>~$500–800/mo</strong> for the whole stack (backend, DB, Stripe, monitoring) with no sharing.</p>
+<table>
+  <tr><th>Plan</th><th>Total cost to serve 1 customer/month</th></tr>
+  <tr><td><strong>Starter</strong></td><td>~$632–682</td></tr>
+  <tr><td><strong>Growth</strong></td><td>~$1,158–1,358</td></tr>
+  <tr><td><strong>Scale</strong></td><td>~$1,830–2,130</td></tr>
+  <tr><td><strong>Agency</strong></td><td>~$5,250–6,250</td></tr>
+</table>
+<p><strong>Summary:</strong> If that one customer is the only one: <strong>~$630–$6,250/mo</strong> depending on plan.</p>
+
+<h2>Short answer</h2>
+<div class="summary">
+  <ul style="margin: 0; padding-left: 1.25em;">
+    <li><strong>Incremental (platform already running):</strong> ~$90–$5,200/mo per customer, by plan.</li>
+    <li><strong>Standalone (only one customer):</strong> ~$630–$6,250/mo for that customer.</li>
+  </ul>
+  <p style="margin-bottom: 0;"><strong>ARIA</strong> is the main variable cost; <strong>support</strong> drives most of the rest at Scale and Agency.</p>
+</div>
+
+<p class="source"><em>Source: COST_TO_SERVE_20_CUSTOMERS.md. ARIA assumes 60% utilization of included credits; cost per credit ~$0.0105. Adjust with actual usage and Anthropic pricing.</em></p>
+
+</body>
+</html>

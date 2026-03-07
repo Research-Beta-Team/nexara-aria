@@ -101,7 +101,7 @@ export default function AddKnowledgeModal({ open, onClose, onDocumentAdded, onFa
       >
         <div style={{ padding: S[6], borderBottom: `1px solid ${C.border}` }}>
           <h2 id="add-knowledge-title" style={{ fontFamily: F.display, fontSize: '20px', fontWeight: 700, color: C.textPrimary, margin: 0 }}>
-            Add to ARIA's Knowledge Base
+            Add to Freya's Knowledge Base
           </h2>
         </div>
 
@@ -194,7 +194,7 @@ export default function AddKnowledgeModal({ open, onClose, onDocumentAdded, onFa
                 onClick={handleUpload}
                 style={{ ...btn.primary, width: '100%', marginTop: S[4] }}
               >
-                {uploading ? "ARIA is reading your document..." : "Upload & Train ARIA"}
+                {uploading ? "Freya is reading your document..." : "Upload & Train Freya"}
               </button>
             </>
           )}
@@ -202,7 +202,7 @@ export default function AddKnowledgeModal({ open, onClose, onDocumentAdded, onFa
           {tab === 'rule' && (
             <>
               <label style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.textSecondary, display: 'block', marginBottom: S[1] }}>
-                Tell ARIA something about your business
+                Tell Freya something about your business
               </label>
               <textarea
                 value={ruleText}
@@ -233,7 +233,7 @@ export default function AddKnowledgeModal({ open, onClose, onDocumentAdded, onFa
                 onClick={handleSaveRule}
                 style={{ ...btn.primary, width: '100%' }}
               >
-                Save to ARIA's Memory
+                Save to Freya's Memory
               </button>
             </>
           )}

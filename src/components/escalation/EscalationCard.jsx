@@ -159,7 +159,7 @@ export default function EscalationCard({ escalation, selected, onSelect, onAppro
           </div>
           <div style={{ backgroundColor: `${sev.color}0A`, border: `1px solid ${sev.border}`, borderRadius: R.md, padding: S[3] }}>
             <div style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: sev.color, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[2] }}>
-              ARIA Recommendation
+              Freya Recommendation
             </div>
             <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textPrimary, margin: 0, lineHeight: '1.6', fontWeight: 500 }}>
               {escalation.recommendation}
@@ -183,7 +183,7 @@ export default function EscalationCard({ escalation, selected, onSelect, onAppro
                 <path d="M1.5 3.5l3.5 3.5 3.5-3.5" stroke={C.textMuted} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               <span style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                ARIA Reasoning
+                Freya Reasoning
               </span>
             </button>
             {expanded && (

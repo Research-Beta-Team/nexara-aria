@@ -110,7 +110,7 @@ export default function ExtractedPreview({ extraction, onConfirm, onEdit }) {
             margin: 0,
           }}
         >
-          ARIA extracted this from your document
+          Freya extracted this from your document
         </h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
           <span
@@ -162,7 +162,7 @@ export default function ExtractedPreview({ extraction, onConfirm, onEdit }) {
               }}
             >
               <span>
-                {unknown_fields.length} items ARIA couldn&apos;t determine
+                {unknown_fields.length} items Freya couldn&apos;t determine
               </span>
               <span style={{ transform: unknownExpanded ? 'rotate(180deg)' : 'rotate(0)' }}>
                 ▼
@@ -185,7 +185,7 @@ export default function ExtractedPreview({ extraction, onConfirm, onEdit }) {
                   >
                     <span>{u.label}</span>
                     <span style={{ fontFamily: F.mono, fontSize: 11, color: C.textMuted }}>
-                      ARIA will use defaults
+                      Freya will use defaults
                     </span>
                   </div>
                 ))}

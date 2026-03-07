@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  NEXARA — useWorkspace hook
+//  Antarious — useWorkspace hook
 //  Convenience hook consuming WorkspaceContext
 // ─────────────────────────────────────────────
 

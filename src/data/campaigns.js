@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  NEXARA — Campaign Module Mock Data
+//  Antarious — Campaign Module Mock Data
 // ─────────────────────────────────────────────
 
 // ── Campaign List ─────────────────────────────
@@ -414,7 +414,7 @@ export const calendarEvents = [
   { id: 'ev6',  date: '2025-02-14', type: 'demo',     label: 'Demo: Nguyen Van Minh',       color: '#FF6E7A' },
   { id: 'ev7',  date: '2025-02-17', type: 'ad',       label: 'LinkedIn ad rotation',         color: '#5EEAD4' },
   { id: 'ev8',  date: '2025-02-19', type: 'email',    label: 'Email seq — step 5 sends',    color: '#3DDC84' },
-  { id: 'ev9',  date: '2025-02-21', type: 'review',   label: 'ARIA weekly insight review',  color: '#6B9478' },
+  { id: 'ev9',  date: '2025-02-21', type: 'review',   label: 'Freya weekly insight review',  color: '#6B9478' },
   { id: 'ev10', date: '2025-02-24', type: 'blog',     label: 'Blog publish: Q Close Tips',  color: '#F5C842' },
   { id: 'ev11', date: '2025-02-26', type: 'deadline', label: 'Creative assets due',         color: '#FF6E7A' },
   { id: 'ev12', date: '2025-02-28', type: 'review',   label: 'Month-end performance review',color: '#6B9478' },

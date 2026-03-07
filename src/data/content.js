@@ -1,6 +1,8 @@
 // ─────────────────────────────────────────────
-//  NEXARA — Content Library Mock Data
+//  Antarious — Content Library Mock Data
 // ─────────────────────────────────────────────
+
+import { TYPE_COLORS as CHANNEL_TYPE_COLORS } from '../config/channelBrands';
 
 export const contentItems = [
 
@@ -22,8 +24,8 @@ export const contentItems = [
     tags: ['CFO', 'Vietnam', 'cold-outreach', 'touch-1'],
     performance: { opens: '38%', clicks: '9.1%', replies: '4.2%', sends: 250, leads: 11 },
     versions: [
-      { v: 'v2', date: '2025-02-12', note: 'Subject line A/B winner applied', author: 'ARIA' },
-      { v: 'v1', date: '2025-02-11', note: 'Initial ARIA draft', author: 'ARIA' },
+      { v: 'v2', date: '2025-02-12', note: 'Subject line A/B winner applied', author: 'Freya' },
+      { v: 'v1', date: '2025-02-11', note: 'Initial Freya draft', author: 'Freya' },
     ],
     preview: "Finance automation for Vietnam-scale CFOs · Cold intro, personalized by company revenue tier.",
     body: `Subject: Finance automation for Vietnam-scale CFOs
@@ -63,7 +65,7 @@ Best,
     tags: ['CFO', 'Vietnam', 'follow-up', 'touch-2'],
     performance: null,
     versions: [
-      { v: 'v1', date: '2025-02-14', note: 'Initial ARIA draft — awaiting approval', author: 'ARIA' },
+      { v: 'v1', date: '2025-02-14', note: 'Initial Freya draft — awaiting approval', author: 'Freya' },
     ],
     preview: "Subject: How [Company] CFOs cut reporting time by 60% · Follow-up value prop.",
     body: `Subject: How {{competitor_company}} CFOs cut reporting time by 60%
@@ -100,7 +102,7 @@ Best,
     performance: { opens: '29%', clicks: '3.8%', replies: '5.1%', sends: 180, leads: 9 },
     versions: [
       { v: 'v2', date: '2025-02-08', note: 'Shortened per brand guidelines', author: 'Brand Enforcer' },
-      { v: 'v1', date: '2025-02-06', note: 'Initial ARIA draft', author: 'ARIA' },
+      { v: 'v1', date: '2025-02-06', note: 'Initial Freya draft', author: 'Freya' },
     ],
     preview: "Subject: Closing the loop, {{first_name}} · Polite break-up. Keeps door open.",
     body: `Subject: Closing the loop, {{first_name}}
@@ -136,7 +138,7 @@ Either way, best of luck with {{company}}'s growth this year.
     performance: { impressions: 142000, clicks: 1022, ctr: '0.72%', leads: 47, cpl: '$40.21' },
     versions: [
       { v: 'v2', date: '2025-02-09', note: 'CTA softened per brand review', author: 'Brand Enforcer' },
-      { v: 'v1', date: '2025-02-08', note: 'Initial ARIA draft', author: 'ARIA' },
+      { v: 'v1', date: '2025-02-08', note: 'Initial Freya draft', author: 'Freya' },
     ],
     preview: "3 signs your financial reporting is holding your company back. Thought leadership angle.",
     body: `HEADLINE:
@@ -178,7 +180,7 @@ AUDIENCE: CFO, VP Finance | Vietnam | 32-55 | Company 500-5000 employees`,
     tags: ['Meta', 'carousel', 'CFO', 'paid-social'],
     performance: null,
     versions: [
-      { v: 'v1', date: '2025-02-14', note: 'Initial ARIA draft — awaiting content approval', author: 'ARIA' },
+      { v: 'v1', date: '2025-02-14', note: 'Initial Freya draft — awaiting content approval', author: 'Freya' },
     ],
     preview: 'Card 1: "Close in 3 days, not 3 weeks." Card 2: "One platform. All entities." Card 3: ROI calculator CTA.',
     body: `META CAROUSEL AD — BATCH B
@@ -224,8 +226,8 @@ Audience: Lookalike 1% (Finance/CFO Vietnam)`,
     performance: { pageViews: 1840, avgTimeOnPage: '4m 12s', organicClicks: 312, leads: 6, bounceRate: '42%' },
     versions: [
       { v: 'v3', date: '2025-02-07', note: 'Published — SEO meta tags added', author: 'Content Strategist' },
-      { v: 'v2', date: '2025-02-06', note: 'SEO score optimized (72 → 81)', author: 'ARIA' },
-      { v: 'v1', date: '2025-02-05', note: 'Initial ARIA draft', author: 'ARIA' },
+      { v: 'v2', date: '2025-02-06', note: 'SEO score optimized (72 → 81)', author: 'Freya' },
+      { v: 'v1', date: '2025-02-05', note: 'Initial Freya draft', author: 'Freya' },
     ],
     preview: '2,400-word SEO article targeting "month-end close automation Vietnam". SEO score: 81/100. Published.',
     body: `# CFO Guide: Automating Month-End Close in Vietnam
@@ -290,7 +292,7 @@ Most CFOs we work with find the ROI calculation straightforward. If your team sp
 
 ---
 
-*Published: February 7, 2025 | Author: ARIA Content Strategist | Campaign: Medglobal VN CFO Q2*`,
+*Published: February 7, 2025 | Author: Freya Content Strategist | Campaign: Medglobal VN CFO Q2*`,
   },
 
   // ── Campaign c2: APAC Brand Awareness ────────
@@ -311,8 +313,8 @@ Most CFOs we work with find the ROI calculation straightforward. If your team sp
     tags: ['Meta', 'brand-awareness', 'APAC', 'single-image'],
     performance: { impressions: 384000, clicks: 1920, ctr: '0.50%', reach: 210000, frequency: '1.8×' },
     versions: [
-      { v: 'v2', date: '2025-01-21', note: 'CTA changed from "Get Started" to "Learn More"', author: 'ARIA' },
-      { v: 'v1', date: '2025-01-20', note: 'Initial ARIA draft', author: 'ARIA' },
+      { v: 'v2', date: '2025-01-21', note: 'CTA changed from "Get Started" to "Learn More"', author: 'Freya' },
+      { v: 'v1', date: '2025-01-20', note: 'Initial Freya draft', author: 'Freya' },
     ],
     preview: '"Your finance team is working harder than it should." Brand awareness single image ad.',
     body: `META SINGLE IMAGE AD
@@ -358,7 +360,7 @@ Placement: Facebook Feed, Instagram Feed, Audience Network`,
     versions: [
       { v: 'v3', date: '2025-01-28', note: 'Final edit + images added', author: 'Content Strategist' },
       { v: 'v2', date: '2025-01-27', note: 'Brand review passed (score 85)', author: 'Brand Enforcer' },
-      { v: 'v1', date: '2025-01-25', note: 'Initial ARIA long-form draft', author: 'ARIA' },
+      { v: 'v1', date: '2025-01-25', note: 'Initial Freya long-form draft', author: 'Freya' },
     ],
     preview: '3,100-word thought leadership piece on CFO automation across APAC markets. Best performing content this quarter.',
     body: `# The CFO Automation Playbook for Asia-Pacific
@@ -477,8 +479,8 @@ CTA: Get My ROI Report`,
     tags: ['blog', 'comparison', 'ROI', 'APAC', 'draft'],
     performance: null,
     versions: [
-      { v: 'v2', date: '2025-02-12', note: 'Brand score improved from 68 to 74 after rewrite', author: 'ARIA' },
-      { v: 'v1', date: '2025-02-10', note: 'Initial draft — brand score 68, needs work', author: 'ARIA' },
+      { v: 'v2', date: '2025-02-12', note: 'Brand score improved from 68 to 74 after rewrite', author: 'Freya' },
+      { v: 'v1', date: '2025-02-10', note: 'Initial draft — brand score 68, needs work', author: 'Freya' },
     ],
     preview: 'Comparison article: manual vs automated finance processes. Draft. Brand score 74 — pending review.',
     body: `# Finance Automation vs Manual: The True Cost Comparison
@@ -538,8 +540,8 @@ Annual close cost (Company B): $24,000 + $16,000 team time = $40,000
     tags: ['email', 'sequence', 'SEA', 'VP-Director', 'financial-services'],
     performance: { opens: '31%', clicks: '6.8%', replies: '3.4%', sends: 420, leads: 14 },
     versions: [
-      { v: 'v2', date: '2025-01-26', note: 'Touch 3 shortened per SDR feedback', author: 'ARIA' },
-      { v: 'v1', date: '2025-01-25', note: 'Initial ARIA sequence draft', author: 'ARIA' },
+      { v: 'v2', date: '2025-01-26', note: 'Touch 3 shortened per SDR feedback', author: 'Freya' },
+      { v: 'v1', date: '2025-01-25', note: 'Initial Freya sequence draft', author: 'Freya' },
     ],
     preview: '3-touch cold outreach sequence for VP/Director level in SEA financial services. Reply rate 3.4%.',
     body: `COLD OUTREACH SEQUENCE — SEA Demand Gen
@@ -648,8 +650,8 @@ TARGETING:
     tags: ['landing-page', 'SEA', 'demo-request', 'conversion'],
     performance: { pageViews: 620, leads: 8, conversionRate: '1.3%', bounceRate: '58%' },
     versions: [
-      { v: 'v2', date: '2025-02-03', note: 'Hero headline changed — A/B test variant B', author: 'ARIA' },
-      { v: 'v1', date: '2025-02-01', note: 'Initial ARIA draft', author: 'ARIA' },
+      { v: 'v2', date: '2025-02-03', note: 'Hero headline changed — A/B test variant B', author: 'Freya' },
+      { v: 'v1', date: '2025-02-01', note: 'Initial Freya draft', author: 'Freya' },
     ],
     preview: 'Demo request landing page for SEA Demand Gen campaign. Conversion rate 1.3% — below 2% target. Pending review.',
     body: `LANDING PAGE COPY — Demo Request (Variant B)
@@ -704,7 +706,7 @@ Issue: Bounce rate high (58%) — suggests mismatch between ad and page messagin
     tags: ['Meta', 'video', 'brand-refresh', 'draft'],
     performance: null,
     versions: [
-      { v: 'v1', date: '2025-02-13', note: 'Initial ARIA draft — not yet reviewed', author: 'ARIA' },
+      { v: 'v1', date: '2025-02-13', note: 'Initial Freya draft — not yet reviewed', author: 'Freya' },
     ],
     preview: 'Video ad script for Q2 brand refresh campaign. 30-second format. Draft — not yet assigned to campaign.',
     body: `META VIDEO AD SCRIPT — Q2 Brand Refresh
@@ -757,7 +759,7 @@ Voiceover style: Confident, peer-to-peer (not salesy)`,
     tags: ['email', 'winback', 're-engagement', 'draft'],
     performance: null,
     versions: [
-      { v: 'v1', date: '2025-02-09', note: 'Initial ARIA draft for winback sequence', author: 'ARIA' },
+      { v: 'v1', date: '2025-02-09', note: 'Initial Freya draft for winback sequence', author: 'Freya' },
     ],
     preview: 'Re-engagement email sequence for contacts who went cold after touch 3. Draft — needs campaign assignment.',
     body: `WINBACK SEQUENCE — Churned CFO Prospects
@@ -813,7 +815,7 @@ If you'd like the full report, happy to send it over.
     performance: { pageViews: 420, avgTimeOnPage: '2m 18s', organicClicks: 89, leads: 2, bounceRate: '71%' },
     versions: [
       { v: 'v2', date: '2025-01-20', note: 'Archived — low performance (bounce rate 71%)', author: 'Campaign Owner' },
-      { v: 'v1', date: '2025-01-15', note: 'Published, underperformed expectations', author: 'ARIA' },
+      { v: 'v1', date: '2025-01-15', note: 'Published, underperformed expectations', author: 'Freya' },
     ],
     preview: 'SEO listicle on ERP integrations. Archived — high bounce rate (71%), low engagement. Content type mismatch.',
     body: `# Top 5 ERP Integrations for Vietnam CFOs (2025)
@@ -839,8 +841,7 @@ export const getContentItem = (id) => contentItems.find((c) => c.id === id) ?? n
 
 export const CONTENT_TYPE_COLORS = {
   'Email':        '#3DDC84',
-  'LinkedIn Ad':  '#0A66C2',
-  'Meta Ad':      '#1877F2',
+  ...CHANNEL_TYPE_COLORS,
   'Blog':         '#F5C842',
   'SEO Article':  '#F5C842',
   'Landing Page': '#5EEAD4',

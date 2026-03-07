@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  NEXARA — Outreach / Prospects (client-aware)
+//  Antarious — Outreach / Prospects (client-aware)
 // ─────────────────────────────────────────────
 
 import { prospects as defaultProspects } from './campaigns';

@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import { clientWorkspaceProfiles as initialWorkspaceProfiles } from '../data/clientWorkspaceProfiles';
 import { CONNECTED_ACCOUNTS as initialConnectedAccounts, SOCIAL_CAMPAIGNS_INITIAL } from '../data/social';
+import { getInitialAriaMemory } from '../data/memoryMock';
+import { approvalsMock } from '../data/approvalsMock';
+import { mqlQueueMock } from '../data/handoffMock';
 
 const AUTH_STORAGE_KEY = 'nexara_auth';
 const ARIA_CHATS_STORAGE_KEY = 'nexara_aria_chats';
@@ -159,6 +162,17 @@ const useStore = create((set, get) => ({
   connectedAccounts: initialConnectedAccounts,
   socialCampaigns: SOCIAL_CAMPAIGNS_INITIAL,
 
+  // ── Inbox: unread count (set by UnifiedInbox) + platform assignments (who handles each channel; Freya can assist) ──
+  inboxUnreadCount: 0,
+  inboxPlatformAssignments: {
+    LinkedIn:  { assignedTo: 'u3', freyaHandles: true },  // u3 = James (SDR)
+    Meta:     { assignedTo: 'freya', freyaHandles: true },
+    Facebook: { assignedTo: 'freya', freyaHandles: true },
+    Instagram: { assignedTo: 'freya', freyaHandles: true },
+    WhatsApp: { assignedTo: 'u3', freyaHandles: true },
+    Email:    { assignedTo: 'u4', freyaHandles: true },   // u4 = Priya (Content)
+  },
+
   // ── ARIA Persona Configuration ──────────────────────────────
   ariaPersonaId: 'cro',
   ariaOperatingRole: 'Chief Revenue Officer',
@@ -176,6 +190,9 @@ const useStore = create((set, get) => ({
 
   // ── ARIA Co-pilot: chat history & project folders ──
   ...readAriaChatsFromStorage(),
+
+  // ── ARIA Persistent Memory (Session 1 — brand, audience, campaigns, performance) ──
+  ariaMemory: getInitialAriaMemory(),
 
   // ── Actions: Identity ────────────────────────
   setRole: (role) => set({ currentRole: role }),
@@ -273,6 +290,20 @@ const useStore = create((set, get) => ({
     set((state) => ({
       connectedAccounts: state.connectedAccounts.filter((a) => a.id !== accountId),
     })),
+
+  setInboxUnreadCount: (count) => set({ inboxUnreadCount: Math.max(0, count) }),
+
+  setInboxPlatformAssignment: (platform, payload) =>
+    set((state) => ({
+      inboxPlatformAssignments: {
+        ...state.inboxPlatformAssignments,
+        [platform]: {
+          assignedTo: payload.assignedTo ?? state.inboxPlatformAssignments[platform]?.assignedTo,
+          freyaHandles: payload.freyaHandles ?? state.inboxPlatformAssignments[platform]?.freyaHandles ?? true,
+        },
+      },
+    })),
+
   setSocialCampaignPosts: (campaignId, posts) =>
     set((state) => ({
       socialCampaigns: state.socialCampaigns.map((c) =>
@@ -570,9 +601,52 @@ const useStore = create((set, get) => ({
       return { ariaChats: next };
     }),
 
+  // ── ARIA Persistent Memory actions ───────────────────────────
+  addMemoryEntry: (namespace, entry) =>
+    set((state) => {
+      const key = namespace;
+      if (!state.ariaMemory || !state.ariaMemory[key]) return state;
+      const id = entry.id || `mem-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      const withTimestamp = { ...entry, id, updatedAt: entry.updatedAt || new Date().toISOString(), source: entry.source || 'Manual' };
+      return {
+        ariaMemory: {
+          ...state.ariaMemory,
+          [key]: [...state.ariaMemory[key], withTimestamp],
+        },
+      };
+    }),
+  deleteMemoryEntry: (namespace, id) =>
+    set((state) => {
+      const key = namespace;
+      if (!state.ariaMemory || !state.ariaMemory[key]) return state;
+      return {
+        ariaMemory: {
+          ...state.ariaMemory,
+          [key]: state.ariaMemory[key].filter((e) => e.id !== id),
+        },
+      };
+    }),
+  updateMemoryEntry: (namespace, id, content) =>
+    set((state) => {
+      const key = namespace;
+      if (!state.ariaMemory || !state.ariaMemory[key]) return state;
+      return {
+        ariaMemory: {
+          ...state.ariaMemory,
+          [key]: state.ariaMemory[key].map((e) =>
+            e.id === id ? { ...e, content, updatedAt: new Date().toISOString() } : e
+          ),
+        },
+      };
+    }),
+
   // ── Content approvals (threaded) ───────────────────────────
   approvals: [],
   openApprovalId: null,
+
+  // ── Content Approval Workflow (Session 2 — queue + history) ──
+  approvalQueue: approvalsMock,
+  approvalHistory: [],
 
   seedApprovals: (items) => set({ approvals: items || [] }),
 
@@ -595,6 +669,44 @@ const useStore = create((set, get) => ({
           : a
       ),
     })),
+
+  // ── Content Approval Workflow actions ───────────────────────
+  updateApprovalItem: (itemId, updates) =>
+    set((state) => ({
+      approvalQueue: (state.approvalQueue || []).map((item) =>
+        item.id === itemId ? { ...item, ...updates } : item
+      ),
+    })),
+  addApprovalItemComment: (itemId, comment) =>
+    set((state) => ({
+      approvalQueue: (state.approvalQueue || []).map((item) =>
+        item.id === itemId
+          ? { ...item, comments: [...(item.comments || []), { ...comment, id: `c-${Date.now()}`, createdAt: new Date().toISOString() }] }
+          : item
+      ),
+    })),
+  appendApprovalHistory: (entry) =>
+    set((state) => ({
+      approvalHistory: [...(state.approvalHistory || []), { ...entry, at: entry.at || new Date().toISOString() }],
+    })),
+
+  // ── MQL Handoff (Session 3) ─────────────────────────────────────
+  mqlQueue: mqlQueueMock,
+  handoffHistory: [],
+  updateMqlItem: (mqlId, updates) =>
+    set((state) => ({
+      mqlQueue: (state.mqlQueue || []).map((item) =>
+        item.id === mqlId ? { ...item, ...updates } : item
+      ),
+    })),
+  appendHandoffHistory: (entry) =>
+    set((state) => ({
+      handoffHistory: [...(state.handoffHistory || []), { ...entry, at: entry.at || new Date().toISOString() }],
+    })),
+
+  // ── Multi-Touch Attribution (Session 4) ───────────────────────
+  attributionModel: 'w_shaped',
+  setAttributionModel: (modelId) => set({ attributionModel: modelId }),
 
   activateAddon: (addonId) =>
     set((state) => ({ addonsActive: [...state.addonsActive, addonId] })),

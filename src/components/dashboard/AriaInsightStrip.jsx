@@ -23,7 +23,7 @@ export default function AriaInsightStrip({ insights = [], personaLabel, greeting
     if (onAskAria) {
       onAskAria(insight);
     } else {
-      toast.info('Opening ARIA…');
+      toast.info('Opening Freya…');
       useStore.getState().toggleAria?.();
     }
   };
@@ -92,7 +92,7 @@ export default function AriaInsightStrip({ insights = [], personaLabel, greeting
             </span>
           ) : (
             <span style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary }}>
-              ARIA has
+              Freya has
               <span style={countStyle}>{insights.length}</span>
               {' '}insights that need attention
             </span>
@@ -165,7 +165,7 @@ export default function AriaInsightStrip({ insights = [], personaLabel, greeting
                 }}
                 onClick={() => handleAskAria(insight)}
               >
-                Ask ARIA
+                Ask Freya
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
                   <path d="M2 5h6M5 2l3 3-3 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>

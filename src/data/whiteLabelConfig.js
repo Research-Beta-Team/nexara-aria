@@ -12,7 +12,7 @@ export const WHITELABEL_CONFIG = {
   logoUrl: null,
   faviconUrl: null,
   emailFrom: 'noreply@youragency.com',
-  emailSignature: 'Best regards,\nThe YourAgency Team\n— Powered by NEXARA',
+  emailSignature: 'Best regards,\nThe YourAgency Team\n— Powered by Antarious',
   clientPortalTitle: 'Your Campaign Intelligence',
   reportHeader: 'YourAgency GTM Report',
   reportFooter: 'Confidential. For authorized use only.',

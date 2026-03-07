@@ -7,6 +7,24 @@ import { C, F, R, S, T, scrollbarStyle, btn } from '../tokens';
 import useStore from '../store/useStore';
 import useToast from '../hooks/useToast';
 
+/* Product UI palette — Antarious Brand Guidelines v1.1 (Meta Command) */
+const UI = {
+  navy:       '#0A1628',
+  navy2:      '#0F1E35',
+  surface:    'rgba(255,255,255,0.04)',
+  surface2:   'rgba(255,255,255,0.06)',
+  border:     'rgba(255,255,255,0.08)',
+  borderHover: 'rgba(255,255,255,0.14)',
+  electric:   '#2563EB',
+  electric2:  '#1d4ed8',
+  electricTint: 'rgba(37,99,235,0.12)',
+  electricBorder: 'rgba(37,99,235,0.3)',
+  sky:        '#38BDF8',
+  text:       '#E2E8F0',
+  textMuted:  'rgba(255,255,255,0.5)',
+  textDim:    'rgba(255,255,255,0.35)',
+};
+
 /* ─── Static data ─────────────────────────────────────────── */
 const CAMPAIGNS = [
   { id: 'all',       label: 'All Campaigns'         },
@@ -58,14 +76,14 @@ const CTR_DATA = [
 ];
 
 const ALERTS = [
-  { id: 'a1', sev: 'High',   time: '9:12 AM',  date: 'Feb 22', title: 'CTR drop detected \u2014 Medglobal CFQ2 LinkedIn',      desc: 'CTR fell from 3.9% to 2.1% (\u219146%). ARIA paused creative rotation and flagged for review.' },
+  { id: 'a1', sev: 'High',   time: '9:12 AM',  date: 'Feb 22', title: 'CTR drop detected \u2014 Medglobal CFQ2 LinkedIn',      desc: 'CTR fell from 3.9% to 2.1% (\u219146%). Freya paused creative rotation and flagged for review.' },
   { id: 'a2', sev: 'Medium', time: '2:45 PM',  date: 'Feb 20', title: 'Frequency warning \u2014 SEA Demand Gen',           desc: 'Average frequency reached 2.67, approaching the 3.0 burnout threshold for this audience.' },
   { id: 'a3', sev: 'High',   time: '11:00 AM', date: 'Feb 18', title: 'CPM spike \u2014 APAC Brand Awareness',             desc: 'CPM increased 24% in 48h. Competitor bid activity detected in the auction landscape.' },
   { id: 'a4', sev: 'Low',    time: '4:30 PM',  date: 'Feb 15', title: 'Creative fatigue \u2014 Email Touch 3',             desc: 'Open rate on Touch-3 emails fell below the 20% alert threshold. Refresh recommended.' },
   { id: 'a5', sev: 'Medium', time: '8:00 AM',  date: 'Feb 12', title: 'Budget pacing ahead \u2014 all campaigns',          desc: 'Combined spend at 78% of monthly budget with 40% of the month remaining.' },
 ];
 
-const SEV_COLOR = { High: C.red, Medium: C.amber, Low: C.primary };
+const SEV_COLOR = { High: C.red, Medium: C.amber, Low: UI.sky };
 
 const CREATIVES = [
   { id: 'c1', name: 'CFO Q2 \u2014 Cold Intro v2',       type: 'Email',       impressions: 28400, ctr: 4.82, cpc: 2.10, cvr: 3.2, status: 'Active'  },
@@ -80,12 +98,12 @@ const CR_COLS   = ['name', 'type', 'impressions', 'ctr', 'cpc', 'cvr', 'status']
 const CR_LABELS = { name: 'Creative', type: 'Type', impressions: 'Impressions', ctr: 'CTR %', cpc: 'CPC', cvr: 'Conv %', status: 'Status' };
 
 const STATUS_STYLE = {
-  Active:  { color: C.primary, bg: C.primaryGlow,        border: 'rgba(61,220,132,0.25)'  },
+  Active:  { color: UI.sky, bg: UI.electricTint, border: UI.electricBorder },
   Paused:  { color: C.amber,   bg: C.amberDim,            border: 'rgba(245,200,66,0.25)'  },
   Fatigue: { color: C.red,     bg: C.redDim,              border: 'rgba(255,110,122,0.25)' },
 };
 
-const TYPE_COLOR = { Email: C.primary, 'LinkedIn Ad': '#60A5FA', 'Meta Ad': '#A78BFA' };
+const TYPE_COLOR = { Email: UI.sky, 'LinkedIn Ad': '#0A66C2', 'Meta Ad': '#1877F2' };
 
 const AUDIENCES = [
   { segment: 'Vietnam CFO / VP Finance',    reach: 31800, frequency: 2.64, maxFreq: 4, burnout: 0.66, status: 'Healthy'  },
@@ -95,7 +113,7 @@ const AUDIENCES = [
   { segment: 'Lookalike \u2014 Closed Won', reach: 9800,  frequency: 1.82, maxFreq: 4, burnout: 0.46, status: 'Healthy'  },
 ];
 
-const BURNOUT_COLOR = (b) => b >= 0.9 ? C.red : b >= 0.7 ? C.amber : C.primary;
+const BURNOUT_COLOR = (b) => b >= 0.9 ? C.red : b >= 0.7 ? C.amber : UI.sky;
 
 const META_BUSINESS_URL = 'https://business.facebook.com';
 
@@ -133,15 +151,15 @@ function MetaConnectionCard() {
   };
 
   return (
-    <div style={{ backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card, padding: S[5], marginBottom: S[5] }}>
+    <div style={{ backgroundColor: UI.surface, border: `1px solid ${UI.border}`, borderLeft: `4px solid ${UI.electric}`, borderRadius: R.card, padding: S[5], marginBottom: S[5] }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: S[4] }}>
         <div>
-          <div style={{ fontFamily: F.body, fontSize: '14px', fontWeight: 700, color: C.textPrimary, marginBottom: S[1] }}>
+          <div style={{ fontFamily: F.body, fontSize: '14px', fontWeight: 700, color: UI.text, marginBottom: S[1] }}>
             Meta Business account
           </div>
-          <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>
+          <div style={{ fontFamily: F.body, fontSize: '12px', color: UI.textMuted }}>
             {metaConnected
-              ? 'Connected. NEXARA can read ad performance and run AI analysis.'
+              ? 'Connected. Antarious can read ad performance and run AI analysis.'
               : 'Connect your Meta Business account and allow access to sync ad accounts and campaigns.'}
           </div>
         </div>
@@ -157,8 +175,8 @@ function MetaConnectionCard() {
                   fontSize: '12px',
                   padding: `${S[2]} ${S[4]}`,
                   textDecoration: 'none',
-                  color: C.primary,
-                  border: `1px solid ${C.primary}`,
+                  color: UI.sky,
+                  border: `1px solid ${UI.borderHover}`,
                   borderRadius: R.button,
                 }}
               >
@@ -184,7 +202,18 @@ function MetaConnectionCard() {
               type="button"
               onClick={handleConnect}
               disabled={connecting}
-              style={{ ...btn.primary, fontSize: '13px', padding: `${S[2]} ${S[4]}` }}
+              style={{
+                fontSize: '13px',
+                padding: `${S[2]} ${S[4]}`,
+                fontFamily: F.body,
+                fontWeight: 700,
+                color: '#fff',
+                background: `linear-gradient(135deg,${UI.electric},${UI.electric2})`,
+                border: 'none',
+                borderRadius: R.button,
+                cursor: connecting ? 'wait' : 'pointer',
+                boxShadow: '0 0 0 1px rgba(37,99,235,0.5), 0 4px 16px rgba(37,99,235,0.3)',
+              }}
             >
               {connecting ? 'Connecting…' : 'Connect Meta Business'}
             </button>
@@ -195,7 +224,7 @@ function MetaConnectionCard() {
   );
 }
 
-/* ─── Previous ads & ARIA: permission to fetch and add to ARIA ─── */
+/* ─── Previous ads & Freya: permission to fetch and add to ARIA ─── */
 function PaidAdsAriaCard() {
   const metaConnected = useStore((s) => s.connections?.meta);
   const paidAds = useStore((s) => s.paidAdsPermissions);
@@ -210,36 +239,36 @@ function PaidAdsAriaCard() {
     setTimeout(() => {
       setPaidAdsPermissions({ allowFetch: true, allowAriaLearn: true });
       setFetching(false);
-      toast.success('Previous ads fetched and added to ARIA. ARIA will use this data to learn and generate detailed reports.');
+      toast.success('Previous ads fetched and added to Freya. Freya will use this data to learn and generate detailed reports.');
     }, 2000);
   };
 
   return (
-    <div style={{ backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card, padding: S[5], marginBottom: S[5] }}>
-      <div style={{ fontFamily: F.body, fontSize: '14px', fontWeight: 700, color: C.textPrimary, marginBottom: S[2] }}>
-        Previous ads & ARIA
+    <div style={{ backgroundColor: UI.surface, border: `1px solid ${UI.border}`, borderRadius: R.card, padding: S[5], marginBottom: S[5] }}>
+      <div style={{ fontFamily: F.body, fontSize: '14px', fontWeight: 700, color: UI.text, marginBottom: S[2] }}>
+        Previous ads & Freya
       </div>
-      <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, marginBottom: S[4], lineHeight: 1.5 }}>
-        Give permission to fetch your previous ads from Meta and add them to ARIA. ARIA will learn from this data and give you a detailed report. Below you’ll see your previous campaigns and their analytics from Meta Business Suite.
+      <p style={{ fontFamily: F.body, fontSize: '12px', color: UI.textMuted, marginBottom: S[4], lineHeight: 1.5 }}>
+        Give permission to fetch your previous ads from Meta and add them to Freya. Freya will learn from this data and give you a detailed report. Below you’ll see your previous campaigns and their analytics from Meta Business Suite.
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: S[3], marginBottom: S[4] }}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: S[2], fontFamily: F.body, fontSize: '13px', color: C.textPrimary, cursor: 'pointer' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: S[2], fontFamily: F.body, fontSize: '13px', color: UI.text, cursor: 'pointer' }}>
           <input
             type="checkbox"
             checked={paidAds?.allowFetch ?? false}
             onChange={(e) => setPaidAdsPermissions({ allowFetch: e.target.checked })}
-            style={{ width: 16, height: 16, accentColor: C.primary }}
+            style={{ width: 16, height: 16, accentColor: UI.electric }}
           />
-          Allow NEXARA to fetch your previous ads from Meta
+          Allow Antarious to fetch your previous ads from Meta
         </label>
-        <label style={{ display: 'flex', alignItems: 'center', gap: S[2], fontFamily: F.body, fontSize: '13px', color: C.textPrimary, cursor: 'pointer' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: S[2], fontFamily: F.body, fontSize: '13px', color: UI.text, cursor: 'pointer' }}>
           <input
             type="checkbox"
             checked={paidAds?.allowAriaLearn ?? false}
             onChange={(e) => setPaidAdsPermissions({ allowAriaLearn: e.target.checked })}
-            style={{ width: 16, height: 16, accentColor: C.primary }}
+            style={{ width: 16, height: 16, accentColor: UI.electric }}
           />
-          Add ads data to ARIA so it can learn and generate detailed reports
+          Add ads data to Freya so it can learn and generate detailed reports
         </label>
       </div>
       <button
@@ -247,13 +276,20 @@ function PaidAdsAriaCard() {
         onClick={handleFetchAndAddToAria}
         disabled={fetching}
         style={{
-          ...btn.primary,
           fontSize: '13px',
           padding: `${S[2]} ${S[4]}`,
+          fontFamily: F.body,
+          fontWeight: 700,
+          color: '#fff',
+          background: `linear-gradient(135deg,${UI.electric},${UI.electric2})`,
+          border: 'none',
+          borderRadius: R.button,
+          cursor: fetching ? 'wait' : 'pointer',
           opacity: fetching ? 0.8 : 1,
+          boxShadow: '0 0 0 1px rgba(37,99,235,0.5), 0 4px 16px rgba(37,99,235,0.3)',
         }}
       >
-        {fetching ? 'Fetching & adding to ARIA…' : 'Fetch previous ads & add to ARIA'}
+        {fetching ? 'Fetching & adding to Freya…' : 'Fetch previous ads & add to Freya'}
       </button>
     </div>
   );
@@ -262,17 +298,17 @@ function PaidAdsAriaCard() {
 /* ─── AI Analysis card ────────────────────────────────────── */
 function AIAnalysisCard() {
   return (
-    <div style={{ backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card, padding: S[5], marginBottom: S[5] }}>
+    <div style={{ backgroundColor: UI.surface, border: `1px solid ${UI.border}`, borderLeft: `4px solid ${UI.electric}`, borderRadius: R.card, padding: S[5], marginBottom: S[5] }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: S[2], marginBottom: S[3] }}>
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ color: C.primary }}>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ color: UI.sky }}>
           <path d="M10 2a6 6 0 0 1 6 6c0 2.5-1.5 4.6-3.6 5.6L12 18H8l-.4-4.4A6 6 0 0 1 10 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-        <span style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: C.textPrimary }}>AI analysis</span>
+        <span style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: UI.text }}>AI analysis</span>
       </div>
-      <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, marginBottom: S[3], lineHeight: 1.5 }}>
+      <p style={{ fontFamily: F.body, fontSize: '12px', color: UI.textMuted, marginBottom: S[3], lineHeight: 1.5 }}>
         {AI_ANALYSIS.summary}
       </p>
-      <ul style={{ margin: 0, paddingLeft: '18px', fontFamily: F.body, fontSize: '12px', color: C.textPrimary, lineHeight: 1.7 }}>
+      <ul style={{ margin: 0, paddingLeft: '18px', fontFamily: F.body, fontSize: '12px', color: UI.text, lineHeight: 1.7 }}>
         {AI_ANALYSIS.points.map((point, i) => (
           <li key={i} style={{ marginBottom: S[2] }}>{point}</li>
         ))}
@@ -284,21 +320,21 @@ function AIAnalysisCard() {
 /* ─── Tooltip style ───────────────────────────────────────── */
 const TIP = {
   contentStyle: {
-    backgroundColor: C.surface2, border: `1px solid ${C.border}`,
-    borderRadius: R.md, fontFamily: F.mono, fontSize: '11px', color: C.textPrimary,
+    backgroundColor: UI.navy2, border: `1px solid ${UI.border}`,
+    borderRadius: R.md, fontFamily: F.mono, fontSize: '11px', color: UI.text,
   },
-  labelStyle: { color: C.textMuted, marginBottom: '4px' },
-  itemStyle:  { color: C.textPrimary },
+  labelStyle: { color: UI.textMuted, marginBottom: '4px' },
+  itemStyle:  { color: UI.text },
 };
 
 /* ─── StatCard ────────────────────────────────────────────── */
 function StatCard({ label, value, delta, up, posGood }) {
   const good  = posGood ? up : !up;
-  const color = good ? C.primary : C.red;
+  const color = good ? UI.sky : C.red;
   return (
-    <div style={{ flex: 1, backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card, padding: S[4] }}>
-      <div style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: S[2] }}>{label}</div>
-      <div style={{ fontFamily: F.mono, fontSize: '22px', fontWeight: 700, color: C.textPrimary, lineHeight: 1, marginBottom: S[1] }}>{value}</div>
+    <div style={{ flex: 1, backgroundColor: UI.surface, border: `1px solid ${UI.border}`, borderRadius: R.card, padding: S[4] }}>
+      <div style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: UI.textMuted, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: S[2] }}>{label}</div>
+      <div style={{ fontFamily: F.mono, fontSize: '22px', fontWeight: 700, color: UI.text, lineHeight: 1, marginBottom: S[1] }}>{value}</div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
         <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
           {up
@@ -307,7 +343,7 @@ function StatCard({ label, value, delta, up, posGood }) {
           }
         </svg>
         <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, color }}>{delta}</span>
-        <span style={{ fontFamily: F.body, fontSize: '10px', color: C.textMuted }}>vs prev</span>
+        <span style={{ fontFamily: F.body, fontSize: '10px', color: UI.textMuted }}>vs prev</span>
       </div>
     </div>
   );
@@ -316,11 +352,11 @@ function StatCard({ label, value, delta, up, posGood }) {
 /* ─── CtrChart ────────────────────────────────────────────── */
 function CtrChart() {
   return (
-    <div style={{ backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card, padding: S[6] }}>
+    <div style={{ backgroundColor: UI.surface, border: `1px solid ${UI.border}`, borderRadius: R.card, padding: S[6] }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: S[4] }}>
         <div>
-          <div style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: C.textPrimary }}>CTR — 14-Day Trend</div>
-          <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted, marginTop: '2px' }}>Click-through rate across all active ad sets</div>
+          <div style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: UI.text }}>CTR — 14-Day Trend</div>
+          <div style={{ fontFamily: F.body, fontSize: '11px', color: UI.textMuted, marginTop: '2px' }}>Click-through rate across all active ad sets</div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
           <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: C.red }}/>
@@ -329,16 +365,16 @@ function CtrChart() {
       </div>
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={CTR_DATA}>
-          <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="day" tick={{ fill: C.textMuted, fontFamily: F.mono, fontSize: 10 }} axisLine={false} tickLine={false} interval={1}/>
-          <YAxis tick={{ fill: C.textMuted, fontFamily: F.mono, fontSize: 10 }} axisLine={false} tickLine={false} width={36} domain={[1.5, 4.5]} tickFormatter={(v) => `${v}%`}/>
+          <CartesianGrid strokeDasharray="3 3" stroke={UI.border} vertical={false}/>
+          <XAxis dataKey="day" tick={{ fill: UI.textMuted, fontFamily: F.mono, fontSize: 10 }} axisLine={false} tickLine={false} interval={1}/>
+          <YAxis tick={{ fill: UI.textMuted, fontFamily: F.mono, fontSize: 10 }} axisLine={false} tickLine={false} width={36} domain={[1.5, 4.5]} tickFormatter={(v) => `${v}%`}/>
           <Tooltip {...TIP} formatter={(v) => [`${v}%`, 'CTR']}/>
           <ReferenceLine x="Feb 22" stroke={C.red} strokeDasharray="5 3" strokeWidth={1.5} label={{ value: '\u26a0', fill: C.red, fontSize: 13, position: 'insideTopLeft' }}/>
-          <Line dataKey="ctr" stroke={C.primary} strokeWidth={2} dot={(props) => {
+          <Line dataKey="ctr" stroke={UI.sky} strokeWidth={2} dot={(props) => {
             const { cx, cy, payload } = props;
             const isAnomaly = payload.day === 'Feb 22';
             return isAnomaly
-              ? <circle key={cx} cx={cx} cy={cy} r={5} fill={C.red} stroke={C.surface} strokeWidth={2}/>
+              ? <circle key={cx} cx={cx} cy={cy} r={5} fill={C.red} stroke={UI.navy} strokeWidth={2}/>
               : <circle key={cx} cx={cx} cy={cy} r={0} fill="transparent"/>;
           }}/>
         </LineChart>
@@ -350,21 +386,21 @@ function CtrChart() {
 /* ─── AlertList ───────────────────────────────────────────── */
 function AlertList() {
   return (
-    <div style={{ backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card, padding: S[5], display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      <div style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: C.textPrimary, marginBottom: S[4], flexShrink: 0 }}>Alert History</div>
+    <div style={{ backgroundColor: UI.surface, border: `1px solid ${UI.border}`, borderRadius: R.card, padding: S[5], display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: UI.text, marginBottom: S[4], flexShrink: 0 }}>Alert History</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: S[3], overflowY: 'auto', ...scrollbarStyle }}>
         {ALERTS.map((a) => {
-          const col = SEV_COLOR[a.sev] ?? C.textMuted;
+          const col = SEV_COLOR[a.sev] ?? UI.textMuted;
           return (
             <div key={a.id} style={{ borderLeft: `2px solid ${col}`, paddingLeft: S[3], paddingBottom: S[2] }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: S[2], marginBottom: '4px' }}>
                 <span style={{ fontFamily: F.mono, fontSize: '9px', fontWeight: 700, color: col, backgroundColor: `${col}18`, border: `1px solid ${col}30`, borderRadius: R.pill, padding: '1px 6px' }}>
                   {a.sev}
                 </span>
-                <span style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted }}>{a.date} · {a.time}</span>
+                <span style={{ fontFamily: F.mono, fontSize: '10px', color: UI.textMuted }}>{a.date} · {a.time}</span>
               </div>
-              <div style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.textPrimary, marginBottom: '2px' }}>{a.title}</div>
-              <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textSecondary, lineHeight: 1.5 }}>{a.desc}</div>
+              <div style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: UI.text, marginBottom: '2px' }}>{a.title}</div>
+              <div style={{ fontFamily: F.body, fontSize: '11px', color: UI.textMuted, lineHeight: 1.5 }}>{a.desc}</div>
             </div>
           );
         })}
@@ -397,9 +433,9 @@ function CreativeTable() {
   };
 
   return (
-    <div style={{ backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card, padding: S[6] }}>
-      <div style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: C.textPrimary, marginBottom: '4px' }}>Creative Performance</div>
-      <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted, marginBottom: S[4] }}>Click any column header to sort</div>
+    <div style={{ backgroundColor: UI.surface, border: `1px solid ${UI.border}`, borderRadius: R.card, padding: S[6] }}>
+      <div style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: UI.text, marginBottom: '4px' }}>Creative Performance</div>
+      <div style={{ fontFamily: F.body, fontSize: '11px', color: UI.textMuted, marginBottom: S[4] }}>Click any column header to sort</div>
       <div style={{ overflowX: 'auto', ...scrollbarStyle }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
@@ -408,10 +444,10 @@ function CreativeTable() {
                 <th key={k} onClick={() => handleSort(k)} style={{
                   padding: `${S[2]} ${S[3]}`, textAlign: k === 'name' ? 'left' : 'right',
                   fontFamily: F.mono, fontSize: '10px', fontWeight: 700,
-                  color: sortKey === k ? C.primary : C.textMuted,
+                  color: sortKey === k ? UI.sky : UI.textMuted,
                   textTransform: 'uppercase', letterSpacing: '0.06em',
                   cursor: 'pointer', whiteSpace: 'nowrap',
-                  borderBottom: `1px solid ${C.border}`, userSelect: 'none',
+                  borderBottom: `1px solid ${UI.border}`, userSelect: 'none',
                 }}>
                   {CR_LABELS[k]}{sortKey === k ? (sortDir === 'asc' ? ' \u2191' : ' \u2193') : ''}
                 </th>
@@ -421,18 +457,18 @@ function CreativeTable() {
           <tbody>
             {sorted.map((row, i) => {
               const ss = STATUS_STYLE[row.status] ?? STATUS_STYLE.Active;
-              const tc = TYPE_COLOR[row.type] ?? C.textSecondary;
+              const tc = TYPE_COLOR[row.type] ?? UI.textMuted;
               return (
-                <tr key={row.id} style={{ backgroundColor: i % 2 === 1 ? C.surface2 : 'transparent' }}>
+                <tr key={row.id} style={{ backgroundColor: i % 2 === 1 ? UI.surface2 : 'transparent' }}>
                   {CR_COLS.map((k) => (
                     <td key={k} style={{
                       padding: `${S[2]} ${S[3]}`,
                       textAlign: k === 'name' ? 'left' : 'right',
-                      borderBottom: `1px solid ${C.border}`,
+                      borderBottom: `1px solid ${UI.border}`,
                       whiteSpace: k === 'name' ? 'normal' : 'nowrap',
                     }}>
                       {k === 'name' && (
-                        <span style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.textPrimary }}>{row.name}</span>
+                        <span style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: UI.text }}>{row.name}</span>
                       )}
                       {k === 'type' && (
                         <span style={{ fontFamily: F.mono, fontSize: '10px', color: tc, backgroundColor: `${tc}14`, border: `1px solid ${tc}25`, borderRadius: R.pill, padding: '1px 7px' }}>{row.type}</span>
@@ -441,7 +477,7 @@ function CreativeTable() {
                         <span style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: ss.color, backgroundColor: ss.bg, border: `1px solid ${ss.border}`, borderRadius: R.pill, padding: '1px 7px' }}>{row.status}</span>
                       )}
                       {k !== 'name' && k !== 'type' && k !== 'status' && (
-                        <span style={{ fontFamily: F.mono, fontSize: '12px', color: C.textSecondary }}>{fmt(k, row[k])}</span>
+                        <span style={{ fontFamily: F.mono, fontSize: '12px', color: UI.textMuted }}>{fmt(k, row[k])}</span>
                       )}
                     </td>
                   ))}
@@ -458,12 +494,12 @@ function CreativeTable() {
 /* ─── AudienceCard ────────────────────────────────────────── */
 function AudienceCard({ seg }) {
   const bc = BURNOUT_COLOR(seg.burnout);
-  const STATUS_BG  = { Healthy: C.primaryGlow, Warning: C.amberDim, Critical: C.redDim };
-  const STATUS_COL = { Healthy: C.primary, Warning: C.amber, Critical: C.red };
+  const STATUS_BG  = { Healthy: UI.electricTint, Warning: C.amberDim, Critical: C.redDim };
+  const STATUS_COL = { Healthy: UI.sky, Warning: C.amber, Critical: C.red };
   return (
-    <div style={{ backgroundColor: C.surface, border: `1px solid ${seg.status === 'Critical' ? 'rgba(255,110,122,0.3)' : C.border}`, borderRadius: R.card, padding: S[4], display: 'flex', flexDirection: 'column', gap: S[3] }}>
+    <div style={{ backgroundColor: UI.surface, border: `1px solid ${seg.status === 'Critical' ? 'rgba(255,110,122,0.3)' : UI.border}`, borderRadius: R.card, padding: S[4], display: 'flex', flexDirection: 'column', gap: S[3] }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: S[2] }}>
-        <span style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 700, color: C.textPrimary, lineHeight: 1.4 }}>{seg.segment}</span>
+        <span style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 700, color: UI.text, lineHeight: 1.4 }}>{seg.segment}</span>
         <span style={{ fontFamily: F.mono, fontSize: '9px', fontWeight: 700, color: STATUS_COL[seg.status], backgroundColor: STATUS_BG[seg.status], borderRadius: R.pill, padding: '2px 7px', whiteSpace: 'nowrap', flexShrink: 0 }}>
           {seg.status}
         </span>
@@ -471,24 +507,24 @@ function AudienceCard({ seg }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: S[2] }}>
         <div>
-          <div style={{ fontFamily: F.mono, fontSize: '9px', color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '2px' }}>Reach</div>
-          <div style={{ fontFamily: F.mono, fontSize: '16px', fontWeight: 700, color: C.textPrimary }}>{seg.reach.toLocaleString()}</div>
+          <div style={{ fontFamily: F.mono, fontSize: '9px', color: UI.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '2px' }}>Reach</div>
+          <div style={{ fontFamily: F.mono, fontSize: '16px', fontWeight: 700, color: UI.text }}>{seg.reach.toLocaleString()}</div>
         </div>
         <div>
-          <div style={{ fontFamily: F.mono, fontSize: '9px', color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '2px' }}>Frequency</div>
-          <div style={{ fontFamily: F.mono, fontSize: '16px', fontWeight: 700, color: C.textPrimary }}>{seg.frequency.toFixed(2)}</div>
+          <div style={{ fontFamily: F.mono, fontSize: '9px', color: UI.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '2px' }}>Frequency</div>
+          <div style={{ fontFamily: F.mono, fontSize: '16px', fontWeight: 700, color: UI.text }}>{seg.frequency.toFixed(2)}</div>
         </div>
       </div>
 
       <div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '5px' }}>
-          <span style={{ fontFamily: F.mono, fontSize: '9px', color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Burnout risk</span>
+          <span style={{ fontFamily: F.mono, fontSize: '9px', color: UI.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Burnout risk</span>
           <span style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: bc }}>{Math.round(seg.burnout * 100)}%</span>
         </div>
-        <div style={{ height: '5px', backgroundColor: C.surface2, borderRadius: R.pill, overflow: 'hidden' }}>
+        <div style={{ height: '5px', backgroundColor: UI.surface2, borderRadius: R.pill, overflow: 'hidden' }}>
           <div style={{ height: '100%', width: `${seg.burnout * 100}%`, backgroundColor: bc, borderRadius: R.pill, transition: 'width 0.4s ease' }}/>
         </div>
-        <div style={{ fontFamily: F.body, fontSize: '10px', color: C.textMuted, marginTop: '4px' }}>
+        <div style={{ fontFamily: F.body, fontSize: '10px', color: UI.textMuted, marginTop: '4px' }}>
           {seg.frequency.toFixed(2)} / {seg.maxFreq} threshold
         </div>
       </div>
@@ -502,9 +538,9 @@ function MetaCampaignsSection({ campaign, stats }) {
 
   if (!metaConnected) {
     return (
-      <div style={{ backgroundColor: C.surface2, border: `1px dashed ${C.border}`, borderRadius: R.card, padding: S[8], textAlign: 'center', marginBottom: S[5] }}>
-        <p style={{ fontFamily: F.body, fontSize: '14px', color: C.textSecondary, margin: 0 }}>
-          Connect your Meta Business account above to see previous campaigns and their analytics from Meta Business Suite. ARIA will use this data to learn and give you a detailed report.
+      <div style={{ backgroundColor: UI.navy2, border: `1px dashed ${UI.border}`, borderRadius: R.card, padding: S[8], textAlign: 'center', marginBottom: S[5] }}>
+        <p style={{ fontFamily: F.body, fontSize: '14px', color: UI.textMuted, margin: 0 }}>
+          Connect your Meta Business account above to see previous campaigns and their analytics from Meta Business Suite. Freya will use this data to learn and give you a detailed report.
         </p>
       </div>
     );
@@ -513,11 +549,11 @@ function MetaCampaignsSection({ campaign, stats }) {
   return (
     <>
       <div style={{ marginBottom: S[4] }}>
-        <h2 style={{ fontFamily: F.display, fontSize: '16px', fontWeight: 700, color: C.textPrimary, margin: '0 0 4px' }}>
+        <h2 style={{ fontFamily: F.display, fontSize: '16px', fontWeight: 700, color: UI.text, margin: '0 0 4px' }}>
           Previous campaigns & analytics from Meta Business Suite
         </h2>
-        <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted, margin: 0 }}>
-          Campaign performance ARIA uses to learn and generate detailed reports
+        <p style={{ fontFamily: F.body, fontSize: '12px', color: UI.textMuted, margin: 0 }}>
+          Campaign performance Freya uses to learn and generate detailed reports
         </p>
       </div>
 
@@ -541,8 +577,8 @@ function MetaCampaignsSection({ campaign, stats }) {
 
       {/* Audience breakdown */}
       <div>
-        <div style={{ fontFamily: 'Syne, sans-serif', fontSize: '14px', fontWeight: 700, color: C.textPrimary, marginBottom: '4px' }}>Audience Breakdown</div>
-        <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted, marginBottom: S[4] }}>Frequency and burnout risk across active audience segments</div>
+        <div style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: UI.text, marginBottom: '4px' }}>Audience Breakdown</div>
+        <div style={{ fontFamily: F.body, fontSize: '11px', color: UI.textMuted, marginBottom: S[4] }}>Frequency and burnout risk across active audience segments</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: S[4] }}>
           {AUDIENCES.map((a) => <AudienceCard key={a.segment} seg={a}/>)}
         </div>
@@ -557,25 +593,25 @@ export default function MetaMonitor() {
   const stats = STATS[campaign] ?? STATS.all;
 
   return (
-    <div style={{ height: '100vh', overflowY: 'auto', backgroundColor: C.bg, ...scrollbarStyle }}>
+    <div style={{ height: '100vh', overflowY: 'auto', backgroundColor: UI.navy, ...scrollbarStyle }}>
       <div style={{ padding: `${S[6]} ${S[8]} ${S[10]}` }}>
 
         {/* Header + campaign filter */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: S[6] }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: S[6], paddingBottom: S[4], borderBottom: `3px solid ${UI.electric}` }}>
           <div>
-            <h1 style={{ fontFamily: 'Syne, sans-serif', fontSize: '22px', fontWeight: 800, color: C.textPrimary, margin: 0, letterSpacing: '-0.03em' }}>Meta Ads Monitor</h1>
-            <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, margin: `${S[1]} 0 0` }}>Paid media performance — 14-day rolling window</p>
+            <h1 style={{ fontFamily: F.display, fontSize: '22px', fontWeight: 800, color: UI.text, margin: 0, letterSpacing: '-0.03em' }}>Meta Ads Monitor</h1>
+            <p style={{ fontFamily: F.body, fontSize: '12px', color: UI.textMuted, margin: `${S[1]} 0 0` }}>Paid media performance — 14-day rolling window</p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
-            <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted }}>Campaign</span>
+            <span style={{ fontFamily: F.mono, fontSize: '11px', color: UI.textMuted }}>Campaign</span>
             <div style={{ position: 'relative' }}>
               <select
                 value={campaign}
                 onChange={(e) => setCampaign(e.target.value)}
                 style={{
                   appearance: 'none',
-                  backgroundColor: C.surface, color: C.textPrimary,
-                  border: `1px solid ${C.border}`, borderRadius: R.button,
+                  backgroundColor: UI.navy2, color: UI.text,
+                  border: `1px solid ${UI.border}`, borderRadius: R.button,
                   padding: `${S[2]} ${S[6]} ${S[2]} ${S[3]}`,
                   fontFamily: F.body, fontSize: '13px', fontWeight: 600,
                   cursor: 'pointer', outline: 'none',
@@ -584,7 +620,7 @@ export default function MetaMonitor() {
                 {CAMPAIGNS.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
               </select>
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
-                <path d="M2 3.5l3 3 3-3" stroke={C.textMuted} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M2 3.5l3 3 3-3" stroke={UI.textMuted} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
           </div>

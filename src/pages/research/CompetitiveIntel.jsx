@@ -199,7 +199,7 @@ export default function CompetitiveIntel() {
             Competitive Intelligence
           </h1>
           <span style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary }}>
-            Updated 2 hours ago by <span style={{ color: C.primary }}>ARIA</span>
+            Updated 2 hours ago by <span style={{ color: C.primary }}>Freya</span>
           </span>
         </div>
         <div style={{ display: 'flex', gap: S[2] }}>

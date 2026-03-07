@@ -135,7 +135,7 @@ export default function ARIAWeeklyBrief({
         <div style={{ display: 'flex', alignItems: 'center', gap: S[3] }}>
           <AriaOrb />
           <span style={{ fontFamily: F.display, fontSize: '16px', fontWeight: 700, color: C.textPrimary }}>
-            ARIA Weekly Brief
+            Freya Weekly Brief
           </span>
           <span style={{ fontFamily: F.body, fontSize: '13px', color: C.textMuted }}>
             {dateStr} · {dayStr}
@@ -235,8 +235,8 @@ export default function ARIAWeeklyBrief({
 
         {/* 💡 ARIA Recommends */}
         <div style={{ ...sectionBase, backgroundColor: recBg, border: `1px solid rgba(94,234,212,0.2)` }}>
-          <div style={sectionHeader('💡', 'ARIA Recommends', brief?.recommendations?.length)}>
-            💡 ARIA Recommends ({brief?.recommendations?.length ?? 0})
+          <div style={sectionHeader('💡', 'Freya Recommends', brief?.recommendations?.length)}>
+            💡 Freya Recommends ({brief?.recommendations?.length ?? 0})
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: S[3] }}>
             {(brief?.recommendations ?? []).map((rec) => (

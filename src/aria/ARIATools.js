@@ -71,7 +71,7 @@ export const ARIA_TOOLS = [
   },
   {
     name: 'fill_form',
-    description: 'Auto-fill a form in the NEXARA app with extracted or generated data',
+    description: 'Auto-fill a form in the Antarious app with extracted or generated data',
     input_schema: {
       type: 'object',
       properties: {

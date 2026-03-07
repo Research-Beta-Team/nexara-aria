@@ -36,7 +36,7 @@ const LIMIT_CONFIG = {
     addon: { label: 'Custom Agent Build', id: 'custom_agent_build' },
   },
   ariaVoiceMinutes: {
-    label: 'ARIA Voice minute', plural: 'ARIA Voice minutes',
+    label: 'Freya Voice minute', plural: 'Freya Voice minutes',
     upgrade: 'unlimited minutes',
     addon: { label: '+500 min expansion', id: 'aria_voice_expansion' },
   },

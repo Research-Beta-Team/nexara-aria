@@ -5,6 +5,7 @@ import useToast from '../hooks/useToast';
 import useStore from '../store/useStore';
 import { campaigns } from '../data/campaigns';
 import ConnectAccountModal from '../components/social/ConnectAccountModal';
+import { IconLinkedIn, IconFacebook, IconInstagram, IconWhatsApp } from '../components/ui/Icons';
 
 const CHANNEL_OPTIONS = [
   { id: 'email', label: 'Email', desc: 'Sequences and outreach' },
@@ -114,7 +115,7 @@ export default function AriaCampaignFlow() {
       setFetching(true);
       setTimeout(() => {
         setFetching(false);
-        toast.success('Content fetched. ARIA will use it for strategy and plan.');
+        toast.success('Content fetched. Freya will use it for strategy and plan.');
         setStep((s) => Math.min(s + 1, STEPS.length - 1));
       }, 2000);
       return;
@@ -130,7 +131,7 @@ export default function AriaCampaignFlow() {
   const handleContinueToStrategy = () => {
     const campaignId = campaigns[0]?.id ?? 'c1';
     navigate(`/campaigns/${campaignId}?tab=strategy&from_aria=1`);
-    toast.success('Add or confirm strategy — then ARIA will generate your plan.');
+    toast.success('Add or confirm strategy — then Freya will generate your plan.');
   };
 
   const handleSkipAccess = () => setShowSkipWarning(true);
@@ -141,13 +142,13 @@ export default function AriaCampaignFlow() {
   };
 
   const ariaTip = {
-    goal: 'A clear goal helps ARIA suggest the right channels and messaging.',
-    learn: 'ARIA uses past campaign performance to improve targeting and copy.',
-    icp: 'Define who you’re targeting so ARIA can personalize outreach and ads.',
+    goal: 'A clear goal helps Freya suggest the right channels and messaging.',
+    learn: 'Freya uses past campaign performance to improve targeting and copy.',
+    icp: 'Define who you’re targeting so Freya can personalize outreach and ads.',
     channels: 'Start with 1–2 channels; add more once the campaign is performing.',
-    access: 'Connected accounts let ARIA reuse and learn from your best content.',
-    fetch: 'ARIA will pull creatives and copy to inform the new campaign plan.',
-    ready: 'You’ll complete strategy and plan on the campaign page. ARIA generates the plan from your inputs.',
+    access: 'Connected accounts let Freya reuse and learn from your best content.',
+    fetch: 'Freya will pull creatives and copy to inform the new campaign plan.',
+    ready: 'You’ll complete strategy and plan on the campaign page. Freya generates the plan from your inputs.',
   };
 
   return (
@@ -190,7 +191,7 @@ export default function AriaCampaignFlow() {
             </div>
             <div>
               <h1 style={{ fontFamily: F.display, fontSize: 22, fontWeight: 800, color: C.textPrimary, margin: 0, letterSpacing: '-0.02em' }}>
-                Create campaign with ARIA
+                Create campaign with Freya
               </h1>
               <p style={{ fontFamily: F.body, fontSize: 13, color: C.textSecondary, margin: '4px 0 0' }}>
                 Step {step + 1} of {STEPS.length} · {STEPS[step]?.title}
@@ -220,7 +221,7 @@ export default function AriaCampaignFlow() {
             padding: S[6],
             boxShadow: shadows.card,
           }}>
-            {/* ARIA tip strip */}
+            {/* Freya tip strip */}
             <div style={{
               display: 'flex',
               alignItems: 'flex-start',
@@ -232,7 +233,7 @@ export default function AriaCampaignFlow() {
               borderRadius: R.md,
               borderLeft: `3px solid ${C.primary}`,
             }}>
-              <span style={{ fontFamily: F.mono, fontSize: 10, fontWeight: 700, color: C.primary, textTransform: 'uppercase', letterSpacing: '0.08em' }}>ARIA</span>
+              <span style={{ fontFamily: F.mono, fontSize: 10, fontWeight: 700, color: C.primary, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Freya</span>
               <p style={{ fontFamily: F.body, fontSize: 12, color: C.textSecondary, margin: 0, lineHeight: 1.45 }}>{ariaTip[stepId]}</p>
             </div>
 
@@ -252,7 +253,7 @@ export default function AriaCampaignFlow() {
                   {dashboardCampaignFiles.map((f, i) => (typeof f === 'string' ? f : f?.name)).filter(Boolean).join(', ')}
                 </div>
                 <p style={{ fontFamily: F.body, fontSize: 11, color: C.textMuted, margin: `${S[2]} 0 0 0` }}>
-                  ARIA will use these when building your strategy and plan.
+                  Freya will use these when building your strategy and plan.
                 </p>
               </div>
             )}
@@ -326,7 +327,7 @@ export default function AriaCampaignFlow() {
                   ))}
                 </select>
                 <p style={{ fontFamily: F.body, fontSize: 12, color: C.textMuted, marginTop: S[2], marginBottom: 0 }}>
-                  ARIA will use performance and messaging from this campaign to improve the new one.
+                  Freya will use performance and messaging from this campaign to improve the new one.
                 </p>
               </div>
             )}
@@ -336,7 +337,7 @@ export default function AriaCampaignFlow() {
                 {[
                   { value: 'existing', label: 'Use existing ICP', desc: 'Pick from your saved ICPs in ICP Builder' },
                   { value: 'builder', label: 'Build in ICP Builder', desc: 'Define job titles, industries, and filters' },
-                  { value: 'aria', label: 'Generate with ARIA', desc: 'ARIA suggests an ICP from your closed-won deals or CRM' },
+                  { value: 'aria', label: 'Generate with Freya', desc: 'Freya suggests an ICP from your closed-won deals or CRM' },
                 ].map((opt) => (
                   <button
                     key={opt.value}
@@ -383,9 +384,9 @@ export default function AriaCampaignFlow() {
                   <button
                     type="button"
                     style={{ ...btn.ghost, fontSize: 12, color: C.primary, marginTop: S[2] }}
-                    onClick={() => icpChoice === 'builder' ? navigate('/research/icp') : toast.info('ARIA ICP generation — coming soon')}
+                    onClick={() => icpChoice === 'builder' ? navigate('/research/icp') : toast.info('Freya ICP generation — coming soon')}
                   >
-                    {icpChoice === 'builder' ? 'Open ICP Builder →' : 'Generate ICP with ARIA →'}
+                    {icpChoice === 'builder' ? 'Open ICP Builder →' : 'Generate ICP with Freya →'}
                   </button>
                 )}
               </div>
@@ -421,16 +422,22 @@ export default function AriaCampaignFlow() {
             {stepId === 'access' && (
               <div>
                 <p style={{ fontFamily: F.body, fontSize: 13, color: C.textSecondary, marginBottom: S[4] }}>
-                  Connect accounts so ARIA can fetch and learn from your best content. You can add more later from Social Media.
+                  Connect accounts so Freya can fetch and learn from your best content. You can add more later from Social Media.
                 </p>
                 {connectedAccounts.length > 0 && (
                   <div style={{ marginBottom: S[4] }}>
                     <div style={{ fontFamily: F.mono, fontSize: 10, fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[2] }}>
                       Connected ({connectedAccounts.length})
                     </div>
-                    <ul style={{ margin: 0, paddingLeft: 18, fontFamily: F.body, fontSize: 13, color: C.textSecondary }}>
+                    <ul style={{ margin: 0, paddingLeft: 18, fontFamily: F.body, fontSize: 13, color: C.textSecondary, listStyle: 'none' }}>
                       {connectedAccounts.map((a) => (
-                        <li key={a.id}>{a.name} · {a.platform}</li>
+                        <li key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                          {a.platform === 'LinkedIn' && <IconLinkedIn color="#0A66C2" width={16} height={16} />}
+                          {(a.platform === 'Meta' || a.platform === 'Facebook') && <IconFacebook color="#1877F2" width={16} height={16} />}
+                          {a.platform === 'Instagram' && <IconInstagram color="#E4405F" width={16} height={16} />}
+                          {a.platform === 'WhatsApp' && <IconWhatsApp color="#25D366" width={16} height={16} />}
+                          <span>{a.name} · {a.platform}</span>
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -452,7 +459,7 @@ export default function AriaCampaignFlow() {
                   <div style={{ marginTop: S[4], padding: S[4], backgroundColor: C.amberDim, border: `1px solid ${C.amber}`, borderRadius: R.card }}>
                     <p style={{ fontFamily: F.body, fontSize: 13, fontWeight: 600, color: C.textPrimary, margin: '0 0 8px' }}>Continue without connecting?</p>
                     <p style={{ fontFamily: F.body, fontSize: 12, color: C.textSecondary, margin: '0 0 12px' }}>
-                      ARIA won’t fetch content from your channels. You can connect later from Social Media.
+                      Freya won’t fetch content from your channels. You can connect later from Social Media.
                     </p>
                     <div style={{ display: 'flex', gap: S[2] }}>
                       <button type="button" style={{ ...btn.ghost, fontSize: 12 }} onClick={() => setShowSkipWarning(false)}>Go back</button>
@@ -467,7 +474,7 @@ export default function AriaCampaignFlow() {
               <div>
                 <p style={{ fontFamily: F.body, fontSize: 13, color: C.textSecondary, marginBottom: S[4] }}>
                   {connectedAccounts.length > 0
-                    ? 'ARIA will fetch content from your connected channels and use it to inform the campaign strategy and plan.'
+                    ? 'Freya will fetch content from your connected channels and use it to inform the campaign strategy and plan.'
                     : 'No accounts connected. Skip this step — you can connect and fetch later.'}
                 </p>
                 {connectedAccounts.length > 0 ? (
@@ -514,7 +521,7 @@ export default function AriaCampaignFlow() {
                   </div>
                 </div>
                 <p style={{ fontFamily: F.body, fontSize: 13, color: C.textSecondary, margin: 0 }}>
-                  Next you’ll complete <strong style={{ color: C.textPrimary }}>Strategy</strong> (brief, ICP, positioning) and ARIA will generate your <strong style={{ color: C.textPrimary }}>Plan</strong>. Then approve content and launch.
+                  Next you’ll complete <strong style={{ color: C.textPrimary }}>Strategy</strong> (brief, ICP, positioning) and Freya will generate your <strong style={{ color: C.textPrimary }}>Plan</strong>. Then approve content and launch.
                 </p>
                 <button
                   type="button"

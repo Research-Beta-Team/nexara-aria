@@ -162,7 +162,7 @@ export default function StartupDashboard({ embedded }) {
         </section>
       </div>
 
-      {/* Chat with ARIA */}
+      {/* Chat with Freya */}
       <section style={{ marginTop: S[6] }}>
         <div
           style={{
@@ -180,11 +180,11 @@ export default function StartupDashboard({ embedded }) {
           <div>
             <h2 style={{ fontFamily: F.display, fontSize: '16px', fontWeight: 700, color: C.textPrimary, margin: '0 0 4px 0' }}>Guide the AI</h2>
             <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: 0 }}>
-              Chat with ARIA to set strategy, change direction, or ask for a replan. Your team can do the same from the main app.
+              Chat with Freya to set strategy, change direction, or ask for a replan. Your team can do the same from the main app.
             </p>
           </div>
           <button type="button" onClick={() => { toggleAria(); navigate('/'); }} style={{ ...btn.primary }}>
-            Open ARIA
+            Open Freya
           </button>
         </div>
       </section>
@@ -196,7 +196,7 @@ export default function StartupDashboard({ embedded }) {
             onClick={() => setSegment(null)}
             style={{ background: 'none', border: 'none', color: C.primary, cursor: 'pointer', textDecoration: 'underline' }}
           >
-            Use full NEXARA app →
+            Use full Antarious app →
           </button>
         ) : (
           <button
@@ -204,7 +204,7 @@ export default function StartupDashboard({ embedded }) {
             onClick={() => { setSegment('startup'); navigate('/'); }}
             style={{ background: 'none', border: 'none', color: C.primary, cursor: 'pointer', textDecoration: 'underline' }}
           >
-            Use full NEXARA app for startups →
+            Use full Antarious app for startups →
           </button>
         )}
       </p>

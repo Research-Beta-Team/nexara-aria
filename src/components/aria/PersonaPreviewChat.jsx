@@ -53,7 +53,7 @@ export default function PersonaPreviewChat({ personaId, companyBrand }) {
               A
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted, marginBottom: 2 }}>ARIA</div>
+              <div style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted, marginBottom: 2 }}>Freya</div>
               <div style={{ fontFamily: F.body, fontSize: '13px', color: C.textPrimary, lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
                 {responseText}
               </div>

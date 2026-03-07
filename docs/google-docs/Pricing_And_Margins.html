@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXARA — Pricing, API Cost per Campaign & Profit Margins</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.5; max-width: 800px; margin: 2em auto; padding: 0 1em; }
+    h1 { font-size: 1.4em; border-bottom: 1px solid #ccc; padding-bottom: 0.25em; }
+    h2 { font-size: 1.15em; margin-top: 1.25em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+    th { background: #f5f5f5; }
+    ul { margin: 0.5em 0; padding-left: 1.5em; }
+    p { margin: 0.5em 0; }
+    .meta { color: #666; font-size: 0.95em; margin-bottom: 1em; }
+  </style>
+</head>
+<body>
+
+<h1>NEXARA — Pricing, API Cost per Campaign & Profit Margins</h1>
+<p class="meta"><strong>Version:</strong> 1.0 (Prototype / Model) &nbsp;|&nbsp; <strong>Audience:</strong> CTO, Finance, Board</p>
+
+<h2>1. Sell Pricing (from plans)</h2>
+<table>
+  <tr><th>Plan</th><th>Monthly (list)</th><th>Annual (effective/mo)</th><th>Credits included</th><th>Top-up (per 1k credits)</th></tr>
+  <tr><td><strong>Starter</strong></td><td>$189</td><td>$149</td><td>5,000</td><td>$12</td></tr>
+  <tr><td><strong>Growth</strong></td><td>$599</td><td>$499</td><td>25,000</td><td>$12</td></tr>
+  <tr><td><strong>Scale</strong></td><td>$1,799</td><td>$1,499</td><td>100,000</td><td>$10</td></tr>
+  <tr><td><strong>Agency</strong></td><td>$4,799</td><td>$3,999</td><td>500,000</td><td>$8</td></tr>
+</table>
+<p>Rollover: Starter/Growth 2× cap, Scale 3× cap, Agency no cap (use or lose in model).</p>
+
+<h2>2. NEXARA-Side API Cost (Model)</h2>
+<p><strong>Primary variable cost:</strong> Anthropic (Claude) for ARIA.</p>
+<ul>
+  <li><strong>Model:</strong> claude-sonnet-4-20250514 (check current Anthropic pricing for input/output per 1M tokens).</li>
+  <li><strong>Assumption (example):</strong> $3 / 1M input, $15 / 1M output (replace with actual pricing).</li>
+  <li><strong>Per ARIA request (example):</strong> ~2k input + ~0.5k output → ~$0.0105 per request.</li>
+  <li><strong>Credit mapping (example):</strong> 1 NEXARA credit = 1 ARIA request (or 100 tokens); define consistently for margin calc.</li>
+</ul>
+<p><strong>Cost per campaign (example model):</strong></p>
+<ul>
+  <li>Assume <strong>50 ARIA requests</strong> per campaign (create, strategy, plan, content drafts, analytics) → 50 × $0.0105 ≈ <strong>$0.53</strong> per campaign (NEXARA cost).</li>
+  <li>If 1 credit = 1 request and 50 credits per campaign → <strong>50 credits</strong> consumed per campaign from NEXARA side.</li>
+</ul>
+<p>Use your actual token counts and Anthropic pricing to replace the above.</p>
+
+<h2>3. Tier-Based Cost vs Sell</h2>
+<table>
+  <tr><th>Plan</th><th>Annual revenue (sell)</th><th>Credits included</th><th>Est. cost of credits (if bought at API cost)</th><th>Gross margin (before infra/support)</th></tr>
+  <tr><td>Starter</td><td>$1,788</td><td>5,000</td><td>~$52.50 (5k × $0.0105)</td><td>High</td></tr>
+  <tr><td>Growth</td><td>$5,988</td><td>25,000</td><td>~$262.50</td><td>High</td></tr>
+  <tr><td>Scale</td><td>$17,988</td><td>100,000</td><td>~$1,050</td><td>High</td></tr>
+  <tr><td>Agency</td><td>$47,988</td><td>500,000</td><td>~$5,250</td><td>High</td></tr>
+</table>
+<p><strong>Note:</strong> "Cost of credits" above assumes each credit ≈ 1 ARIA request at ~$0.0105. Real cost depends on token usage and Anthropic pricing.</p>
+<p><strong>Other costs:</strong> Infrastructure, support (Scale/Agency: Slack, CSM), payment processing. Not included in table.</p>
+
+<h2>4. Profit Margin Calculation (Formula)</h2>
+<ul>
+  <li><strong>Revenue per plan:</strong> price.annual or price.monthly × 12.</li>
+  <li><strong>Variable cost per customer:</strong> Credits: (credits_included + expected_top_up) × cost_per_credit. cost_per_credit = your cost per 1k tokens (or per request) from Anthropic. Support: e.g. Scale = dedicated Slack + 1h SLA; Agency = dedicated CSM → allocate cost per seat.</li>
+  <li><strong>Contribution margin:</strong> Revenue − Variable cost (credits + support allocation).</li>
+  <li><strong>Gross margin %:</strong> (Revenue − COGS) / Revenue; COGS = credits + infra + support allocation.</li>
+</ul>
+<p><strong>Example (Growth, annual):</strong></p>
+<ul>
+  <li>Revenue: $5,988.</li>
+  <li>Credits: 25,000 × $0.0105 = $262.50.</li>
+  <li>Support: e.g. $50/customer (email, 4h SLA).</li>
+  <li>Contribution: $5,988 − $262.50 − $50 = $5,675.50 → <strong>~94.8%</strong> before fixed costs.</li>
+</ul>
+
+<h2>5. Top-Up and Overage</h2>
+<ul>
+  <li><strong>Top-up price:</strong> $8–12 per 1k credits (plan-dependent).</li>
+  <li><strong>Your cost:</strong> e.g. 1k credits ≈ 1k requests × $0.0105 = $10.50 (if margin negative at $12, adjust price or usage).</li>
+  <li><strong>Margin on top-up:</strong> (topUpPricePer1k − cost_per_1k_credits) / topUpPricePer1k.</li>
+</ul>
+
+<h2>6. Summary for Board</h2>
+<ul>
+  <li><strong>Sell pricing:</strong> Four tiers, $149–$3,999/mo (annual).</li>
+  <li><strong>NEXARA-side API cost:</strong> Dominated by Anthropic; model as cost per request/token and apply to credits consumed per campaign and per plan.</li>
+  <li><strong>Cost per campaign:</strong> Example ~$0.53 per campaign (50 requests); calibrate with real usage and pricing.</li>
+  <li><strong>Margins:</strong> High contribution margin possible if credit cost is a small fraction of revenue; refine with actual token usage and support costs.</li>
+  <li><strong>Sensitivity:</strong> Track (1) actual token consumption per plan, (2) top-up take rate, (3) support cost per tier.</li>
+</ul>
+
+</body>
+</html>

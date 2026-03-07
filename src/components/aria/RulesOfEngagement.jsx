@@ -7,7 +7,7 @@ export default function RulesOfEngagement({ rules, onToggle, onUpdate, onRemove,
   return (
     <div>
       <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: `0 0 ${S[4]} 0` }}>
-        Think of these as standing orders ARIA never forgets.
+        Think of these as standing orders Freya never forgets.
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: S[2] }}>
         {rules.map((rule) => (

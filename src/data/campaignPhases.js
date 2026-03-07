@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  NEXARA — Campaign Phases (templates + mock)
+//  Antarious — Campaign Phases (templates + mock)
 // ─────────────────────────────────────────────
 
 const CHANNEL_IDS = ['email', 'linkedin', 'meta_ads', 'google_ads', 'whatsapp'];

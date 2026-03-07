@@ -1,6 +1,8 @@
 import useToast from '../../../hooks/useToast';
 import { C, F, R, S, T, btn, badge, flex } from '../../../tokens';
 import { metaCampaigns } from '../../../data/campaigns';
+import { IconFacebook } from '../../ui/Icons';
+import { CHANNEL_COLORS } from '../../../config/channelBrands';
 
 const STATUS_BADGE = {
   active: { ...badge.base, ...badge.green },
@@ -115,14 +117,14 @@ export default function PaidAdsTab() {
       {/* Meta header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: S[3] }}>
-          {/* Meta icon */}
           <div style={{
             width: '32px', height: '32px', borderRadius: R.md,
-            backgroundColor: '#1877F2', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            backgroundColor: CHANNEL_COLORS.Facebook,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="white">
-              <path d="M8 2C4.686 2 2 4.686 2 8s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6zm0 2c1.104 0 2 .896 2 2s-.896 2-2 2-2-.896-2-2 .896-2 2-2zm0 9c-1.657 0-3.13-.846-4-2.13.02-1.322 2.667-2.054 4-2.054 1.326 0 3.976.732 4 2.054C11.13 12.154 9.657 13 8 13z"/>
-            </svg>
+            <IconFacebook color="#fff" width={18} height={18} />
           </div>
           <div>
             <div style={{ fontFamily: F.display, fontSize: '15px', fontWeight: 700, color: C.textPrimary }}>Meta Ads</div>

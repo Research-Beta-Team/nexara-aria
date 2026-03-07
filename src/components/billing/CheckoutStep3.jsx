@@ -137,10 +137,10 @@ function WireInfo() {
       </div>
       {[
         ['Bank', 'DBS Bank Singapore'],
-        ['Account Name', 'Nexara Pte. Ltd.'],
+        ['Account Name', 'Antarious Pte. Ltd.'],
         ['Account No.', '0123-4567-8901'],
         ['SWIFT', 'DBSSSGSG'],
-        ['Reference', 'NEXARA-UPGRADE-XXXXX'],
+        ['Reference', 'ANTARIOUS-UPGRADE-XXXXX'],
       ].map(([label, val]) => (
         <div key={label} style={{ display: 'flex', justifyContent: 'space-between' }}>
           <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted }}>{label}</span>

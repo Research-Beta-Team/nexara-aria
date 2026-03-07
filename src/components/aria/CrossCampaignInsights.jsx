@@ -45,7 +45,7 @@ export default function CrossCampaignInsights({ benchmarks = [] }) {
                     {youWin ? `+${diffText}` : diffText}
                     {row.ariaRecommendation && (
                       <div style={{ fontFamily: F.body, fontSize: '11px', fontWeight: 400, color: C.textSecondary, marginTop: 4 }}>
-                        ARIA: {row.ariaRecommendation}
+                        Freya: {row.ariaRecommendation}
                       </div>
                     )}
                   </td>

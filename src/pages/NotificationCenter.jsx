@@ -432,7 +432,7 @@ export default function NotificationCenter() {
             Notification Centre
           </h1>
           <span style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary }}>
-            All alerts, updates, and ARIA insights in one place
+            All alerts, updates, and Freya insights in one place
           </span>
         </div>
         <div style={{ display: 'flex', gap: S[2] }}>

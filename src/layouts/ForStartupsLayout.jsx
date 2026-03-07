@@ -35,7 +35,7 @@ export default function ForStartupsLayout() {
             letterSpacing: '-0.02em',
           }}
         >
-          NEXARA
+          ANTARIOUS
           <span style={{ fontFamily: F.body, fontWeight: 600, color: C.textSecondary, fontSize: '14px' }}>for Startups</span>
         </button>
         <nav style={{ display: 'flex', alignItems: 'center', gap: S[4] }}>

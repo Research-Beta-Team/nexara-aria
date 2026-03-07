@@ -8,6 +8,8 @@ import ContentPreviewModal from '../components/campaign/ContentPreviewModal';
 import ApprovalStatusBadge from '../components/approvals/ApprovalStatusBadge';
 import ContentIDChip from '../components/ui/ContentIDChip';
 import { contentItems, CONTENT_TYPE_COLORS } from '../data/content';
+import { TYPE_COLORS as CHANNEL_TYPE_COLORS } from '../config/channelBrands';
+import { IconLinkedIn, IconFacebook } from '../components/ui/Icons';
 
 /* ─── constants ──────────────────────────────────────────── */
 const TYPES    = ['Email', 'LinkedIn Ad', 'Meta Ad', 'SEO Article', 'Blog', 'Landing Page'];
@@ -16,8 +18,8 @@ const VIEWS    = ['List', 'Grid', 'By Type', 'By Campaign'];
 
 const TYPE_COLORS = CONTENT_TYPE_COLORS ?? {
   'Email':        C.primary,
-  'LinkedIn Ad':  '#0A66C2',
-  'Meta Ad':      '#1877F2',
+  'LinkedIn Ad':  CHANNEL_TYPE_COLORS['LinkedIn Ad'],
+  'Meta Ad':      CHANNEL_TYPE_COLORS['Meta Ad'],
   'SEO Article':  C.amber,
   'Blog':         '#A78BFA',
   'Landing Page': '#F472B6',
@@ -47,13 +49,8 @@ function TypeIcon({ type, size = 16 }) {
       <path d="M1 5.5l7 4 7-4" stroke={color} strokeWidth="1.3" strokeLinecap="round"/>
     </svg>
   );
-  if (type === 'LinkedIn Ad' || type === 'Meta Ad') return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect x="1" y="1" width="14" height="10" rx="2" stroke={color} strokeWidth="1.3"/>
-      <path d="M4 14h8" stroke={color} strokeWidth="1.3" strokeLinecap="round"/>
-      <path d="M8 11v3" stroke={color} strokeWidth="1.3" strokeLinecap="round"/>
-    </svg>
-  );
+  if (type === 'LinkedIn Ad') return <IconLinkedIn color={color} width={size} height={size} />;
+  if (type === 'Meta Ad') return <IconFacebook color={color} width={size} height={size} />;
   if (type === 'Blog' || type === 'SEO Article') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
       <path d="M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke={color} strokeWidth="1.3"/>
@@ -410,7 +407,7 @@ export default function ContentLibrary() {
 
         {/* Page header */}
         <div style={{ marginBottom: S[6] }}>
-          <h1 style={{ fontFamily: 'Syne, sans-serif', fontSize: '24px', fontWeight: 800, color: C.textPrimary, margin: 0, letterSpacing: '-0.03em' }}>
+          <h1 style={{ fontFamily: F.display, fontSize: '24px', fontWeight: 800, color: C.textPrimary, margin: 0, letterSpacing: '-0.03em' }}>
             {layout === 'client' ? 'Your approvals' : 'Content Library'}
           </h1>
           <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: `${S[1]} 0 0` }}>

@@ -8,8 +8,8 @@ const ACTION_TAG_STYLE = {
 
 export default function ApprovalComment({ comment, reviewer, onReply }) {
   const isAria = comment.authorId === 'aria';
-  const displayName = isAria ? 'ARIA' : (comment.authorId === 'current' ? 'You' : (reviewer?.name ?? 'Unknown'));
-  const initials = isAria ? 'A' : (comment.authorId === 'current' ? 'YU' : (reviewer?.initials ?? '?'));
+  const displayName = isAria ? 'Freya' : (comment.authorId === 'current' ? 'You' : (reviewer?.name ?? 'Unknown'));
+  const initials = isAria ? 'F' : (comment.authorId === 'current' ? 'YU' : (reviewer?.initials ?? '?'));
   const tagStyle = comment.actionTag ? ACTION_TAG_STYLE[comment.actionTag] : null;
 
   return (
@@ -71,7 +71,7 @@ export default function ApprovalComment({ comment, reviewer, onReply }) {
           >
             {comment.actionTag === 'approved' && 'Approved'}
             {comment.actionTag === 'changes_requested' && 'Changes requested'}
-            {comment.actionTag === 'replied_to_aria' && 'Replied to ARIA'}
+            {comment.actionTag === 'replied_to_aria' && 'Replied to Freya'}
           </span>
         )}
         {comment.ariaReply && (
@@ -87,7 +87,7 @@ export default function ApprovalComment({ comment, reviewer, onReply }) {
               color: C.textSecondary,
             }}
           >
-            ARIA revised and suggests: {comment.body}
+            Freya revised and suggests: {comment.body}
           </div>
         )}
         {!isAria && onReply && (

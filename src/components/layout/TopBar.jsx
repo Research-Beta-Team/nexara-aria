@@ -51,7 +51,7 @@ function Breadcrumb() {
     customers: 'Customer Success',
     'customer-success': 'Customer Success',
     settings: 'Settings',
-    aria: 'ARIA',
+    aria: 'Freya',
     billing: 'Billing',
     team: 'Team',
     whitelabel: 'White-Label',
@@ -583,6 +583,7 @@ export default function TopBar({ onAriaOpen }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const navigate = useNavigate();
   const notifications = useStore((s) => s.notifications);
+  const inboxUnreadCount = useStore((s) => s.inboxUnreadCount);
   const currentRole = useStore((s) => s.currentRole);
   const unread = notifications.filter((n) => !n.read).length;
   const toast = useToast();
@@ -610,9 +611,9 @@ export default function TopBar({ onAriaOpen }) {
     fontFamily: F.display,
     fontSize: '18px',
     fontWeight: 800,
-    color: C.textPrimary,
-    letterSpacing: '0.06em',
-    textTransform: 'uppercase',
+    color: C.primary,
+    letterSpacing: '-0.02em',
+    textTransform: 'none',
     flexShrink: 0,
   };
 
@@ -649,7 +650,7 @@ export default function TopBar({ onAriaOpen }) {
       <header style={barStyle}>
         {/* Left: logo + client switcher (owner/csm) or campaign selector */}
         <div style={leftStyle}>
-          <span style={logoStyle}>NEXARA</span>
+          <span style={logoStyle}>Antarious</span>
           <CampaignSelector />
         </div>
 
@@ -658,7 +659,7 @@ export default function TopBar({ onAriaOpen }) {
           <Breadcrumb />
         </div>
 
-        {/* Right: search, aria, theme, notif, credit chip, divider, avatar */}
+        {/* Right: search, Freya, theme, notif, credit chip, divider, avatar */}
         <div style={rightStyle}>
           {/* Search */}
           <button
@@ -672,7 +673,41 @@ export default function TopBar({ onAriaOpen }) {
             </svg>
           </button>
 
-          {/* ARIA AI button */}
+          {/* Inbox — pending messages */}
+          <button
+            style={iconButtonStyle}
+            title="Company Social Inbox"
+            onClick={() => navigate('/inbox')}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M2 4h12v8H2V4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+              <path d="M2 4l6 4 6-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            {inboxUnreadCount > 0 && (
+              <span style={{
+                position: 'absolute',
+                top: '2px',
+                right: '2px',
+                minWidth: '14px',
+                height: '14px',
+                padding: '0 4px',
+                borderRadius: '7px',
+                backgroundColor: C.red,
+                border: `1.5px solid ${C.surface}`,
+                fontFamily: F.mono,
+                fontSize: '10px',
+                fontWeight: 700,
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                {inboxUnreadCount > 99 ? '99+' : inboxUnreadCount}
+              </span>
+            )}
+          </button>
+
+          {/* Freya button */}
           <button
             style={{
               display: 'flex',
@@ -681,16 +716,16 @@ export default function TopBar({ onAriaOpen }) {
               height: '30px',
               padding: '0 10px',
               backgroundColor: C.primaryGlow,
-              border: `1px solid rgba(61,220,132,0.3)`,
+              border: `1px solid ${C.primary}`,
               borderRadius: R.pill,
               color: C.primary,
               cursor: 'pointer',
               transition: T.base,
             }}
-            title="Ask ARIA"
+            title="Ask Freya"
             onClick={() => onAriaOpen?.()}
           >
-            {/* ARIA triangle-A circuit mark */}
+            {/* Freya mark */}
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M7 1.5L13.2 12.8H0.8L7 1.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
               <path d="M3.6 9.2h6.8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
@@ -698,7 +733,7 @@ export default function TopBar({ onAriaOpen }) {
               <circle cx="0.8"  cy="12.8" r="1.1" fill="currentColor"/>
               <circle cx="13.2" cy="12.8" r="1.1" fill="currentColor"/>
             </svg>
-            <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em' }}>ARIA</span>
+            <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em' }}>Freya</span>
           </button>
 
           {/* Theme toggle */}

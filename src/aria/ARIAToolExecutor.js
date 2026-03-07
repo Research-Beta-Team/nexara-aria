@@ -116,7 +116,7 @@ export async function execute(toolName, input, store) {
           headline: 'Finance automation for Vietnam-scale CFOs',
           body_text: 'Close in 3 days, not 3 weeks.',
           cta: 'Book a demo',
-          brand: 'NEXARA',
+          brand: 'Antarious',
           detected_channel: 'LinkedIn',
         };
       }

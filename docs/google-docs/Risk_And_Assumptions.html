@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXARA — Risks & Assumptions</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.5; max-width: 800px; margin: 2em auto; padding: 0 1em; }
+    h1 { font-size: 1.4em; border-bottom: 1px solid #ccc; padding-bottom: 0.25em; }
+    h2 { font-size: 1.15em; margin-top: 1.25em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+    th { background: #f5f5f5; }
+    ul { margin: 0.5em 0; padding-left: 1.5em; }
+    p { margin: 0.5em 0; }
+    .meta { color: #666; font-size: 0.95em; margin-bottom: 1em; }
+  </style>
+</head>
+<body>
+
+<h1>NEXARA — Risks & Assumptions (Board / CTO)</h1>
+<p class="meta"><strong>Version:</strong> 1.0 &nbsp;|&nbsp; <strong>Audience:</strong> Board of Directors, CTO, Risk review</p>
+
+<h2>1. Assumptions</h2>
+<ul>
+  <li><strong>Product:</strong> Target segment (agencies, GTM teams) will pay for an integrated AI workspace at the proposed price points. Role-based and tier-based differentiation is valued.</li>
+  <li><strong>ARIA:</strong> Claude (Anthropic) remains the primary model; pricing and rate limits are stable enough to support margin targets. Demo mode is sufficient for sales demos without API key.</li>
+  <li><strong>Credits:</strong> Credit-based consumption is understood by customers; top-up and overage pricing are accepted. 1 credit ≈ 1 ARIA request (or defined token equivalent) for costing.</li>
+  <li><strong>Prototype:</strong> Current UI and flows are representative of v1 product; no major pivot required before backend build.</li>
+  <li><strong>Integrations:</strong> CRM (HubSpot, Salesforce), Meta/LinkedIn/Google Ads, and inbox are planned; scope and timeline TBD. Product is usable without some integrations (e.g. manual uploads, mock data).</li>
+  <li><strong>Compliance:</strong> Data residency, GDPR, and SOC2 (or equivalent) will be addressed in production; prototype does not process real PII beyond what is stored in localStorage.</li>
+</ul>
+
+<h2>2. Risks</h2>
+<table>
+  <tr><th>Risk</th><th>Impact</th><th>Likelihood</th><th>Mitigation</th></tr>
+  <tr><td><strong>Anthropic API cost or availability</strong></td><td>High — ARIA is core</td><td>Medium</td><td>Proxy through backend; meter usage; consider multi-model fallback long-term.</td></tr>
+  <tr><td><strong>Credit economics</strong></td><td>Margins compress if usage spikes</td><td>Medium</td><td>Instrument usage per plan; align credit definition to token cost; adjust top-up or included credits.</td></tr>
+  <tr><td><strong>No backend in prototype</strong></td><td>Delays production launch</td><td>Certain</td><td>Roadmap: auth, persistence, billing, ARIA proxy as Phase 1.</td></tr>
+  <tr><td><strong>Scope creep on integrations</strong></td><td>Delays and cost overrun</td><td>Medium</td><td>Prioritize by plan (e.g. Growth = inbox/ads; Scale = API/warehouse).</td></tr>
+  <tr><td><strong>User adoption of ARIA</strong></td><td>Low engagement → low perceived value</td><td>Medium</td><td>Onboarding flow, quick actions, and role-specific prompts; track engagement and iterate.</td></tr>
+  <tr><td><strong>Security / key exposure</strong></td><td>API key in client in prototype</td><td>High if shipped</td><td>Never ship client-side API key; production must use server-side ARIA proxy.</td></tr>
+  <tr><td><strong>Competitive response</strong></td><td>Incumbents add AI co-pilot</td><td>Medium</td><td>Differentiate on GTM depth, role-adaptive UX, and agency-specific workflows.</td></tr>
+</table>
+
+<h2>3. Dependencies</h2>
+<ul>
+  <li><strong>Anthropic:</strong> API availability, pricing, and terms.</li>
+  <li><strong>Payment provider:</strong> Stripe (or similar) for billing and top-ups.</li>
+  <li><strong>Identity:</strong> Optional IdP (e.g. Auth0) or custom auth; decision pending.</li>
+  <li><strong>Hosting:</strong> Static SPA + backend (e.g. cloud provider); no lock-in assumed.</li>
+</ul>
+
+<h2>4. Approval / Sign-off</h2>
+<ul>
+  <li>Technical approach and prototype scope: CTO.</li>
+  <li>Pricing and margin model: Finance / Board.</li>
+  <li>Risk register and mitigations: reviewed periodically; updates in this document.</li>
+</ul>
+
+</body>
+</html>

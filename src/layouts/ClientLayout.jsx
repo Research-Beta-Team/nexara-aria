@@ -69,7 +69,7 @@ export default function ClientLayout({ children }) {
               border: `1px solid ${CP.border}`,
             }}
           >
-            Secured by NEXARA
+            Secured by Antarious
           </span>
         </div>
       </header>
@@ -91,7 +91,7 @@ export default function ClientLayout({ children }) {
           color: CP.textSecondary,
         }}
       >
-        Powered by NEXARA
+        Powered by Antarious
         {' · '}
         <a href="#" style={{ color: CP.primary }} onClick={(e) => e.preventDefault()}>
           Privacy policy

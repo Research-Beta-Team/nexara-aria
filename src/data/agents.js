@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  NEXARA — Agent Roster Mock Data
+//  Antarious — Agent Roster Mock Data
 // ─────────────────────────────────────────────
 
 // 14-day performance series (hardcoded for stability)
@@ -45,7 +45,7 @@ export const agents = [
       outputLanguages: 'English, Vietnamese',
       retryLogic: '3 retries on rate-limit',
       rateLimit: '500 profiles / hour',
-      createdBy: 'ARIA System',
+      createdBy: 'Freya System',
       lastUpdated: '2025-02-01',
     },
     outputHistory: [
@@ -76,7 +76,7 @@ export const agents = [
       outputLanguages: 'English',
       retryLogic: '2 retries with temperature +0.1',
       rateLimit: '200 emails / day',
-      createdBy: 'ARIA System',
+      createdBy: 'Freya System',
       lastUpdated: '2025-02-03',
     },
     outputHistory: [
@@ -107,7 +107,7 @@ export const agents = [
       outputLanguages: 'English, Vietnamese',
       retryLogic: '1 retry with higher temperature',
       rateLimit: 'Unlimited',
-      createdBy: 'ARIA System',
+      createdBy: 'Freya System',
       lastUpdated: '2025-02-05',
     },
     outputHistory: [
@@ -139,7 +139,7 @@ export const agents = [
       outputLanguages: 'English (primary), Vietnamese (secondary)',
       retryLogic: '3 retries with brand constraint injection',
       rateLimit: '50 outputs / hour',
-      createdBy: 'ARIA System',
+      createdBy: 'Freya System',
       lastUpdated: '2025-02-02',
     },
     outputHistory: [
@@ -169,7 +169,7 @@ export const agents = [
       outputLanguages: 'English',
       retryLogic: '2 retries with SEO prompt injection',
       rateLimit: '10 articles / day',
-      createdBy: 'ARIA System',
+      createdBy: 'Freya System',
       lastUpdated: '2025-01-28',
     },
     outputHistory: [
@@ -199,7 +199,7 @@ export const agents = [
       outputLanguages: 'English',
       retryLogic: 'No retry — bid changes are time-sensitive',
       rateLimit: 'Continuous monitoring (5-min intervals)',
-      createdBy: 'ARIA System',
+      createdBy: 'Freya System',
       lastUpdated: '2025-02-01',
     },
     outputHistory: [
@@ -230,7 +230,7 @@ export const agents = [
       outputLanguages: 'English',
       retryLogic: '2 retries',
       rateLimit: '1,000 accounts / hour',
-      createdBy: 'ARIA System',
+      createdBy: 'Freya System',
       lastUpdated: '2025-01-20',
     },
     outputHistory: [
@@ -259,7 +259,7 @@ export const agents = [
       outputLanguages: 'English',
       retryLogic: '2 retries with stricter data constraints',
       rateLimit: '10 reports / hour',
-      createdBy: 'ARIA System',
+      createdBy: 'Freya System',
       lastUpdated: '2025-01-25',
     },
     outputHistory: [
@@ -288,7 +288,7 @@ export const agents = [
       outputLanguages: 'All (language-agnostic embeddings)',
       retryLogic: '3 retries on API timeout',
       rateLimit: '500 documents / hour',
-      createdBy: 'ARIA System',
+      createdBy: 'Freya System',
       lastUpdated: '2025-01-15',
     },
     outputHistory: [
@@ -318,7 +318,7 @@ export const agents = [
       outputLanguages: 'English',
       retryLogic: 'No retry — alerts are time-sensitive',
       rateLimit: 'Real-time monitoring (1-min intervals)',
-      createdBy: 'ARIA System',
+      createdBy: 'Freya System',
       lastUpdated: '2025-02-01',
     },
     outputHistory: [
@@ -348,7 +348,7 @@ export const agents = [
       outputLanguages: 'English',
       retryLogic: '1 retry with 30-second delay',
       rateLimit: 'Real-time (1-min checks)',
-      createdBy: 'ARIA System',
+      createdBy: 'Freya System',
       lastUpdated: '2025-02-01',
     },
     outputHistory: [
@@ -379,7 +379,7 @@ export const agents = [
       outputLanguages: 'English, Vietnamese',
       retryLogic: 'N/A — analysis only',
       rateLimit: '200 reviews / hour',
-      createdBy: 'ARIA System',
+      createdBy: 'Freya System',
       lastUpdated: '2025-01-20',
     },
     outputHistory: [

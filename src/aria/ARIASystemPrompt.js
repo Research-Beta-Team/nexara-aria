@@ -3,7 +3,31 @@
  */
 
 /**
- * @param {Record<string, unknown>} context - from ARIAMemory.buildContextForSystemPrompt()
+ * Format persistent memory (store ariaMemory) for system prompt.
+ * @param {Record<string, Array<{ content: string }>>} persistentMemory
+ * @returns {string}
+ */
+function formatPersistentMemoryBlock(persistentMemory) {
+  if (!persistentMemory || typeof persistentMemory !== 'object') return '';
+  const lines = ['FREYA MEMORY CONTEXT (use this in every response when relevant):'];
+  const names = { brand: 'BRAND', audience: 'AUDIENCE', campaigns: 'CAMPAIGNS', performance: 'PERFORMANCE' };
+  for (const [key, label] of Object.entries(names)) {
+    const entries = persistentMemory[key];
+    if (Array.isArray(entries) && entries.length > 0) {
+      lines.push(`${label}:`);
+      entries.forEach((e) => {
+        const text = e && typeof e.content === 'string' ? e.content.trim() : '';
+        if (text) lines.push(`- ${text}`);
+      });
+      lines.push('');
+    }
+  }
+  if (lines.length <= 1) return '';
+  return '\n\n' + lines.join('\n').trim();
+}
+
+/**
+ * @param {Record<string, unknown>} context - from ARIAMemory.buildContextForSystemPrompt(); may include persistentMemory
  * @returns {string}
  */
 export function buildSystemPrompt(context) {
@@ -22,8 +46,9 @@ export function buildSystemPrompt(context) {
   const tone = prefs.preferredTone || 'concise';
   const patterns = (ctx.learnedPatterns || []).join(', ') || 'None yet';
 
-  return `You are ARIA — the Autonomous Revenue Intelligence Assistant powering NEXARA GTM OS.
-You are not a chatbot. You are an agentic AI that takes actions, uses tools, and executes multi-step GTM workflows autonomously.
+  const memoryBlock = formatPersistentMemoryBlock(ctx.persistentMemory);
+
+  return `You are Freya — the GTM co-pilot powering Antarious. You take actions, use tools, and execute multi-step GTM workflows.
 
 Your personality: Confident, data-first, proactive, concise. You lead with numbers.
 You don't ask unnecessary questions — you make a decision and execute, then report.
@@ -38,6 +63,7 @@ CURRENT CONTEXT:
 - Recent decisions: ${decisions || 'None'}
 - User preferences: tone=${tone}, channels=${(prefs.preferredChannels || []).join(', ') || 'any'}
 - Learned patterns: ${patterns}
+${memoryBlock}
 
 TOOL USAGE RULES:
 Always use tools to take actions — never describe what you WOULD do, actually DO it.
@@ -57,7 +83,7 @@ RESPONSE FORMAT:
 Structure responses as:
 1. One-line summary of what you found/did
 2. Key data or output (tables, lists, content — formatted in markdown)
-3. What ARIA recommends doing next (1-3 options with confidence %)
+3. What Freya recommends doing next (1-3 options with confidence %)
 Use markdown. Be concise — executives don't have time for paragraphs.
 Never start with "I" — start with the insight or action.
 

@@ -1,50 +1,37 @@
 import { useState, useRef, useEffect } from 'react';
 import { C, F, R, S, Z, btn, inputStyle, scrollbarStyle } from '../../tokens';
-import { IconClose, IconCheck, IconCircleEmpty, IconSend } from '../ui/Icons';
+import { TYPE_COLORS } from '../../config/channelBrands';
+import { IconClose, IconCheck, IconCircleEmpty, IconSend, IconLinkedIn, IconFacebook, IconWhatsApp } from '../ui/Icons';
 import ApprovalStatusBadge from './ApprovalStatusBadge';
 import ApprovalComment from './ApprovalComment';
 import ReviewerAvatarRow from './ReviewerAvatarRow';
 
 const TYPE_ICONS = {
-  Email: () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+  Email: (color) => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
       <rect x="2" y="4" width="20" height="16" rx="2" />
       <path d="M2 8l10 6 10-6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
-  LinkedIn: () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z" />
-      <rect x="2" y="9" width="4" height="12" />
-      <circle cx="4" cy="4" r="2" />
-    </svg>
-  ),
-  'Meta Ad': () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <rect x="2" y="2" width="20" height="20" rx="4" />
-      <path d="M12 8v8M8 12h8" strokeLinecap="round" />
-    </svg>
-  ),
-  Strategy: () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+  LinkedIn: (color) => <IconLinkedIn color={color} width={18} height={18} />,
+  'LinkedIn Ad': (color) => <IconLinkedIn color={color} width={18} height={18} />,
+  'Meta Ad': (color) => <IconFacebook color={color} width={18} height={18} />,
+  Strategy: (color) => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
       <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
-  Script: () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+  Script: (color) => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
       <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
       <path d="M14 2v6h6M10 13H8M16 13h-2M10 17H8M16 17h-2" strokeLinecap="round" />
     </svg>
   ),
-  WhatsApp: () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 016 8v.5z" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  ),
+  WhatsApp: (color) => <IconWhatsApp color={color} width={18} height={18} />,
 };
 
-const defaultTypeIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+const defaultTypeIcon = (color) => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
     <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
     <path d="M14 2v6h6M8 13h8M8 17h4" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
@@ -64,6 +51,7 @@ export default function ApprovalThreadPanel({ contentItem, reviewers: reviewerLi
   if (!contentItem) return null;
 
   const { contentId, type, title, body, status, reviewers, comments = [], statusUpdatedAt, generatedBy, generatedAt, campaignName } = contentItem;
+  const typeColor = TYPE_COLORS[type] || C.textSecondary;
   const TypeIcon = TYPE_ICONS[type] ?? defaultTypeIcon;
   const previewLength = 200;
   const showExpand = body && body.length > previewLength && !expandedPreview;
@@ -96,7 +84,7 @@ export default function ApprovalThreadPanel({ contentItem, reviewers: reviewerLi
     });
     setAriaPromptText('');
     setShowAriaPrompt(false);
-    toast?.success('Sent to ARIA for revision');
+    toast?.success('Sent to Freya for revision');
   };
 
   const handlePublish = () => {
@@ -109,7 +97,7 @@ export default function ApprovalThreadPanel({ contentItem, reviewers: reviewerLi
   };
 
   const timelineSteps = [
-    { done: true, label: 'Draft created by ARIA Copywriter', date: contentItem.createdAt },
+    { done: true, label: 'Draft created by Freya Copywriter', date: contentItem.createdAt },
     { done: true, label: 'Submitted for review by Asif', date: contentItem.submittedAt },
     { done: status !== 'in_review', label: 'Badhon requested changes', date: status === 'revision_requested' ? statusUpdatedAt : null },
     { done: status === 'approved' || status === 'published', label: 'Final approval' },
@@ -142,7 +130,7 @@ export default function ApprovalThreadPanel({ contentItem, reviewers: reviewerLi
         <div style={{ padding: S[4], borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: S[2] }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: S[2], flexWrap: 'wrap' }}>
-              <span style={{ color: C.textSecondary }}><TypeIcon /></span>
+              <span style={{ color: typeColor }}>{TypeIcon(typeColor)}</span>
               <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted, backgroundColor: C.surface2, padding: `2px ${S[2]}`, borderRadius: R.sm }}>
                 {contentId}
               </span>
@@ -254,7 +242,7 @@ export default function ApprovalThreadPanel({ contentItem, reviewers: reviewerLi
           {showAriaPrompt ? (
             <div style={{ marginBottom: S[3] }}>
               <label style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.textSecondary, display: 'block', marginBottom: S[1] }}>
-                Tell ARIA what to change:
+                Tell Freya what to change:
               </label>
               <textarea
                 value={ariaPromptText}
@@ -264,7 +252,7 @@ export default function ApprovalThreadPanel({ contentItem, reviewers: reviewerLi
               />
               <div style={{ display: 'flex', gap: S[2] }}>
                 <button type="button" style={{ ...btn.primary, fontSize: '12px' }} onClick={handleAskAria}>
-                  Send to ARIA
+                  Send to Freya
                 </button>
                 <button type="button" style={{ ...btn.ghost, fontSize: '12px' }} onClick={() => { setShowAriaPrompt(false); setAriaPromptText(''); }}>
                   Cancel
@@ -289,7 +277,7 @@ export default function ApprovalThreadPanel({ contentItem, reviewers: reviewerLi
                   Request changes
                 </button>
                 <button type="button" style={{ ...btn.secondary, fontSize: '12px' }} onClick={() => setShowAriaPrompt(true)}>
-                  ↩ Ask ARIA to revise
+                  ↩ Ask Freya to revise
                 </button>
                 <button type="button" style={{ ...btn.secondary, fontSize: '12px' }} onClick={handlePublish}>
                   <IconSend color="currentColor" width={14} height={14} />

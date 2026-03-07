@@ -1,102 +1,108 @@
 /* ─────────────────────────────────────────────
-   NEXARA — CSS Design Token Variables
-   Dark theme is the default (:root).
-   Light theme activates via [data-theme="light"]
-   on <html>.
+   Antarious — CSS Design Token Variables
+   Product UI uses Marketing brand palette (ink, sage, cream)
+   per Antarious Brand Guidelines v1.1.
+   Light theme via [data-theme="light"].
 ───────────────────────────────────────────── */
 
-/* ── Dark theme (default) ─────────────────── */
+/* ── Dark theme (Product UI — Marketing palette) ── */
 :root {
-  /* Backgrounds */
-  --c-bg:       #070D09;
-  --c-surface:  #0C1510;
-  --c-surface2: #111B14;
-  --c-surface3: #162019;
+  /* Backgrounds — ink base, stepped (ink-2, darker ink steps) */
+  --c-bg:       #1C2B27;
+  --c-surface:  #2D3F3B;
+  --c-surface2: #364a44;
+  --c-surface3: #3e554d;
 
-  /* Borders */
-  --c-border:       #1C2E22;
-  --c-border-hover: #2A4433;
+  /* Borders — subtle sage/stone */
+  --c-border:       rgba(200, 221, 216, 0.12);
+  --c-border-hover: rgba(107, 163, 150, 0.45);
 
-  /* Brand accents */
-  --c-primary:      #3DDC84;
-  --c-primary-dim:  #2AA860;
-  --c-primary-glow: rgba(61, 220, 132, 0.15);
-  --c-secondary:    #5EEAD4;
-  --c-secondary-dim:#3DBFAB;
+  /* Brand accents — sage primary, sage-light secondary */
+  --c-primary:      #4A7C6F;
+  --c-primary-dim:  #3a6358;
+  --c-primary-glow: rgba(74, 124, 111, 0.25);
+  --c-secondary:    #6BA396;
+  --c-secondary-dim: #3a6358;
 
-  /* Text */
-  --c-text-primary:   #DFF0E8;
-  --c-text-secondary: #6B9478;
-  --c-text-muted:     #3A5242;
-  --c-text-inverse:   #070D09;
+  /* Sage (alias for primary / Freya accent) */
+  --c-sage: #4A7C6F;
+
+  /* Text — cream and sage-pale on dark */
+  --c-text-primary:   #FAF8F3;
+  --c-text-secondary: #C8DDD8;
+  --c-text-muted:     #8B9E98;
+  --c-text-inverse:   #1C2B27;
 
   /* Semantic */
-  --c-red:       #FF6E7A;
-  --c-red-dim:   rgba(255, 110, 122, 0.15);
-  --c-amber:     #F5C842;
-  --c-amber-dim: rgba(245, 200, 66, 0.15);
-  --c-green:     #3DDC84;
-  --c-green-dim: rgba(61, 220, 132, 0.15);
+  --c-red:       #EF4444;
+  --c-red-dim:   rgba(239, 68, 68, 0.15);
+  --c-amber:     #FBBF24;
+  --c-amber-dim: rgba(251, 191, 36, 0.15);
+  --c-green:     #10B981;
+  --c-green-dim: rgba(16, 185, 129, 0.15);
 
-  /* Overlays */
-  --c-overlay:       rgba(7, 13, 9, 0.70);
-  --c-overlay-heavy: rgba(7, 13, 9, 0.92);
+  /* Overlays — ink */
+  --c-overlay:       rgba(28, 43, 39, 0.78);
+  --c-overlay-heavy: rgba(28, 43, 39, 0.94);
 
-  /* Shadows */
-  --shadow-card:       0 1px 3px rgba(0,0,0,0.4), 0 0 0 1px rgba(28,46,34,0.8);
-  --shadow-card-hover: 0 4px 16px rgba(0,0,0,0.5), 0 0 0 1px rgba(61,220,132,0.2);
-  --shadow-glow:       0 0 20px rgba(61,220,132,0.2);
-  --shadow-glow-sm:    0 0 8px rgba(61,220,132,0.15);
-  --shadow-modal:      0 24px 64px rgba(0,0,0,0.8);
-  --shadow-dropdown:   0 8px 24px rgba(0,0,0,0.6), 0 0 0 1px rgba(28,46,34,1);
-  --shadow-inset:      inset 0 1px 3px rgba(0,0,0,0.4);
+  /* Shadows — sage tint */
+  --shadow-card:       0 1px 3px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(200, 221, 216, 0.08);
+  --shadow-card-hover: 0 4px 16px rgba(74, 124, 111, 0.18), 0 0 0 1px rgba(74, 124, 111, 0.25);
+  --shadow-glow:       0 0 20px rgba(74, 124, 111, 0.2);
+  --shadow-glow-sm:    0 0 8px rgba(74, 124, 111, 0.15);
+  --shadow-modal:      0 24px 64px rgba(0, 0, 0, 0.6);
+  --shadow-dropdown:   0 8px 24px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(200, 221, 216, 0.1);
+  --shadow-inset:      inset 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
-/* ── Light theme ──────────────────────────── */
+/* ── Light theme (Marketing / onboarding style) ── */
 [data-theme="light"] {
-  /* Backgrounds */
-  --c-bg:       #EFF7F2;
+  /* Backgrounds — cream/stone */
+  --c-bg:       #F7F5F0;
   --c-surface:  #FFFFFF;
-  --c-surface2: #F4FAF6;
-  --c-surface3: #E6F2EB;
+  --c-surface2: #FAF8F3;
+  --c-surface3: #EEF5F3;
 
   /* Borders */
-  --c-border:       #C8E3D2;
-  --c-border-hover: #9CCBB3;
+  --c-border:       #C8DDD8;
+  --c-border-hover: #6BA396;
 
-  /* Brand accents — darker for legibility on white */
-  --c-primary:      #1A9B5F;
-  --c-primary-dim:  #14825000;
-  --c-primary-glow: rgba(26, 155, 95, 0.12);
-  --c-secondary:    #12A99A;
-  --c-secondary-dim:#0E8F82;
+  /* Brand accents — sage for light */
+  --c-primary:      #4A7C6F;
+  --c-primary-dim:  #3a6358;
+  --c-primary-glow: rgba(74, 124, 111, 0.15);
+  --c-secondary:    #6BA396;
+  --c-secondary-dim: #3a6358;
 
-  /* Text */
-  --c-text-primary:   #081A0F;
-  --c-text-secondary: #38644B;
-  --c-text-muted:     #7CA88A;
+  /* Sage — Freya / bridge (same in light) */
+  --c-sage: #4A7C6F;
+
+  /* Text — ink */
+  --c-text-primary:   #1C2B27;
+  --c-text-secondary: #5A7168;
+  --c-text-muted:     #8B9E98;
   --c-text-inverse:   #FFFFFF;
 
   /* Semantic */
-  --c-red:       #C42B3B;
-  --c-red-dim:   rgba(196, 43, 59, 0.10);
-  --c-amber:     #8A6200;
-  --c-amber-dim: rgba(138, 98, 0, 0.10);
-  --c-green:     #1A9B5F;
-  --c-green-dim: rgba(26, 155, 95, 0.12);
+  --c-red:       #EF4444;
+  --c-red-dim:   rgba(239, 68, 68, 0.10);
+  --c-amber:     #FBBF24;
+  --c-amber-dim: rgba(251, 191, 36, 0.12);
+  --c-green:     #10B981;
+  --c-green-dim: rgba(16, 185, 129, 0.12);
 
   /* Overlays */
-  --c-overlay:       rgba(8, 26, 15, 0.50);
-  --c-overlay-heavy: rgba(8, 26, 15, 0.85);
+  --c-overlay:       rgba(28, 43, 39, 0.45);
+  --c-overlay-heavy: rgba(28, 43, 39, 0.88);
 
   /* Shadows */
-  --shadow-card:       0 1px 3px rgba(0,0,0,0.07), 0 0 0 1px rgba(200,227,210,0.9);
-  --shadow-card-hover: 0 4px 16px rgba(0,0,0,0.10), 0 0 0 1px rgba(26,155,95,0.25);
-  --shadow-glow:       0 0 20px rgba(26,155,95,0.15);
-  --shadow-glow-sm:    0 0 8px rgba(26,155,95,0.10);
-  --shadow-modal:      0 24px 64px rgba(0,0,0,0.18);
-  --shadow-dropdown:   0 8px 24px rgba(0,0,0,0.10), 0 0 0 1px rgba(200,227,210,1);
-  --shadow-inset:      inset 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-card:       0 1px 3px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(200, 221, 216, 0.8);
+  --shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(74, 124, 111, 0.25);
+  --shadow-glow:       0 0 20px rgba(74, 124, 111, 0.12);
+  --shadow-glow-sm:    0 0 8px rgba(74, 124, 111, 0.1);
+  --shadow-modal:      0 24px 64px rgba(0, 0, 0, 0.12);
+  --shadow-dropdown:   0 8px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(200, 221, 216, 1);
+  --shadow-inset:      inset 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 /* ── Global base ──────────────────────────── */
@@ -108,5 +114,6 @@ html {
 body {
   background-color: var(--c-bg);
   color: var(--c-text-primary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
   transition: background-color 0.25s ease, color 0.2s ease;
 }

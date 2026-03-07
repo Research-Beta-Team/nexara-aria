@@ -18,16 +18,16 @@ class ErrorBoundary extends Component {
       return (
         <div style={{
           padding: 24,
-          fontFamily: "'DM Sans', sans-serif",
-          backgroundColor: '#070D09',
-          color: '#DFF0E8',
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
+          backgroundColor: '#1C2B27',
+          color: '#FAF8F3',
           minHeight: '100vh',
         }}>
           <h1 style={{ color: '#FF6E7A', fontSize: 18 }}>Something went wrong</h1>
-          <pre style={{ marginTop: 12, padding: 12, background: '#111B14', borderRadius: 8, overflow: 'auto', fontSize: 12 }}>
+          <pre style={{ marginTop: 12, padding: 12, background: '#2D3F3B', borderRadius: 8, overflow: 'auto', fontSize: 12 }}>
             {this.state.error?.message || String(this.state.error)}
           </pre>
-          <p style={{ marginTop: 12, color: '#6B9478', fontSize: 13 }}>Check the browser console (F12) for details.</p>
+          <p style={{ marginTop: 12, color: '#C8DDD8', fontSize: 13 }}>Check the browser console (F12) for details.</p>
         </div>
       )
     }

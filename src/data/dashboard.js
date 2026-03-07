@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  NEXARA — Dashboard Mock Data (client-aware)
+//  Antarious — Dashboard Mock Data (client-aware)
 //  Keyed by clientId; use getDashboardForClient(activeClientId)
 // ─────────────────────────────────────────────
 

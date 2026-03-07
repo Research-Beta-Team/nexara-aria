@@ -40,7 +40,7 @@ export default function DashboardSDR() {
         </div>
         <div style={{ ...cardStyle, padding: S[4] }}>
           <h2 style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.primary, textTransform: 'uppercase', margin: `0 0 ${S[3]}` }}>New Prospects Enrolled (12)</h2>
-          <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>ARIA enrolled 12 new CFOs into Sequence A overnight</div>
+          <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>Freya enrolled 12 new CFOs into Sequence A overnight</div>
           <button style={{ ...btn.secondary, fontSize: '12px', marginTop: S[3] }} onClick={() => toast.info('Review list')}>Review list →</button>
         </div>
       </div>
@@ -51,7 +51,7 @@ export default function DashboardSDR() {
           <button style={{ ...btn.ghost, fontSize: '12px', marginTop: S[2] }} onClick={() => navigate('/campaigns')}>Check sequences →</button>
         </div>
         <div style={{ ...cardStyle, padding: S[4], border: `1px solid ${C.primary}` }}>
-          <h2 style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.primary, textTransform: 'uppercase', margin: `0 0 ${S[3]}` }}>ARIA Suggested Next Action</h2>
+          <h2 style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.primary, textTransform: 'uppercase', margin: `0 0 ${S[3]}` }}>Freya Suggested Next Action</h2>
           <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>"Follow up with James Nguyen — sent 3 emails, opened all 3, no reply yet. High intent."</div>
           <button style={{ ...btn.primary, fontSize: '12px', marginTop: S[3] }} onClick={() => toast.info('Draft message')}>Draft message →</button>
         </div>

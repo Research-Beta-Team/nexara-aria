@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXARA — CTO / Board Brief</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.5; max-width: 800px; margin: 2em auto; padding: 0 1em; }
+    h1 { font-size: 1.5em; border-bottom: 1px solid #ccc; padding-bottom: 0.25em; }
+    h2 { font-size: 1.2em; margin-top: 1.25em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+    th { background: #f5f5f5; }
+    ul { margin: 0.5em 0; padding-left: 1.5em; }
+    p { margin: 0.5em 0; }
+    .meta { color: #666; font-size: 0.95em; margin-bottom: 1em; }
+  </style>
+</head>
+<body>
+
+<h1>NEXARA — CTO / Board Brief (One-Page)</h1>
+<p class="meta"><strong>Date:</strong> 2025 &nbsp;|&nbsp; <strong>Status:</strong> Prototype &nbsp;|&nbsp; <strong>Prepared for:</strong> Board of Directors</p>
+
+<h2>What Is NEXARA?</h2>
+<p>NEXARA is a <strong>GTM AI Operating System</strong> for marketing agencies: a single workspace for campaigns, content, analytics, and an AI co-pilot (ARIA) that assists with strategy, content, and operations. Think Bloomberg Terminal meets Notion for GTM teams.</p>
+
+<h2>Product Summary</h2>
+<ul>
+  <li><strong>Platform:</strong> Web app (React 19, Vite). Dark-mode UI, role-adaptive (Owner, CSM, SDR, Media Buyer, Analyst, Client, etc.), tiered plans (Starter → Agency).</li>
+  <li><strong>ARIA:</strong> Claude-powered co-pilot with 12 tools (search prospects, create content, query campaigns, send outreach, escalate to human, etc.). Works in demo mode without API key; production uses Anthropic API.</li>
+  <li><strong>Monetization:</strong> SaaS plans ($149–$3,999/mo annual); credit-based AI usage; top-ups at $8–12 per 1k credits by plan.</li>
+  <li><strong>Current state:</strong> Full UI prototype; client-side state and mock data; no backend. Ready for board demo and roadmap decisions.</li>
+</ul>
+
+<h2>Technical Highlights</h2>
+<ul>
+  <li><strong>Stack:</strong> React 19, Zustand, React Router, Recharts, inline styles (design tokens).</li>
+  <li><strong>Architecture:</strong> SPA; planned backend for auth, campaigns, billing, ARIA proxy. ARIA tool execution is mocked; production will run server-side with rate limits and cost control.</li>
+  <li><strong>Security:</strong> Client-only auth in prototype; production will use server-side auth and API key protection for ARIA.</li>
+</ul>
+
+<h2>Pricing & Margins (Summary)</h2>
+<ul>
+  <li><strong>Sell:</strong> Starter $149/mo, Growth $499/mo, Scale $1,499/mo, Agency $3,999/mo (annual). Credits included: 5k–500k/month; top-up $8–12/1k.</li>
+  <li><strong>Cost:</strong> Dominated by Anthropic (ARIA). Example: ~$0.53/campaign (50 requests); margin remains high if credit cost is modeled and contained.</li>
+  <li><strong>Detail:</strong> See PRICING_AND_MARGINS document.</li>
+</ul>
+
+<h2>Risks & Assumptions</h2>
+<ul>
+  <li><strong>Prototype:</strong> No persistence beyond localStorage; no real billing or CRM/ads integrations.</li>
+  <li><strong>Production:</strong> Requires backend, auth, billing (e.g. Stripe), ARIA proxy, and integration connectors. API pricing and token usage will drive unit economics.</li>
+  <li><strong>Dependencies:</strong> Anthropic API availability and pricing; optional CRM/ads APIs for full feature set.</li>
+</ul>
+
+<h2>Supporting Documents</h2>
+<table>
+  <tr><th>Document</th><th>Purpose</th></tr>
+  <tr><td>TECHNICAL_DOCUMENTATION</td><td>Stack, structure, conventions</td></tr>
+  <tr><td>PROJECT_ARCHITECTURE</td><td>High-level architecture, data flow</td></tr>
+  <tr><td>WORKFLOW_TUTORIAL</td><td>Non-technical user flows</td></tr>
+  <tr><td>API_DOCUMENTATION</td><td>ARIA tools, intended REST API</td></tr>
+  <tr><td>FEATURES_AND_USER_INTERACTION</td><td>Features by plan, behavior by role</td></tr>
+  <tr><td>WORKFLOW_EXECUTION</td><td>How workflows run (onboarding, campaign, ARIA)</td></tr>
+  <tr><td>PRICING_AND_MARGINS</td><td>Sell pricing, API cost per campaign, margin formulas</td></tr>
+  <tr><td>board/RISK_AND_ASSUMPTIONS</td><td>Risks, assumptions, mitigations</td></tr>
+</table>
+
+<h2>Asks / Next Steps</h2>
+<ol>
+  <li><strong>Approve</strong> prototype as basis for production roadmap.</li>
+  <li><strong>Prioritize</strong> backend scope: auth, billing, ARIA proxy, campaign/content persistence.</li>
+  <li><strong>Lock</strong> pricing and credit-to-cost model using real usage data once ARIA is instrumented.</li>
+</ol>
+
+</body>
+</html>

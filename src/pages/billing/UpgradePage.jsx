@@ -67,7 +67,7 @@ function TrustStrip() {
   };
 
   const items1 = ['No contracts', 'Cancel anytime', '14-day money-back guarantee'];
-  const items2 = ['Prices in USD', 'All plans include ARIA AI', 'SOC 2 Type II compliant'];
+  const items2 = ['Prices in USD', 'All plans include Freya AI', 'SOC 2 Type II compliant'];
 
   return (
     <div style={{

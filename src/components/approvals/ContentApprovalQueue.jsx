@@ -1,5 +1,7 @@
 import { useState, useMemo } from 'react';
 import { C, F, R, S, btn } from '../../tokens';
+import { TYPE_COLORS } from '../../config/channelBrands';
+import { IconLinkedIn, IconFacebook, IconWhatsApp } from '../ui/Icons';
 import { daysInStatus, isRecentlyApproved } from '../../data/approvals';
 import ApprovalStatusBadge from './ApprovalStatusBadge';
 import ReviewerAvatarRow from './ReviewerAvatarRow';
@@ -12,18 +14,9 @@ const TYPE_ICONS = {
       <path d="M2 8l10 6 10-6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
-  LinkedIn: (color) => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
-      <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z" />
-      <rect x="2" y="9" width="4" height="12" />
-      <circle cx="4" cy="4" r="2" />
-    </svg>
-  ),
-  'Meta Ad': (color) => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
-      <rect x="2" y="2" width="20" height="20" rx="4" />
-    </svg>
-  ),
+  LinkedIn: (color) => <IconLinkedIn color={color} width={14} height={14} />,
+  'LinkedIn Ad': (color) => <IconLinkedIn color={color} width={14} height={14} />,
+  'Meta Ad': (color) => <IconFacebook color={color} width={14} height={14} />,
   Strategy: (color) => (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
       <path d="M12 2L2 7l10 5 10-5-10-5z" strokeLinecap="round" strokeLinejoin="round" />
@@ -35,11 +28,7 @@ const TYPE_ICONS = {
       <path d="M8 13h8M8 17h4" strokeLinecap="round" />
     </svg>
   ),
-  WhatsApp: (color) => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
-      <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 016 8v.5z" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  ),
+  WhatsApp: (color) => <IconWhatsApp color={color} width={14} height={14} />,
 };
 
 const defaultIcon = (color) => (
@@ -49,6 +38,7 @@ const defaultIcon = (color) => (
 );
 
 function QueueRow({ item, reviewers, onOpen }) {
+  const typeColor = TYPE_COLORS[item.type] || C.textSecondary;
   const TypeIcon = TYPE_ICONS[item.type] ?? defaultIcon;
   const days = daysInStatus(item.statusUpdatedAt);
 
@@ -67,7 +57,7 @@ function QueueRow({ item, reviewers, onOpen }) {
       <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted, backgroundColor: C.surface2, padding: `2px ${S[2]}`, borderRadius: R.sm, flexShrink: 0 }}>
         {item.contentId}
       </span>
-      <span style={{ color: C.textSecondary, flexShrink: 0 }}>{TypeIcon(C.textSecondary)}</span>
+      <span style={{ color: typeColor, flexShrink: 0 }}>{TypeIcon(typeColor)}</span>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {item.title}
@@ -189,7 +179,7 @@ export default function ContentApprovalQueue({
       {revisionRequested.length > 0 && (
         <section style={{ marginBottom: S[6] }}>
           <h3 style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 700, color: C.textSecondary, marginBottom: S[3], textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Revision requested — waiting for ARIA ({revisionRequested.length})
+            Revision requested — waiting for Freya ({revisionRequested.length})
           </h3>
           <div style={{ border: `1px solid ${C.border}`, borderRadius: R.card, overflow: 'hidden' }}>
             {revisionRequested.map((item) => (

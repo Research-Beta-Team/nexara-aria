@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import useToast from '../../../hooks/useToast';
 import { C, F, R, S, badge, flex, btn, cardStyle } from '../../../tokens';
+import { TYPE_COLORS } from '../../../config/channelBrands';
 import { contentItems } from '../../../data/campaigns';
 import ContentPreviewModal from '../ContentPreviewModal';
 
@@ -13,8 +14,8 @@ const STATUS_BADGE = {
 
 const TYPE_META = {
   Email:       { color: C.primary, label: 'Email' },
-  'LinkedIn Ad': { color: '#0A66C2', label: 'LinkedIn' },
-  'Meta Ad':   { color: '#1877F2', label: 'Meta' },
+  'LinkedIn Ad': { color: TYPE_COLORS['LinkedIn Ad'], label: 'LinkedIn' },
+  'Meta Ad':   { color: TYPE_COLORS['Meta Ad'], label: 'Meta' },
   Blog:        { color: C.amber, label: 'Blog' },
 };
 
@@ -154,7 +155,7 @@ export default function ContentTab() {
                 Campaign content
               </h1>
               <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: `${S[1]} 0 0` }}>
-                All copy, creatives, and assets for this campaign. Preview, edit, or generate new items with ARIA.
+                All copy, creatives, and assets for this campaign. Preview, edit, or generate new items with Freya.
               </p>
             </div>
             <div style={{ display: 'flex', gap: S[2], flexShrink: 0 }}>
@@ -168,9 +169,9 @@ export default function ContentTab() {
               <button
                 type="button"
                 style={{ ...btn.primary, fontSize: '13px' }}
-                onClick={() => toast.success('Generating content with ARIA…')}
+                onClick={() => toast.success('Generating content with Freya…')}
               >
-                Generate with ARIA
+                Generate with Freya
               </button>
             </div>
           </div>

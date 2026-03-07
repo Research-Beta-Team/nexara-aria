@@ -6,7 +6,7 @@
 export const ICP_DEFINITION = {
   version:     'v3.2',
   lastUpdated: 'Feb 24 2026',
-  updatedBy:   'ARIA (from 12 closed-won)',
+  updatedBy:   'Freya (from 12 closed-won)',
   icpScore:    87,
 
   firmographic: {

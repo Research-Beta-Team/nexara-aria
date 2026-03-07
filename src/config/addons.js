@@ -47,8 +47,8 @@ export const ADDONS = [
   },
   {
     id: 'aria_voice_expansion',
-    name: 'ARIA Voice Expansion',
-    description: '+500 call minutes per month for ARIA Voice AI.',
+    name: 'Freya Voice Expansion',
+    description: '+500 call minutes per month for Freya Voice AI.',
     price: 199,
     type: 'monthly',
     availableOn: ['scale', 'agency'],
@@ -75,7 +75,7 @@ export const ADDONS = [
   {
     id: 'onboarding_accelerator',
     name: 'Onboarding Accelerator',
-    description: '4-session guided setup with a NEXARA specialist.',
+    description: '4-session guided setup with an Antarious specialist.',
     price: 1200,
     type: 'one_time',
     availableOn: ['growth', 'scale', 'agency'],

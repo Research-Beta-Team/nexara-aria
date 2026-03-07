@@ -31,6 +31,7 @@ import NotificationCenter   from './pages/NotificationCenter';
 import ICPBuilder           from './pages/research/ICPBuilder';
 import IntentSignals        from './pages/research/IntentSignals';
 import CompetitiveIntel     from './pages/research/CompetitiveIntel';
+import ABMEngine from './pages/ABMEngine';
 import SocialMedia          from './pages/SocialMedia';
 import SocialCampaignDetail from './pages/SocialCampaignDetail';
 import PipelineManager      from './pages/revenue/PipelineManager';
@@ -56,6 +57,15 @@ import WorkspaceTemplates from './pages/admin/WorkspaceTemplates';
 import ClientWorkspaces from './pages/admin/ClientWorkspaces';
 import CSMWorkspaceConfigurator from './pages/admin/CSMWorkspaceConfigurator';
 import WorkspacePreview from './pages/admin/WorkspacePreview';
+import ComingSoonPage from './components/layout/ComingSoonPage';
+import ARIAMemoryEngine from './pages/ARIAMemoryEngine';
+import ContentApprovalWorkflow from './pages/ContentApprovalWorkflow';
+import MQLHandoffCenter from './pages/MQLHandoffCenter';
+import MultiTouchAttribution from './pages/MultiTouchAttribution';
+import WeeklyExecutiveDigest from './pages/WeeklyExecutiveDigest';
+import ARIACampaignBriefer from './pages/ARIACampaignBriefer';
+import LeadEnrichmentCenter from './pages/LeadEnrichmentCenter';
+import BoardReportGenerator from './pages/BoardReportGenerator';
 
 // Toast for standalone layouts
 import Toast from './components/ui/Toast';
@@ -156,7 +166,7 @@ function ComingSoon({ page }) {
       <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: C.primary, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
         Coming Soon
       </div>
-      <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', color: C.textMuted, textAlign: 'center', maxWidth: '320px' }}>
+      <div style={{ fontFamily: F.body, fontSize: '14px', color: C.textMuted, textAlign: 'center', maxWidth: '320px' }}>
         <strong style={{ color: C.textSecondary }}>{page}</strong> is under active development. Check back soon.
       </div>
     </div>
@@ -164,33 +174,7 @@ function ComingSoon({ page }) {
 }
 
 // ── Coming soon with details (for ABM & Playbooks sidebar section) ──
-function ComingSoonPage({ page, description }) {
-  return (
-    <div style={{ padding: '64px 48px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', maxWidth: '480px', margin: '0 auto' }}>
-      <div style={{
-        width: '56px', height: '56px', borderRadius: '14px',
-        backgroundColor: C.primaryDim, border: `1px solid ${C.primaryGlow}`,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ color: C.primary }}>
-          <path d="M12 2L2 7l10 5 10-5-10-5ZM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </div>
-      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: C.primary, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-        Coming Soon
-      </div>
-      <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: '22px', fontWeight: 700, color: C.textPrimary, margin: 0, textAlign: 'center' }}>
-        {page}
-      </h1>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', color: C.textSecondary, textAlign: 'center', lineHeight: 1.6, margin: 0 }}>
-        {description}
-      </p>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '13px', color: C.textMuted, textAlign: 'center', margin: 0 }}>
-        This page is under active development. Check back soon.
-      </p>
-    </div>
-  );
-}
+// ComingSoonPage imported above from components/layout/ComingSoonPage.jsx
 
 // ── Theme sync ────────────────────────────────
 // Keeps document data-theme in sync with store
@@ -260,6 +244,8 @@ export default function App() {
         <Route path="campaigns"     element={<CampaignList />} />
         <Route path="campaigns/new/aria" element={<AriaCampaignFlow />} />
         <Route path="campaigns/new" element={<CampaignNew />} />
+        <Route path="campaigns/approvals" element={<ContentApprovalWorkflow />} />
+        <Route path="campaigns/briefer"   element={<ARIACampaignBriefer />} />
         <Route path="campaigns/:id"                     element={<CampaignDetail />} />
         <Route path="campaigns/:id/prospect/:pid"      element={<OutreachDetail />} />
         <Route path="outreach" element={<Outreach />} />
@@ -280,14 +266,14 @@ export default function App() {
         <Route path="research/intent"    element={<IntentSignals />} />
         <Route path="intent"             element={<Navigate to="/research/intent" replace />} />
         <Route path="research/competitive" element={<CompetitiveIntel />} />
-        <Route path="abm" element={<ComingSoonPage page="ABM Engine" description="Named-account targeting, tier management, and buying committee timelines. Run ABM campaigns with account playbooks, stakeholder maps, and pipeline visibility. Tier accounts (e.g. Enterprise, Mid-Market), track engagement heat maps, and orchestrate multi-thread outreach." />} />
+        <Route path="abm" element={<ABMEngine />} />
         <Route path="revenue/pipeline" element={<PipelineManager />} />
         <Route path="revenue/forecast" element={<ForecastEngine />} />
         <Route path="revenue/customers" element={<CustomerSuccess />} />
         <Route path="revenue/crm" element={<CRM />} />
         <Route path="crm" element={<Navigate to="/revenue/crm" replace />} />
         <Route path="customer-success" element={<Navigate to="/revenue/customers" replace />} />
-        <Route path="playbooks" element={<ComingSoonPage page="Playbooks" description="Pre-built GTM playbooks by vertical and use case. Pick a playbook (e.g. SaaS Demo Gen, Product Launch, ABM Program) and ARIA customises it for your context. Launch campaigns in hours with sequences, content, and channels already defined." />} />
+        <Route path="playbooks" element={<ComingSoonPage page="Playbooks" description="Pre-built GTM playbooks by vertical and use case. Pick a playbook (e.g. SaaS Demo Gen, Product Launch, ABM Program) and Freya customises it for your context. Launch campaigns in hours with sequences, content, and channels already defined." />} />
         <Route path="social" element={<SocialMedia />} />
         <Route path="social/campaigns/:campaignId" element={<SocialCampaignDetail />} />
         {/* Revenue stubs */}
@@ -305,6 +291,12 @@ export default function App() {
         <Route path="aria-brain"       element={<ARIABrain />} />
         <Route path="aria/knowledge"   element={<ARIAKnowledge />} />
         <Route path="aria/workflows"   element={<WorkflowCenter />} />
+        <Route path="aria/memory"      element={<ARIAMemoryEngine />} />
+        <Route path="crm/handoff"      element={<MQLHandoffCenter />} />
+        <Route path="crm/enrichment"   element={<LeadEnrichmentCenter />} />
+        <Route path="analytics/attribution" element={<MultiTouchAttribution />} />
+        <Route path="reports/digest"   element={<WeeklyExecutiveDigest />} />
+        <Route path="reports/board"    element={<BoardReportGenerator />} />
         <Route path="workspace/whitelabel" element={<WhiteLabelConfig />} />
         <Route path="whitelabel"       element={<WhiteLabelConfig />} />
         <Route path="admin/workspace-templates" element={<WorkspaceTemplates />} />

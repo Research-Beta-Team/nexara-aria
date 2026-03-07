@@ -48,7 +48,7 @@ export default function ARIAMomentSuccess({ extraction, onGoToCampaign, onGoToDa
           textAlign: 'center',
         }}
       >
-        ARIA built this in 8 seconds. A team would take 3 days.
+        Freya built this in 8 seconds. A team would take 3 days.
       </p>
 
       {/* Summary card */}

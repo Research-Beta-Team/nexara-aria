@@ -130,7 +130,7 @@ export default function Signup() {
 
         {/* Footer */}
         <div style={{ textAlign: 'center', fontFamily: F.body, fontSize: '12px', color: C.textMuted }}>
-          Powered by ARIA · Nextara AI Platform · All data simulated
+          Powered by Freya · Nextara AI Platform · All data simulated
         </div>
       </div>
     </div>

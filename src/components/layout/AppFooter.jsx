@@ -22,14 +22,14 @@ export default function AppFooter() {
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: S[4] }}>
-        <span style={{ fontFamily: F.display, fontWeight: 700, color: C.primary, letterSpacing: '-0.02em' }}>NEXARA</span>
+        <span style={{ fontFamily: F.display, fontWeight: 700, color: C.primary, letterSpacing: '-0.02em' }}>Antarious</span>
         <span style={{ color: C.border }}>·</span>
         <span>GTM AI OS</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: S[4] }}>
         <Link to="/settings" style={{ color: C.textMuted, textDecoration: 'none' }}>Settings</Link>
         <Link to="/billing/upgrade" style={{ color: C.textMuted, textDecoration: 'none' }}>Billing</Link>
-        <span>© {new Date().getFullYear()} NEXARA</span>
+        <span>© {new Date().getFullYear()} Antarious</span>
       </div>
     </footer>
   );

@@ -2,15 +2,19 @@ import { useState, useMemo, useEffect } from 'react';
 import useToast from '../hooks/useToast';
 import { C, F, R, S, btn, badge, sectionHeading } from '../tokens';
 import { NAMED_ACCOUNTS, ABM_PIPELINE_TOTAL } from '../data/abm';
+import { getT1AccountRealityReport, getT1CallBrief } from '../data/abmControl';
 import AccountTierList from '../components/abm/AccountTierList';
 import AccountHeatMap from '../components/abm/AccountHeatMap';
 import BuyingCommitteeTimeline from '../components/abm/BuyingCommitteeTimeline';
 import AccountPlaybook from '../components/abm/AccountPlaybook';
+import ABMControlDashboard from '../components/abm/ABMControlDashboard';
+import ABMT2View from '../components/abm/ABMT2View';
+import ABMT3View from '../components/abm/ABMT3View';
 
 const TIERS = [
-  { id: 1, label: 'Tier 1 — Enterprise', count: 3 },
-  { id: 2, label: 'Tier 2 — Mid-Market', count: 4 },
-  { id: 3, label: 'Tier 3 — SMB', count: 5 },
+  { id: 1, label: 'T1 — Human Led', count: 3 },
+  { id: 2, label: 'T2 — Supervised', count: 4 },
+  { id: 3, label: 'T3 — Automated', count: 5 },
 ];
 
 const ACCOUNT_TABS = [
@@ -60,6 +64,7 @@ function AriaIcon({ size = 16 }) {
 }
 
 export default function ABMEngine() {
+  const [viewMode, setViewMode] = useState('dashboard'); // 'dashboard' | 't1' | 't2' | 't3'
   const [selectedTier, setSelectedTier] = useState(1);
   const [selectedAccountId, setSelectedAccountId] = useState(NAMED_ACCOUNTS[0]?.id || null);
   const [accountTab, setAccountTab] = useState('overview');
@@ -80,17 +85,51 @@ export default function ABMEngine() {
     if (!inTier && accountsByTier.length > 0) setSelectedAccountId(accountsByTier[0].id);
   }, [selectedTier, accountsByTier, selectedAccountId]);
 
+  // Control Architecture: dashboard or T2/T3 views
+  if (viewMode === 'dashboard') {
+    return (
+      <div style={{ height: '100%', overflow: 'auto' }}>
+        <ABMControlDashboard
+          onSelectTier={(key) => {
+            if (key === 't1') setViewMode('t1');
+            else if (key === 't2') setViewMode('t2');
+            else if (key === 't3') setViewMode('t3');
+          }}
+        />
+      </div>
+    );
+  }
+  if (viewMode === 't2') {
+    return (
+      <div style={{ height: '100%', overflow: 'auto' }}>
+        <ABMT2View onBack={() => setViewMode('dashboard')} toast={toast} />
+      </div>
+    );
+  }
+  if (viewMode === 't3') {
+    return (
+      <div style={{ height: '100%', overflow: 'auto' }}>
+        <ABMT3View onBack={() => setViewMode('dashboard')} toast={toast} />
+      </div>
+    );
+  }
+
   return (
     <div style={{ padding: S[6], display: 'flex', flexDirection: 'column', gap: S[5], height: '100%', minHeight: 0 }}>
       {/* Page header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: S[3] }}>
-        <div>
-          <h1 style={{ ...sectionHeading, fontSize: '22px', letterSpacing: '-0.02em', margin: 0 }}>
-            ABM Engine
-          </h1>
-          <span style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary }}>
-            {NAMED_ACCOUNTS.length} named accounts · {formatPipelineTotal(ABM_PIPELINE_TOTAL)} total pipeline
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: S[4] }}>
+          <button style={{ ...btn.ghost, fontSize: '13px' }} onClick={() => setViewMode('dashboard')}>
+            ← Control dashboard
+          </button>
+          <div>
+            <h1 style={{ ...sectionHeading, fontSize: '22px', letterSpacing: '-0.02em', margin: 0 }}>
+              T1 — Human Led, AI Assisted
+            </h1>
+            <span style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary }}>
+              {NAMED_ACCOUNTS.filter((a) => a.tier === 1).length} accounts · Full detail, all decisions by VP
+            </span>
+          </div>
         </div>
         <div style={{ display: 'flex', gap: S[2] }}>
           <button style={{ ...btn.secondary, fontSize: '13px' }} onClick={() => toast.info('Add account flow coming soon')}>
@@ -102,7 +141,7 @@ export default function ABMEngine() {
         </div>
       </div>
 
-      {/* Tier tabs */}
+      {/* Tier tabs — T1 view shows only tier-1 accounts; tabs still allow switching segment view in future */}
       <div style={{ display: 'flex', gap: 0, borderBottom: `1px solid ${C.border}` }}>
         {TIERS.map((t) => {
           const active = selectedTier === t.id;
@@ -232,64 +271,119 @@ export default function ABMEngine() {
               </div>
 
               {/* Tab content */}
-              {accountTab === 'overview' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: S[6] }}>
-                  <div
-                    style={{
-                      padding: S[5],
-                      backgroundColor: C.surface,
-                      border: `1px solid ${C.border}`,
-                      borderRadius: R.card,
-                    }}
-                  >
-                    <h3 style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[3] }}>
-                      Account intel
-                    </h3>
-                    <dl style={{ margin: 0, fontFamily: F.body, fontSize: '13px' }}>
-                      <div style={{ marginBottom: S[2] }}>
-                        <dt style={{ color: C.textMuted, marginBottom: 2 }}>HQ</dt>
-                        <dd style={{ color: C.textPrimary, margin: 0 }}>{selectedAccount.hq}</dd>
-                      </div>
-                      <div style={{ marginBottom: S[2] }}>
-                        <dt style={{ color: C.textMuted, marginBottom: 2 }}>Website</dt>
-                        <dd style={{ margin: 0 }}><a href={selectedAccount.website} target="_blank" rel="noopener noreferrer" style={{ color: C.secondary }}>{selectedAccount.website?.replace(/^https?:\/\//, '')}</a></dd>
-                      </div>
-                      <div style={{ marginBottom: S[2] }}>
-                        <dt style={{ color: C.textMuted, marginBottom: 2 }}>Funding</dt>
-                        <dd style={{ color: C.textPrimary, margin: 0 }}>{selectedAccount.funding}</dd>
-                      </div>
-                      <div>
-                        <dt style={{ color: C.textMuted, marginBottom: 2 }}>Tech stack detected</dt>
-                        <dd style={{ margin: 0, display: 'flex', flexWrap: 'wrap', gap: S[1] }}>
-                          {(selectedAccount.techStack || []).map((t, i) => (
-                            <span key={i} style={{ ...badge.base, ...badge.muted, fontSize: '10px' }}>{t}</span>
-                          ))}
-                        </dd>
-                      </div>
-                    </dl>
-                  </div>
-                  <div
-                    style={{
-                      padding: S[5],
-                      backgroundColor: 'rgba(61,220,132,0.06)',
-                      border: '1px solid rgba(61,220,132,0.2)',
-                      borderLeft: `3px solid ${C.primary}`,
-                      borderRadius: R.card,
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: S[2], marginBottom: S[3] }}>
-                      <AriaIcon size={18} />
-                      <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, color: C.primary, textTransform: 'uppercase' }}>ARIA recommends</span>
+              {accountTab === 'overview' && (() => {
+                const reality = getT1AccountRealityReport(selectedAccount);
+                const callBrief = getT1CallBrief(selectedAccount);
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: S[5] }}>
+                    <div
+                      style={{
+                        padding: S[3],
+                        backgroundColor: 'rgba(61,220,132,0.06)',
+                        border: '1px solid rgba(61,220,132,0.2)',
+                        borderRadius: R.sm,
+                        fontFamily: F.body,
+                        fontSize: '12px',
+                        color: C.textSecondary,
+                      }}
+                    >
+                      <strong style={{ color: C.primary }}>T1 control:</strong> AI never sends any communication to a stakeholder without your approval. All outreach is reviewed and approved by VP.
                     </div>
-                    <p style={{ fontFamily: F.body, fontSize: '14px', color: C.textPrimary, margin: '0 0 16px', lineHeight: 1.5 }}>
-                      {selectedAccount.ariaRecommendation}
-                    </p>
-                    <button style={{ ...btn.primary, fontSize: '13px' }} onClick={() => toast.success('Recommendation executed')}>
-                      Execute Recommendation
-                    </button>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: S[6] }}>
+                      <div
+                        style={{
+                          padding: S[5],
+                          backgroundColor: C.surface,
+                          border: `1px solid ${C.border}`,
+                          borderRadius: R.card,
+                        }}
+                      >
+                        <h3 style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 700, color: C.primary, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[3] }}>
+                          Account reality report
+                        </h3>
+                        <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textPrimary, margin: '0 0 8px' }}>{reality?.summary}</p>
+                        <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>{reality?.sentimentShifts}</p>
+                        <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted }}>Data vs rep: {reality?.dataVsRep}</p>
+                        <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted }}>Prepared {reality?.lastUpdated}</span>
+                      </div>
+                      <div
+                        style={{
+                          padding: S[5],
+                          backgroundColor: C.surface2,
+                          border: `1px solid ${C.border}`,
+                          borderRadius: R.card,
+                        }}
+                      >
+                        <h3 style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 700, color: C.secondary, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[3] }}>
+                          Call brief (pre-meeting)
+                        </h3>
+                        <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textPrimary, margin: '0 0 8px' }}><strong>{callBrief?.accountName}</strong></p>
+                        <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>Objective: {callBrief?.objective}</p>
+                        <ul style={{ margin: '8px 0', paddingLeft: S[5], fontFamily: F.body, fontSize: '12px', color: C.textPrimary }}>
+                          {(callBrief?.talkingPoints || []).map((pt, i) => <li key={i}>{pt}</li>)}
+                        </ul>
+                        <p style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted, fontStyle: 'italic' }}>{callBrief?.personalContextNote}</p>
+                      </div>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: S[6] }}>
+                      <div
+                        style={{
+                          padding: S[5],
+                          backgroundColor: C.surface,
+                          border: `1px solid ${C.border}`,
+                          borderRadius: R.card,
+                        }}
+                      >
+                        <h3 style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[3] }}>
+                          Account intel
+                        </h3>
+                        <dl style={{ margin: 0, fontFamily: F.body, fontSize: '13px' }}>
+                          <div style={{ marginBottom: S[2] }}>
+                            <dt style={{ color: C.textMuted, marginBottom: 2 }}>HQ</dt>
+                            <dd style={{ color: C.textPrimary, margin: 0 }}>{selectedAccount.hq}</dd>
+                          </div>
+                          <div style={{ marginBottom: S[2] }}>
+                            <dt style={{ color: C.textMuted, marginBottom: 2 }}>Website</dt>
+                            <dd style={{ margin: 0 }}><a href={selectedAccount.website} target="_blank" rel="noopener noreferrer" style={{ color: C.secondary }}>{selectedAccount.website?.replace(/^https?:\/\//, '')}</a></dd>
+                          </div>
+                          <div style={{ marginBottom: S[2] }}>
+                            <dt style={{ color: C.textMuted, marginBottom: 2 }}>Funding</dt>
+                            <dd style={{ color: C.textPrimary, margin: 0 }}>{selectedAccount.funding}</dd>
+                          </div>
+                          <div>
+                            <dt style={{ color: C.textMuted, marginBottom: 2 }}>Tech stack detected</dt>
+                            <dd style={{ margin: 0, display: 'flex', flexWrap: 'wrap', gap: S[1] }}>
+                              {(selectedAccount.techStack || []).map((t, i) => (
+                                <span key={i} style={{ ...badge.base, ...badge.muted, fontSize: '10px' }}>{t}</span>
+                              ))}
+                            </dd>
+                          </div>
+                        </dl>
+                      </div>
+                      <div
+                        style={{
+                          padding: S[5],
+                          backgroundColor: 'rgba(61,220,132,0.06)',
+                          border: '1px solid rgba(61,220,132,0.2)',
+                          borderLeft: `3px solid ${C.primary}`,
+                          borderRadius: R.card,
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: S[2], marginBottom: S[3] }}>
+                          <AriaIcon size={18} />
+                          <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, color: C.primary, textTransform: 'uppercase' }}>Freya recommends</span>
+                        </div>
+                        <p style={{ fontFamily: F.body, fontSize: '14px', color: C.textPrimary, margin: '0 0 16px', lineHeight: 1.5 }}>
+                          {selectedAccount.ariaRecommendation}
+                        </p>
+                        <button style={{ ...btn.primary, fontSize: '13px' }} onClick={() => toast.success('Recommendation executed')}>
+                          Execute Recommendation
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {accountTab === 'stakeholders' && (
                 <AccountHeatMap account={selectedAccount} toast={toast} />

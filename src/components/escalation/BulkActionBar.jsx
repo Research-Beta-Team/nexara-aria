@@ -38,7 +38,7 @@ export default function BulkActionBar({ count, onApproveAll, onDenyAll, onSendAd
         <button
           style={{
             ...btn.secondary, fontSize: '12px', padding: `${S[1]} ${S[4]}`,
-            color: '#EF4444', borderColor: '#EF444440',
+            color: C.red, borderColor: C.red,
           }}
           onClick={onDenyAll}
         >

@@ -1,7 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import useToast from '../hooks/useToast';
-import { C, F, R, S, T, btn, badge, flex, shadows } from '../tokens';
-import { IconSend, IconEye, IconLink, IconMessage, IconCalendar, IconCompass } from '../components/ui/Icons';
+import useStore from '../store/useStore';
+import { C, F, R, S, btn, badge, flex, shadows, Z } from '../tokens';
+import { IconSend, IconEye, IconLink, IconMessage, IconCalendar, IconCompass, IconPhone, IconPen, IconLinkedIn, IconMail } from '../components/ui/Icons';
 import { prospects } from '../data/campaigns';
 
 const TOUCHPOINT_ICONS = {
@@ -11,6 +14,9 @@ const TOUCHPOINT_ICONS = {
   email_replied: { Icon: IconMessage, color: C.primary,       label: 'Replied'        },
   linkedin_view: { Icon: IconCompass, color: '#0A66C2',       label: 'LinkedIn View'  },
   demo_booked:   { Icon: IconCalendar, color: C.amber,        label: 'Demo Booked'    },
+  note:          { Icon: IconPen,     color: C.textMuted,     label: 'Note'           },
+  call:          { Icon: IconPhone,   color: C.secondary,     label: 'Call'           },
+  meeting:       { Icon: IconCalendar, color: C.primary,       label: 'Meeting'        },
 };
 
 const INTENT_BADGE = {
@@ -24,6 +30,158 @@ const ARIA_RECS = [
   { color: C.secondary, text: 'Company recently posted about ERP modernization on LinkedIn. Use as personalization hook.' },
   { color: C.amber,     text: 'Reply indicates interest but no specific time given. Send calendar invite directly to reduce friction.' },
 ];
+
+// ── Log Activity modal ───────────────────────
+function LogActivityModal({ prospect, onClose, onSaved }) {
+  const toast = useToast();
+  const [type, setType] = useState('note');
+  const [note, setNote] = useState('');
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const h = (e) => { if (ref.current && !ref.current.contains(e.target)) onClose(); };
+    document.addEventListener('click', h);
+    return () => document.removeEventListener('click', h);
+  }, [onClose]);
+
+  const handleSave = () => {
+    const label = type === 'note' ? 'Note' : type === 'call' ? 'Call' : type === 'email_sent' ? 'Email sent' : 'Meeting';
+    const detail = note.trim() || (type === 'call' ? 'Call logged' : type === 'meeting' ? 'Meeting logged' : 'Note added');
+    onSaved?.({ type, note: note.trim(), label, detail });
+    toast.success(`Activity logged: ${label}`);
+    onClose();
+  };
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, backgroundColor: C.overlayHeavy, zIndex: Z.modal, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: S[4] }} onClick={onClose}>
+      <div ref={ref} style={{ backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card, boxShadow: shadows.modal, width: '100%', maxWidth: '420px', padding: S[5] }} onClick={(e) => e.stopPropagation()}>
+        <h3 style={{ fontFamily: F.display, fontSize: '16px', fontWeight: 700, color: C.textPrimary, margin: `0 0 ${S[4]}` }}>Log Activity</h3>
+        <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: `0 0 ${S[4]}` }}>Log an activity for {prospect.name}</p>
+        <div style={{ marginBottom: S[4] }}>
+          <label style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.textSecondary, display: 'block', marginBottom: S[2] }}>Type</label>
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            style={{ width: '100%', padding: `${S[2]} ${S[3]}`, fontFamily: F.body, fontSize: '13px', backgroundColor: C.surface2, border: `1px solid ${C.border}`, borderRadius: R.input, color: C.textPrimary }}
+          >
+            <option value="note">Note</option>
+            <option value="call">Call</option>
+            <option value="email_sent">Email sent</option>
+            <option value="meeting">Meeting</option>
+          </select>
+        </div>
+        <div style={{ marginBottom: S[5] }}>
+          <label style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.textSecondary, display: 'block', marginBottom: S[2] }}>Note (optional)</label>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="e.g. Left voicemail, will follow up Thursday"
+            rows={3}
+            style={{ width: '100%', padding: S[3], fontFamily: F.body, fontSize: '13px', backgroundColor: C.surface2, border: `1px solid ${C.border}`, borderRadius: R.input, color: C.textPrimary, resize: 'vertical' }}
+          />
+        </div>
+        <div style={{ display: 'flex', gap: S[2], justifyContent: 'flex-end' }}>
+          <button type="button" style={{ ...btn.secondary, fontSize: '13px' }} onClick={onClose}>Cancel</button>
+          <button type="button" style={{ ...btn.primary, fontSize: '13px' }} onClick={handleSave}>Save</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Update Stage modal ────────────────────────
+const STAGE_LABELS = { 1: 'Step 1', 2: 'Step 2', 3: 'Step 3', 4: 'Step 4', 5: 'Replied / Meeting' };
+
+function UpdateStageModal({ prospect, currentStep, onClose, onSaved }) {
+  const toast = useToast();
+  const [step, setStep] = useState(currentStep ?? prospect.sequenceStep ?? 1);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const h = (e) => { if (ref.current && !ref.current.contains(e.target)) onClose(); };
+    document.addEventListener('click', h);
+    return () => document.removeEventListener('click', h);
+  }, [onClose]);
+
+  const handleSave = () => {
+    onSaved?.(step);
+    toast.success(`Stage updated to ${STAGE_LABELS[step] || `Step ${step}`}`);
+    onClose();
+  };
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, backgroundColor: C.overlayHeavy, zIndex: Z.modal, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: S[4] }} onClick={onClose}>
+      <div ref={ref} style={{ backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card, boxShadow: shadows.modal, width: '100%', maxWidth: '360px', padding: S[5] }} onClick={(e) => e.stopPropagation()}>
+        <h3 style={{ fontFamily: F.display, fontSize: '16px', fontWeight: 700, color: C.textPrimary, margin: `0 0 ${S[4]}` }}>Update Stage</h3>
+        <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: `0 0 ${S[4]}` }}>Move {prospect.name} to a different sequence step.</p>
+        <div style={{ marginBottom: S[5] }}>
+          <label style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.textSecondary, display: 'block', marginBottom: S[2] }}>Sequence step</label>
+          <select
+            value={step}
+            onChange={(e) => setStep(Number(e.target.value))}
+            style={{ width: '100%', padding: `${S[2]} ${S[3]}`, fontFamily: F.body, fontSize: '13px', backgroundColor: C.surface2, border: `1px solid ${C.border}`, borderRadius: R.input, color: C.textPrimary }}
+          >
+            {[1, 2, 3, 4, 5].map((n) => (
+              <option key={n} value={n}>{STAGE_LABELS[n]}</option>
+            ))}
+          </select>
+        </div>
+        <div style={{ display: 'flex', gap: S[2], justifyContent: 'flex-end' }}>
+          <button type="button" style={{ ...btn.secondary, fontSize: '13px' }} onClick={onClose}>Cancel</button>
+          <button type="button" style={{ ...btn.primary, fontSize: '13px' }} onClick={handleSave}>Update</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Book Demo modal ───────────────────────────
+const CALENDAR_LINK_BASE = 'https://calendly.com/antarious-demo/30min';
+
+function BookDemoModal({ prospect, onClose, onSent }) {
+  const toast = useToast();
+  const ref = useRef(null);
+  const calendarLink = `${CALENDAR_LINK_BASE}?email=${encodeURIComponent(prospect.email || '')}&name=${encodeURIComponent(prospect.name || '')}`;
+
+  useEffect(() => {
+    const h = (e) => { if (ref.current && !ref.current.contains(e.target)) onClose(); };
+    document.addEventListener('click', h);
+    return () => document.removeEventListener('click', h);
+  }, [onClose]);
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(calendarLink).then(() => toast.success('Calendar link copied')).catch(() => toast.info('Copy failed'));
+  };
+
+  const handleOpenScheduling = () => {
+    window.open(calendarLink, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleSend = () => {
+    onSent?.();
+    toast.success(`Calendar invite sent to ${prospect.email}`);
+    onClose();
+  };
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, backgroundColor: C.overlayHeavy, zIndex: Z.modal, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: S[4] }} onClick={onClose}>
+      <div ref={ref} style={{ backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card, boxShadow: shadows.modal, width: '100%', maxWidth: '400px', padding: S[5] }} onClick={(e) => e.stopPropagation()}>
+        <h3 style={{ fontFamily: F.display, fontSize: '16px', fontWeight: 700, color: C.textPrimary, margin: `0 0 ${S[2]}` }}>Book Demo</h3>
+        <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: `0 0 ${S[4]}` }}>
+          Send a calendar invite to <strong style={{ color: C.textPrimary }}>{prospect.email}</strong> so they can pick a time for a demo.
+        </p>
+        <div style={{ display: 'flex', gap: S[2], marginTop: S[4], flexWrap: 'wrap' }}>
+          <button type="button" style={{ ...btn.secondary, fontSize: '12px' }} onClick={handleCopyLink}>Copy calendar link</button>
+          <button type="button" style={{ ...btn.secondary, fontSize: '12px' }} onClick={handleOpenScheduling}>Open scheduling page</button>
+        </div>
+        <div style={{ display: 'flex', gap: S[2], justifyContent: 'flex-end', marginTop: S[5] }}>
+          <button type="button" style={{ ...btn.secondary, fontSize: '13px' }} onClick={onClose}>Cancel</button>
+          <button type="button" style={{ ...btn.primary, fontSize: '13px' }} onClick={handleSend}>Send calendar invite</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ── ICP score ring ─────────────────────────────
 function IcpRing({ score }) {
@@ -128,12 +286,74 @@ function AriaSidebar() {
 }
 
 // ── Page ──────────────────────────────────────
+function formatTouchpointDate() {
+  const d = new Date();
+  const month = d.toLocaleString('en-US', { month: 'short' });
+  const day = d.getDate();
+  const time = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  return `${month} ${day}, ${time}`;
+}
+
 export default function OutreachDetail() {
   const { id, pid } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
+  const toggleAria = useStore((s) => s.toggleAria);
+  const addAriaChat = useStore((s) => s.addAriaChat);
+  const [logActivityOpen, setLogActivityOpen] = useState(false);
+  const [updateStageOpen, setUpdateStageOpen] = useState(false);
+  const [bookDemoOpen, setBookDemoOpen] = useState(false);
 
-  const prospect = prospects.find((p) => p.id === pid) ?? prospects[0];
+  const prospectFromData = prospects.find((p) => p.id === pid) ?? prospects[0];
+  const [touchpoints, setTouchpoints] = useState(() => [...(prospectFromData.touchpoints || [])]);
+  const [sequenceStep, setSequenceStep] = useState(() => prospectFromData.sequenceStep ?? 1);
+
+  useEffect(() => {
+    const p = prospects.find((x) => x.id === pid) ?? prospects[0];
+    setTouchpoints([...(p.touchpoints || [])]);
+    setSequenceStep(p.sequenceStep ?? 1);
+  }, [pid]);
+
+  const prospect = { ...prospectFromData, touchpoints, sequenceStep };
+
+  const handleLogActivitySaved = (payload) => {
+    const newTp = {
+      id: `log-${Date.now()}`,
+      type: payload.type,
+      date: formatTouchpointDate(),
+      detail: payload.detail || payload.note || (payload.type === 'call' ? 'Call logged' : payload.type === 'meeting' ? 'Meeting logged' : 'Note added'),
+    };
+    setTouchpoints((prev) => [...prev, newTp]);
+  };
+
+  const handleUpdateStageSaved = (step) => {
+    setSequenceStep(step);
+  };
+
+  const handleBookDemoSent = () => {
+    const newTp = {
+      id: `demo-${Date.now()}`,
+      type: 'demo_booked',
+      date: formatTouchpointDate(),
+      detail: `Calendar invite sent to ${prospect.email}. Demo booking link shared.`,
+    };
+    setTouchpoints((prev) => [...prev, newTp]);
+  };
+
+  const handleSendFollowUp = () => {
+    const welcomeMessage = { role: 'aria', id: 'welcome', text: "Hi, I'm Freya — your AI co-pilot. What would you like to do?", type: 'text' };
+    const userPrompt = `Draft a follow-up for ${prospect.name} at ${prospect.company}. They are ${prospect.title}.`;
+    const userMsg = { role: 'user', id: Date.now(), text: userPrompt };
+    const ariaReply = {
+      role: 'aria',
+      id: Date.now() + 1,
+      text: `Here’s a concise follow-up you can send to **${prospect.name}**:\n\n**Subject:** Re: Quick follow-up – ${prospect.company}\n\nHi ${prospect.name},\n\nI wanted to circle back on my previous note. I’d love to show you how we’re helping finance leaders like you streamline planning and reporting.\n\nWould a 15-minute call this week work to share a short demo?\n\nBest,\n[Your name]`,
+      type: 'text',
+    };
+    addAriaChat({ title: `Follow-up: ${prospect.name}`, messages: [welcomeMessage, userMsg, ariaReply] });
+    toggleAria();
+    toast.success('Freya opened with a draft follow-up. Review and edit in the panel.');
+  };
 
   return (
     <div style={{ padding: S[6], display: 'flex', flexDirection: 'column', gap: S[5] }}>
@@ -175,9 +395,29 @@ export default function OutreachDetail() {
             <span style={INTENT_BADGE[prospect.intent]}>{prospect.intent} intent</span>
           </div>
 
-          <div style={{ display: 'flex', gap: S[4], flexWrap: 'wrap' }}>
-            <span style={{ fontFamily: F.mono, fontSize: '12px', color: C.textMuted, display: 'flex', alignItems: 'center', gap: 6 }}><IconSend color={C.textMuted} width={14} height={14} /> {prospect.email}</span>
-            <span style={{ fontFamily: F.mono, fontSize: '12px', color: C.textMuted }}>⬡ {prospect.linkedin}</span>
+          <div style={{ display: 'flex', gap: S[4], flexWrap: 'wrap', alignItems: 'center' }}>
+            <a
+              href={prospect.email ? `mailto:${prospect.email}` : '#'}
+              style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted, display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
+              title={prospect.email}
+              onMouseEnter={(e) => { e.currentTarget.style.color = C.primary; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = C.textMuted; }}
+            >
+              <IconMail color="currentColor" width={14} height={14} />
+              <span>Email</span>
+            </a>
+            <a
+              href={prospect.linkedin && !prospect.linkedin.startsWith('http') ? `https://${prospect.linkedin}` : prospect.linkedin || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted, display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
+              title={prospect.linkedin}
+              onMouseEnter={(e) => { e.currentTarget.style.color = C.primary; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = C.textMuted; }}
+            >
+              <IconLinkedIn color="currentColor" width={14} height={14} />
+              <span>LinkedIn</span>
+            </a>
             <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted }}>
               Step {prospect.sequenceStep}/5 · Last touch {prospect.lastTouch}
             </span>
@@ -189,20 +429,47 @@ export default function OutreachDetail() {
 
         {/* Actions */}
         <div style={{ display: 'flex', gap: S[2], flexShrink: 0 }}>
-          <button style={{ ...btn.ghost, fontSize: '12px' }} onClick={() => toast.info('Logging activity…')}>
+          <button
+            type="button"
+            style={{ ...btn.ghost, fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: 8 }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setLogActivityOpen(true);
+            }}
+            aria-label="Log activity for this prospect"
+            title="Log a call, email, meeting, or note"
+          >
+            <IconPen width={14} height={14} color={C.textSecondary} />
             Log Activity
           </button>
-          <button style={{ ...btn.secondary, fontSize: '12px' }} onClick={() => toast.info('Opening email composer…')}>
+          <button style={{ ...btn.secondary, fontSize: '12px' }} onClick={handleSendFollowUp}>
             Send Follow-up
           </button>
-          <button style={{ ...btn.secondary, fontSize: '12px' }} onClick={() => toast.info('Updating stage…')}>
+          <button style={{ ...btn.secondary, fontSize: '12px' }} onClick={() => setUpdateStageOpen(true)}>
             Update Stage
           </button>
-          <button style={{ ...btn.primary, fontSize: '12px' }} onClick={() => toast.success('Opening calendar invite…')}>
+          <button style={{ ...btn.primary, fontSize: '12px' }} onClick={() => setBookDemoOpen(true)}>
             Book Demo
           </button>
         </div>
       </div>
+
+      {logActivityOpen && createPortal(
+        <LogActivityModal
+          key={`log-activity-${prospect.id}`}
+          prospect={prospect}
+          onClose={() => setLogActivityOpen(false)}
+          onSaved={handleLogActivitySaved}
+        />,
+        document.body
+      )}
+      {updateStageOpen && (
+        <UpdateStageModal prospect={prospect} currentStep={sequenceStep} onClose={() => setUpdateStageOpen(false)} onSaved={handleUpdateStageSaved} />
+      )}
+      {bookDemoOpen && (
+        <BookDemoModal prospect={prospect} onClose={() => setBookDemoOpen(false)} onSent={handleBookDemoSent} />
+      )}
 
       {/* Two-column: timeline + ARIA */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: S[5], alignItems: 'start' }}>

@@ -115,6 +115,52 @@ function CampaignCard({ campaign, onClick }) {
   );
 }
 
+// ── List row (compact row for list view) ──────
+function CampaignListRow({ campaign, onClick }) {
+  const [hovered, setHovered] = useState(false);
+  const { name, client, status, health, goal, current, spend, budget, cpl, ctr, channels } = campaign;
+  const pct = Math.min(100, Math.round((current / goal) * 100));
+  const barColor = HEALTH_COLOR[health] ?? C.primary;
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'minmax(160px, 1fr) minmax(100px, 0.8fr) 72px 72px 80px 70px 80px minmax(0, 1fr)',
+        gap: S[4],
+        alignItems: 'center',
+        padding: `${S[3]} ${S[4]}`,
+        borderBottom: `1px solid ${C.border}`,
+        backgroundColor: hovered ? C.surface2 : 'transparent',
+        cursor: 'pointer',
+        transition: T.color,
+      }}
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } }}
+    >
+      <div style={{ minWidth: 0 }}>
+        <div style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
+        <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textSecondary }}>{client}</div>
+      </div>
+      <span style={STATUS_BADGE[status] ?? STATUS_BADGE.draft}>{status}</span>
+      <span style={{ fontFamily: F.mono, fontSize: '12px', color: barColor }}>{current}/{goal}</span>
+      <span style={{ fontFamily: F.mono, fontSize: '12px', color: C.textPrimary }}>${cpl}</span>
+      <span style={{ fontFamily: F.mono, fontSize: '12px', color: C.textPrimary }}>{ctr}%</span>
+      <span style={{ fontFamily: F.mono, fontSize: '12px', color: C.textPrimary }}>${(spend / 1000).toFixed(1)}k</span>
+      <span style={{ fontFamily: F.mono, fontSize: '12px', color: C.textMuted }}>${(budget / 1000).toFixed(0)}k</span>
+      <div style={{ display: 'flex', gap: S[1], flexWrap: 'wrap' }}>
+        {channels.map((ch) => (
+          <span key={ch} style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 600, color: CHANNEL_COLORS[ch] ?? C.textSecondary }}>{ch}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ── Page ──────────────────────────────────────
 const ALL_STATUSES = ['all', 'active', 'paused', 'draft', 'completed'];
 const ALL_CHANNELS = ['all', 'LinkedIn', 'Meta', 'Display', 'Google'];
@@ -128,6 +174,7 @@ export default function CampaignList() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [channelFilter, setChannelFilter] = useState('all');
+  const [viewMode, setViewMode] = useState('list'); // 'list' | 'tile'
 
   const campaignLimit = getLimit('activeCampaigns');
   const atCampaignLimit = campaignLimit !== -1 && isLimitReached('activeCampaigns', activeCampaignsCount);
@@ -196,7 +243,7 @@ export default function CampaignList() {
         </div>
 
         {/* Filter row */}
-        <div style={{ display: 'flex', gap: S[5], flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: S[5], flexWrap: 'wrap', alignItems: 'center' }}>
           {/* Status filters */}
           <div style={{ display: 'flex', gap: S[1], alignItems: 'center' }}>
             <span style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted, marginRight: S[1] }}>STATUS</span>
@@ -215,13 +262,100 @@ export default function CampaignList() {
               </button>
             ))}
           </div>
+          {/* View toggle: List | Tile */}
+          <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto', gap: 0 }}>
+            <button
+              type="button"
+              title="List view"
+              onClick={() => setViewMode('list')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '32px',
+                height: '32px',
+                border: `1px solid ${viewMode === 'list' ? C.primary : C.border}`,
+                borderRight: 'none',
+                borderRadius: `${R.sm} 0 0 ${R.sm}`,
+                backgroundColor: viewMode === 'list' ? C.primaryGlow : 'transparent',
+                color: viewMode === 'list' ? C.primary : C.textMuted,
+                cursor: 'pointer',
+                transition: T.color,
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 3h10M2 7h10M2 11h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </button>
+            <button
+              type="button"
+              title="Tile view"
+              onClick={() => setViewMode('tile')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '32px',
+                height: '32px',
+                border: `1px solid ${viewMode === 'tile' ? C.primary : C.border}`,
+                borderRadius: `0 ${R.sm} ${R.sm} 0`,
+                backgroundColor: viewMode === 'tile' ? C.primaryGlow : 'transparent',
+                color: viewMode === 'tile' ? C.primary : C.textMuted,
+                cursor: 'pointer',
+                transition: T.color,
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <rect x="1" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+                <rect x="8" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+                <rect x="1" y="8" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+                <rect x="8" y="8" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Campaign grid */}
+      {/* Campaign list or grid */}
       {filtered.length === 0 ? (
         <div style={{ textAlign: 'center', padding: `${S[16]} 0`, color: C.textMuted, fontFamily: F.body, fontSize: '14px' }}>
           No campaigns match your filters.
+        </div>
+      ) : viewMode === 'list' ? (
+        <div style={{ backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card, overflow: 'hidden' }}>
+          {/* List header */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'minmax(160px, 1fr) minmax(100px, 0.8fr) 72px 72px 80px 70px 80px minmax(0, 1fr)',
+              gap: S[4],
+              alignItems: 'center',
+              padding: `${S[2]} ${S[4]}`,
+              borderBottom: `1px solid ${C.border}`,
+              fontFamily: F.mono,
+              fontSize: '10px',
+              fontWeight: 700,
+              color: C.textMuted,
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+            }}
+          >
+            <span>Name</span>
+            <span>Status</span>
+            <span>Leads</span>
+            <span>CPL</span>
+            <span>CTR</span>
+            <span>Spend</span>
+            <span>Budget</span>
+            <span>Channels</span>
+          </div>
+          {filtered.map((c) => (
+            <CampaignListRow
+              key={c.id}
+              campaign={c}
+              onClick={() => navigate(`/campaigns/${c.id}`)}
+            />
+          ))}
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: S[4] }}>

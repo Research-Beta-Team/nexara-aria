@@ -31,7 +31,7 @@ export default function AriaInsightStrip({ insights = [], personaLabel, greeting
   const stripStyle = {
     backgroundColor: C.surface,
     border: `1px solid ${C.border}`,
-    borderLeft: `3px solid ${C.primary}`,
+    borderLeft: `4px solid ${C.primary}`,
     borderRadius: R.card,
     overflow: 'hidden',
     transition: T.base,

@@ -540,7 +540,7 @@ export default function ContentPreviewModal({ item, onClose }) {
                 Clone
               </button>
               <button
-                style={{ ...btn.ghost, fontSize: '12px', color: '#EF4444', borderColor: '#EF444433' }}
+                style={{ ...btn.ghost, fontSize: '12px', color: C.red, borderColor: C.red }}
                 onClick={() => { setLocalStatus('archived'); toast.info(`"${item.name}" archived`); }}
               >
                 Archive

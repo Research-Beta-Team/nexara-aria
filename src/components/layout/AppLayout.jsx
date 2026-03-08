@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocation, Link, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import useStore from '../../store/useStore';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
@@ -11,24 +11,10 @@ import usePlanAlerts from '../../hooks/usePlanAlerts';
 import PlanChangeToast from '../plan/PlanChangeToast';
 import { C, F, R, S, scrollbarStyle } from '../../tokens';
 
-const DEV_ROLE_LABELS = {
-  owner: 'Owner/CEO',
-  founder: 'Founder',
-  advisor: 'Strategic Advisor',
-  csm: 'Client Success Manager',
-  mediaBuyer: 'Media Buyer',
-  contentStrategist: 'Content Strategist',
-  sdr: 'SDR / Outreach',
-  analyst: 'Analyst',
-  client: 'Client (Read-Only)',
-};
-
 export default function AppLayout({ children }) {
   const [ariaOpen, setAriaOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const currentRole = useStore((s) => s.currentRole);
-  const isDev = typeof import.meta !== 'undefined' && import.meta.env?.DEV;
   const previousClientIdBeforePreview = useStore((s) => s.previousClientIdBeforePreview);
   const activeClientId = useStore((s) => s.activeClientId);
   const currentClient = useStore((s) => s.currentClient);
@@ -107,7 +93,7 @@ export default function AppLayout({ children }) {
                 borderRadius: R.button,
                 border: `1px solid ${C.amber}`,
                 backgroundColor: C.amber,
-                color: '#081A0F',
+                color: C.textOnLightAccent,
                 fontFamily: F.body,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -133,34 +119,6 @@ export default function AppLayout({ children }) {
           onBuyCredits={() => { dismissToast(); navigate('/billing'); } }
           onUpgradePlan={() => { dismissToast(); navigate('/billing'); } }
         />
-      )}
-      {isDev && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: 12,
-            left: 12,
-            zIndex: 400,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '6px 10px',
-            backgroundColor: 'rgba(245,200,66,0.2)',
-            border: '1px solid rgba(245,200,66,0.5)',
-            borderRadius: 8,
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: '11px',
-            color: '#081A0F',
-          }}
-        >
-          <span>DEV MODE: Viewing as {DEV_ROLE_LABELS[currentRole] ?? currentRole}</span>
-          <Link
-            to="/dev/roles"
-            style={{ color: '#1A9B5F', fontWeight: 600, textDecoration: 'none' }}
-          >
-            Change Role
-          </Link>
-        </div>
       )}
       <AriaPanel
         open={ariaOpen}

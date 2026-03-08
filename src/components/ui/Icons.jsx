@@ -88,6 +88,16 @@ export function IconSend({ color = 'currentColor', width = size, height = size }
   );
 }
 
+/** Envelope / email — use for email links and mail actions */
+export function IconMail({ color = 'currentColor', width = size, height = size }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <rect x="2" y="3" width="14" height="12" rx="1" stroke={color} strokeWidth={stroke} strokeLinejoin="round"/>
+      <path d="M2 5l7 5 7-5" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
 export function IconChart({ color = 'currentColor', width = size, height = size }) {
   return (
     <svg width={width} height={height} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>

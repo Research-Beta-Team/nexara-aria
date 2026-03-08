@@ -183,6 +183,10 @@ export default function Onboarding() {
     navigate('/first-onboarding/aria');
   };
 
+  const handleBack = () => {
+    if (stepIndex > 0) setStepIndex(stepIndex - 1);
+  };
+
   return (
     <div
       style={{
@@ -197,16 +201,29 @@ export default function Onboarding() {
       <div style={{ width: '100%', maxWidth: '560px' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: S[5] }}>
+          <div style={{ minWidth: 100 }}>
+            {stepIndex > 0 && (
+              <button
+                type="button"
+                onClick={handleBack}
+                style={{ ...btnGhost, fontSize: '13px', color: N.textSecondary }}
+              >
+                ← Back
+              </button>
+            )}
+          </div>
           <AntariousLogo variant="dark" height={28} />
-          {stepId !== 'welcome' && stepId !== 'done' && (
-            <button
-              type="button"
-              onClick={handleSkipToDashboard}
-              style={{ ...btnGhost, fontSize: '12px', color: N.textMuted }}
-            >
-              Skip to Dashboard →
-            </button>
-          )}
+          <div style={{ minWidth: 100, display: 'flex', justifyContent: 'flex-end' }}>
+            {stepId !== 'welcome' && stepId !== 'done' && (
+              <button
+                type="button"
+                onClick={handleSkipToDashboard}
+                style={{ ...btnGhost, fontSize: '12px', color: N.textMuted }}
+              >
+                Skip to Dashboard →
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Progress */}

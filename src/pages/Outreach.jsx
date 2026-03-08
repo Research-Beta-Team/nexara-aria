@@ -1,108 +1,141 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useStore from '../store/useStore';
 import useToast from '../hooks/useToast';
-import { C, F, R, S, T, btn, badge, flex, cardStyle } from '../tokens';
-import { getProspectsForClient, DEFAULT_OUTREACH_CAMPAIGN_ID } from '../data/outreach';
+import { C, F, S, btn, flex } from '../tokens';
+import {
+  getProspectsForClient,
+  getCampaignsForOutreach,
+  DEFAULT_OUTREACH_CAMPAIGN_ID,
+} from '../data/outreach';
+import OutreachStats from '../components/outreach/OutreachStats';
+import OutreachFilters from '../components/outreach/OutreachFilters';
+import OutreachTable from '../components/outreach/OutreachTable';
+import OutreachEmptyState from '../components/outreach/OutreachEmptyState';
+import OutreachTileView from '../components/outreach/OutreachTileView';
 
-const INTENT_BADGE = {
-  high: { ...badge.base, ...badge.green },
-  medium: { ...badge.base, ...badge.amber },
-  low: { ...badge.base, ...badge.muted },
-};
+const VIEW_STORAGE_KEY = 'nexara_outreach_view';
+const DEFAULT_COLUMNS = ['icp', 'prospect', 'campaign', 'channel', 'intent', 'sequence', 'lastTouch', 'replied', 'actions'];
 
-const FILTERS = [
-  { id: 'all', label: 'All' },
-  { id: 'replied', label: 'Replied' },
-  { id: 'high', label: 'High intent' },
-  { id: 'active', label: 'In sequence' },
-];
-
-function IcpScore({ score }) {
-  const color = score >= 90 ? C.primary : score >= 75 ? C.amber : C.red;
-  return (
-    <div style={{
-      width: '36px', height: '36px', borderRadius: '50%',
-      border: `2px solid ${color}`,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      flexShrink: 0,
-      backgroundColor: `${color}18`,
-    }}>
-      <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, color }}>{score}</span>
-    </div>
-  );
+function filterByDate(prospects, dateRange) {
+  if (!dateRange || dateRange === 'all') return prospects;
+  const days = parseInt(dateRange, 10);
+  if (!Number.isFinite(days)) return prospects;
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  return prospects.filter((p) => p.addedDate && new Date(p.addedDate) >= since);
 }
 
-function SequenceSteps({ current, total = 5 }) {
-  return (
-    <div style={{ display: 'flex', gap: '3px', alignItems: 'center' }}>
-      {Array.from({ length: total }).map((_, i) => (
-        <div
-          key={i}
-          style={{
-            width: '8px', height: '8px', borderRadius: '50%',
-            backgroundColor: i < current ? C.primary : C.surface3,
-            border: `1px solid ${i < current ? C.primary : C.border}`,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-function StatBox({ label, value, color }) {
-  return (
-    <div style={{
-      display: 'flex', flexDirection: 'column', gap: '2px',
-      padding: `${S[3]} ${S[4]}`,
-      backgroundColor: C.surface2,
-      border: `1px solid ${C.border}`,
-      borderRadius: R.md,
-      flex: 1,
-      minWidth: '100px',
-    }}>
-      <span style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
-      <span style={{ fontFamily: F.mono, fontSize: '18px', fontWeight: 700, color: color ?? C.textPrimary, lineHeight: 1 }}>{value}</span>
-    </div>
-  );
+function sortProspects(list, sortKey, sortDir) {
+  const dir = sortDir === 'asc' ? 1 : -1;
+  return [...list].sort((a, b) => {
+    let va = a[sortKey];
+    let vb = b[sortKey];
+    if (sortKey === 'replied') {
+      va = va ? 1 : 0;
+      vb = vb ? 1 : 0;
+    }
+    if (typeof va === 'string') return dir * (va.localeCompare(vb));
+    if (va == null && vb == null) return 0;
+    if (va == null) return dir;
+    if (vb == null) return -dir;
+    return dir * (va < vb ? -1 : va > vb ? 1 : 0);
+  });
 }
 
 export default function Outreach() {
   const navigate = useNavigate();
   const toast = useToast();
   const activeClientId = useStore((s) => s.activeClientId);
+  const currentRole = useStore((s) => s.currentRole);
+  const toggleAria = useStore((s) => s.toggleAria);
+
+  const [viewMode, setViewModeState] = useState(() => {
+    try {
+      return localStorage.getItem(VIEW_STORAGE_KEY) || 'list';
+    } catch {
+      return 'list';
+    }
+  });
+  const setViewMode = useCallback((mode) => {
+    setViewModeState(mode);
+    try {
+      localStorage.setItem(VIEW_STORAGE_KEY, mode);
+    } catch (_) {}
+  }, []);
+
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
+  const [dateRange, setDateRange] = useState('all');
+  const [campaignId, setCampaignId] = useState('');
+  const [savedViewId, setSavedViewId] = useState('');
+  const [sortKey, setSortKey] = useState('icpScore');
+  const [sortDir, setSortDir] = useState('desc');
+  const [visibleColumns] = useState(DEFAULT_COLUMNS);
+  const [page, setPage] = useState(1);
+  const pageSize = 25;
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const prospects = getProspectsForClient(activeClientId ?? 'medglobal');
+  const canEdit = currentRole !== 'analyst';
 
-  const filtered = useMemo(() => {
-    let list = prospects;
+  const prospects = useMemo(() => {
+    let list = getProspectsForClient(activeClientId ?? 'medglobal');
+    list = filterByDate(list, dateRange);
+    if (campaignId) list = list.filter((p) => p.campaignId === campaignId);
     if (filter === 'replied') list = list.filter((p) => p.replied);
     else if (filter === 'high') list = list.filter((p) => p.intent === 'high');
     else if (filter === 'active') list = list.filter((p) => (p.sequenceStep ?? 0) > 0);
     if (search.trim()) {
       const q = search.toLowerCase();
-      list = list.filter((p) =>
-        (p.name || '').toLowerCase().includes(q) ||
-        (p.company || '').toLowerCase().includes(q) ||
-        (p.title || '').toLowerCase().includes(q)
+      list = list.filter(
+        (p) =>
+          (p.name || '').toLowerCase().includes(q) ||
+          (p.company || '').toLowerCase().includes(q) ||
+          (p.title || '').toLowerCase().includes(q)
       );
     }
     return list;
-  }, [prospects, filter, search]);
+  }, [activeClientId, dateRange, campaignId, filter, search]);
 
-  const replied = prospects.filter((p) => p.replied).length;
-  const highIntent = prospects.filter((p) => p.intent === 'high').length;
-  const replyRate = prospects.length ? Math.round((replied / prospects.length) * 100) : 0;
+  const sorted = useMemo(() => sortProspects(prospects, sortKey, sortDir), [prospects, sortKey, sortDir]);
 
-  const handleRowClick = (prospectId) => {
-    navigate(`/campaigns/${DEFAULT_OUTREACH_CAMPAIGN_ID}/prospect/${prospectId}`);
+  const paginated = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return sorted.slice(start, start + pageSize);
+  }, [sorted, page]);
+
+  const campaigns = useMemo(() => getCampaignsForOutreach(activeClientId ?? 'medglobal'), [activeClientId]);
+
+  useEffect(() => setPage(1), [filter, search, dateRange, campaignId]);
+
+  const handleSort = useCallback((key) => {
+    setSortKey(key);
+    setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+  }, []);
+
+  const exportCsv = useCallback(() => {
+    const headers = ['Name', 'Title', 'Company', 'ICP', 'Intent', 'Channel', 'Sequence', 'Last touch', 'Replied'];
+    const rows = sorted.map((p) => [p.name, p.title, p.company, p.icpScore, p.intent, p.channel, p.sequenceStep, p.lastTouch, p.replied ? 'Yes' : 'No']);
+    const csv = [headers.join(','), ...rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `outreach-prospects-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Export started');
+  }, [sorted, toast]);
+
+  const rowActions = {
+    onViewTimeline: (id) => navigate(`/campaigns/${DEFAULT_OUTREACH_CAMPAIGN_ID}/prospect/${id}`),
+    onPause: () => toast.info('Pause sequence (mock)'),
+    onMarkReplied: () => toast.info('Mark replied (mock)'),
+    onHandoff: () => navigate('/crm/handoff'),
   };
 
   return (
     <div style={{ padding: S[6], display: 'flex', flexDirection: 'column', gap: S[5], minHeight: '100%' }}>
-      {/* Header */}
       <div style={{ ...flex.rowBetween, flexWrap: 'wrap', gap: S[3] }}>
         <div>
           <h1 style={{ fontFamily: F.display, fontSize: '22px', fontWeight: 800, color: C.textPrimary, margin: '0 0 4px' }}>
@@ -110,140 +143,86 @@ export default function Outreach() {
           </h1>
           <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary }}>
             Prospects and sequences across campaigns. Click a prospect to view timeline and take action.
+            {currentRole === 'sdr' && ' You can pause sequences and mark replies.'}
+            {currentRole === 'analyst' && ' View-only: export and filters available.'}
           </p>
         </div>
         <div style={{ display: 'flex', gap: S[2] }}>
-          <button style={{ ...btn.secondary, fontSize: '13px' }} onClick={() => toast.info('Add prospects flow coming soon')}>
+          <button type="button" style={{ ...btn.secondary, fontSize: '13px' }} onClick={() => toast.info('Add prospects flow coming soon')}>
             Add prospects
           </button>
-          <button style={{ ...btn.primary, fontSize: '13px' }} onClick={() => navigate('/campaigns/new')}>
+          <button type="button" style={{ ...btn.secondary, fontSize: '13px' }} onClick={() => { toggleAria(); toast.info('Ask Freya: "Who should I follow up with?"'); }}>
+            Ask Freya
+          </button>
+          <button type="button" style={{ ...btn.primary, fontSize: '13px' }} onClick={() => navigate('/campaigns/new')}>
             New campaign
           </button>
         </div>
       </div>
 
-      {/* Stats */}
-      <div style={{ display: 'flex', gap: S[3], flexWrap: 'wrap' }}>
-        <StatBox label="Prospects" value={prospects.length} />
-        <StatBox label="Replied" value={replied} color={C.primary} />
-        <StatBox label="High intent" value={highIntent} color={C.secondary} />
-        <StatBox label="Reply rate" value={`${replyRate}%`} color={C.primary} />
-        <StatBox label="Sequence" value="5-step" />
-      </div>
-
-      {/* Filters + search */}
-      <div style={{ ...flex.rowBetween, flexWrap: 'wrap', gap: S[3] }}>
-        <div style={{ display: 'flex', gap: S[2], flexWrap: 'wrap' }}>
-          {FILTERS.map((f) => (
-            <button
-              key={f.id}
-              style={{
-                ...(filter === f.id ? btn.primary : btn.secondary),
-                fontSize: '12px',
-                padding: `${S[2]} ${S[3]}`,
-              }}
-              onClick={() => setFilter(f.id)}
-            >
-              {f.label}
-            </button>
-          ))}
+      {loading && (
+        <div style={{ padding: S[4], textAlign: 'center', fontFamily: F.body, color: C.textMuted }}>
+          Loading prospects…
         </div>
-        <input
-          type="search"
-          placeholder="Search by name, company, title…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{
-            minWidth: '220px',
-            padding: `${S[2]} ${S[3]}`,
-            fontFamily: F.body,
-            fontSize: '13px',
-            color: C.textPrimary,
-            backgroundColor: C.surface2,
-            border: `1px solid ${C.border}`,
-            borderRadius: R.input,
-            outline: 'none',
-          }}
-        />
-      </div>
+      )}
+      {error && (
+        <div style={{ padding: S[4], backgroundColor: C.redDim, border: `1px solid ${C.red}`, borderRadius: '10px', color: C.red }}>
+          {error}
+        </div>
+      )}
 
-      {/* Prospect list */}
-      <div style={{ ...cardStyle, padding: 0, overflow: 'hidden' }}>
-        {filtered.length === 0 ? (
-          <div style={{ padding: S[8], textAlign: 'center' }}>
-            <p style={{ fontFamily: F.body, fontSize: '14px', color: C.textMuted, margin: '0 0 12px' }}>
-              {prospects.length === 0
-                ? 'No prospects yet. Add prospects to a campaign or import from your CRM.'
-                : 'No prospects match the current filters or search.'}
-            </p>
-            {prospects.length === 0 && (
-              <button style={btn.primary} onClick={() => toast.info('Add prospects flow coming soon')}>
-                Add prospects
-              </button>
-            )}
-          </div>
-        ) : (
-          <>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '40px 1fr 88px 90px 88px 80px 32px',
-              gap: S[3],
-              padding: `${S[2]} ${S[4]}`,
-              borderBottom: `1px solid ${C.border}`,
-              backgroundColor: C.surface3,
-            }}>
-              {['ICP', 'Prospect', 'Intent', 'Sequence', 'Last touch', 'Replied', ''].map((h) => (
-                <span key={h} style={{ fontFamily: F.body, fontSize: '11px', fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  {h}
-                </span>
-              ))}
-            </div>
-            {filtered.map((p, i) => (
-              <div
-                key={p.id}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '40px 1fr 88px 90px 88px 80px 32px',
-                  gap: S[3],
-                  padding: `${S[3]} ${S[4]}`,
-                  alignItems: 'center',
-                  borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : 'none',
-                  cursor: 'pointer',
-                  transition: T.color,
-                }}
-                onClick={() => handleRowClick(p.id)}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = C.surface3; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-              >
-                <IcpScore score={p.icpScore} />
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', overflow: 'hidden' }}>
-                  <span style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {p.name}
-                  </span>
-                  <span style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {p.title} · {p.company}
-                  </span>
-                </div>
-                <span style={INTENT_BADGE[p.intent]}>{p.intent}</span>
-                <SequenceSteps current={p.sequenceStep} total={5} />
-                <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted }}>{p.lastTouch}</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: S[1] }}>
-                  <div style={{
-                    width: '8px', height: '8px', borderRadius: '50%',
-                    backgroundColor: p.replied ? C.primary : C.surface3,
-                    border: `1px solid ${p.replied ? C.primary : C.border}`,
-                    boxShadow: p.replied ? `0 0 4px ${C.primary}` : 'none',
-                  }} />
-                  <span style={{ fontFamily: F.mono, fontSize: '11px', color: p.replied ? C.primary : C.textMuted }}>{p.replied ? 'Yes' : 'No'}</span>
-                </div>
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ color: C.textMuted }}>
-                  <path d="M4 7h6M7 4l3 3-3 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-            ))}
-          </>
-        )}
-      </div>
+      <OutreachStats prospects={prospects} replyRateTrend={5} />
+
+      <OutreachFilters
+        filter={filter}
+        setFilter={setFilter}
+        search={search}
+        setSearch={setSearch}
+        dateRange={dateRange}
+        setDateRange={setDateRange}
+        campaignId={campaignId}
+        setCampaignId={setCampaignId}
+        savedViewId={savedViewId}
+        setSavedViewId={setSavedViewId}
+        campaigns={campaigns}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        onExportCsv={exportCsv}
+      />
+
+      {sorted.length === 0 ? (
+        <OutreachEmptyState
+          hasProspects={prospects.length > 0}
+          onAddProspects={() => toast.info('Add prospects flow coming soon')}
+          onImport={() => toast.info('Import from CRM coming soon')}
+        />
+      ) : viewMode === 'tile' ? (
+        <OutreachTileView prospects={paginated} />
+      ) : (
+        <OutreachTable
+          prospects={paginated}
+          visibleColumns={visibleColumns}
+          sortKey={sortKey}
+          sortDir={sortDir}
+          onSort={handleSort}
+          onRowActions={rowActions}
+          canEdit={canEdit}
+        />
+      )}
+
+      {sorted.length > pageSize && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: S[2] }}>
+          <button type="button" style={{ ...btn.ghost, fontSize: '12px' }} disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+            Previous
+          </button>
+          <span style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary }}>
+            Page {page} of {Math.ceil(sorted.length / pageSize)}
+          </span>
+          <button type="button" style={{ ...btn.ghost, fontSize: '12px' }} disabled={page >= Math.ceil(sorted.length / pageSize)} onClick={() => setPage((p) => p + 1)}>
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }

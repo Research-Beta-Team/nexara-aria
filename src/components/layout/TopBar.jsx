@@ -9,7 +9,7 @@ import usePlanAlerts from '../../hooks/usePlanAlerts';
 import NotificationDropdown from '../notifications/NotificationDropdown';
 import UpgradeModal from '../plan/UpgradeModal';
 import PlanExpiryWarning from '../plan/PlanExpiryWarning';
-import { getRoleDisplayName } from '../../pages/dev/RoleSwitcher';
+import { getRoleDisplayName, ROLE_IDS } from '../../config/roleConfig';
 import { IconWarning } from '../ui/Icons';
 import AntariousLogo from '../ui/AntariousLogo';
 import { C, F, R, S, T, shadows } from '../../tokens';
@@ -177,10 +177,12 @@ const MOCK_ACCOUNTS = [
 // ── Avatar / Account dropdown ─────────────────
 function AvatarButton() {
   const currentRole = useStore((s) => s.currentRole);
+  const setRole = useStore((s) => s.setRole);
   const logout = useStore((s) => s.logout);
   const navigate = useNavigate();
   const toast = useToast();
   const [open, setOpen] = useState(false);
+  const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const isDev = typeof import.meta !== 'undefined' && import.meta.env?.DEV === true;
 
   const avatarStyle = {
@@ -243,20 +245,100 @@ function AvatarButton() {
 
   return (
     <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: S[2] }}>
-      <span style={{
-        fontFamily: F.mono,
-        fontSize: '10px',
-        fontWeight: 700,
-        color: C.textMuted,
-        textTransform: 'uppercase',
-        letterSpacing: '0.08em',
-        backgroundColor: C.surface3,
-        border: `1px solid ${C.border}`,
-        borderRadius: R.pill,
-        padding: `2px ${S[2]}`,
-      }}>
-        {getRoleDisplayName(currentRole)}
-      </span>
+      {/* Role pill — in dev mode click opens role switcher dropdown */}
+      {isDev ? (
+        <div style={{ position: 'relative' }}>
+          <button
+            type="button"
+            onClick={() => setRoleDropdownOpen((o) => !o)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: S[1],
+              padding: `2px ${S[2]}`,
+              fontFamily: F.mono,
+              fontSize: '10px',
+              fontWeight: 700,
+              color: C.textMuted,
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              backgroundColor: C.surface3,
+              border: `1px solid ${roleDropdownOpen ? C.primary : C.border}`,
+              borderRadius: R.pill,
+              cursor: 'pointer',
+              transition: T.color,
+            }}
+          >
+            {getRoleDisplayName(currentRole)}
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ transform: roleDropdownOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.15s ease' }}>
+              <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+          {roleDropdownOpen && (
+            <>
+              <div style={{ position: 'fixed', inset: 0, zIndex: 198 }} onClick={() => setRoleDropdownOpen(false)} aria-hidden="true" />
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 6px)',
+                  left: 0,
+                  minWidth: '200px',
+                  backgroundColor: C.surface2,
+                  border: `1px solid ${C.border}`,
+                  borderRadius: R.card,
+                  boxShadow: shadows.dropdown,
+                  zIndex: 200,
+                  overflow: 'hidden',
+                  padding: `${S[1]} 0`,
+                }}
+              >
+                {ROLE_IDS.map((roleId) => (
+                  <button
+                    key={roleId}
+                    type="button"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      width: '100%',
+                      padding: `${S[2]} ${S[4]}`,
+                      border: 'none',
+                      background: currentRole === roleId ? C.primaryGlow : 'transparent',
+                      color: currentRole === roleId ? C.primary : C.textPrimary,
+                      fontFamily: F.body,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      transition: T.color,
+                    }}
+                    onClick={() => {
+                      setRole(roleId);
+                      toast.success(`Now viewing as ${getRoleDisplayName(roleId)}`);
+                      setRoleDropdownOpen(false);
+                    }}
+                  >
+                    {getRoleDisplayName(roleId)}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      ) : (
+        <span style={{
+          fontFamily: F.mono,
+          fontSize: '10px',
+          fontWeight: 700,
+          color: C.textMuted,
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+          backgroundColor: C.surface3,
+          border: `1px solid ${C.border}`,
+          borderRadius: R.pill,
+          padding: `2px ${S[2]}`,
+        }}>
+          {getRoleDisplayName(currentRole)}
+        </span>
+      )}
       <div
         role="button"
         tabIndex={0}
@@ -285,7 +367,7 @@ function AvatarButton() {
                   setOpen(false);
                 }}
               >
-                <span style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: acc.current ? C.primary : C.surface3, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: F.mono, fontSize: '10px', color: acc.current ? '#070D09' : C.textMuted }}>
+                <span style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: acc.current ? C.primary : C.surface3, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: F.mono, fontSize: '10px', color: acc.current ? C.textInverse : C.textMuted }}>
                   {acc.label.slice(0, 1)}
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -323,17 +405,6 @@ function AvatarButton() {
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 12H3a1 1 0 01-1-1V3a1 1 0 011-1h2M9 10l3-3-3-3M6 7h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               Sign out
             </button>
-
-            {isDev && (
-              <>
-                <div style={{ height: 1, backgroundColor: C.border, margin: `${S[2]} 0` }} />
-                <div style={sectionLabelStyle}>Dev</div>
-                <button type="button" style={itemStyle()} onClick={() => { navigate('/dev/roles'); setOpen(false); }}>
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v2M7 10v2M2 7h2M10 7h2M4.5 4.5l1.5 1.5M8 8l1.5 1.5M4.5 9.5l1.5-1.5M8 5l1.5-1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                  Role switching
-                </button>
-              </>
-            )}
           </div>
         </>
       )}
@@ -416,7 +487,8 @@ function CreditChip() {
           borderRadius: R.pill,
           color: chipColor,
           cursor: 'pointer',
-          fontFamily: F.mono,
+          boxSizing: 'content-box',
+          fontFamily: F.body,
           fontSize: '11px',
           fontWeight: 700,
           letterSpacing: '0.02em',
@@ -688,7 +760,7 @@ export default function TopBar({ onAriaOpen }) {
                 fontFamily: F.mono,
                 fontSize: '10px',
                 fontWeight: 700,
-                color: '#fff',
+                color: C.textOnDanger,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

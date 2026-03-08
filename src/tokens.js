@@ -30,6 +30,10 @@ export const C = {
   textSecondary: 'var(--c-text-secondary)',
   textMuted:     'var(--c-text-muted)',
   textInverse:   'var(--c-text-inverse)',
+  /** Text on primary/sage: use textInverse. Text on danger/red: use textOnDanger. */
+  textOnDanger:  '#FFFFFF',
+  /** Text on light accent backgrounds (amber, yellow, light surfaces) — always dark for contrast. */
+  textOnLightAccent: '#1C2B27',
 
   // Semantic
   red:      'var(--c-red)',

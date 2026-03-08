@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { C, F, R, S, T, btn, shadows } from '../../tokens';
 
 const SEV_COLORS = {
-  High:   { color: '#EF4444', bg: 'rgba(239,68,68,0.12)',   border: 'rgba(239,68,68,0.25)' },
-  Medium: { color: C.amber,  bg: 'rgba(245,200,66,0.12)',   border: 'rgba(245,200,66,0.25)' },
-  Low:    { color: C.primary, bg: 'rgba(61,220,132,0.10)', border: 'rgba(61,220,132,0.25)' },
+  High:   { color: C.red,   bg: C.redDim,   border: C.red },
+  Medium: { color: C.amber, bg: C.amberDim, border: C.amber },
+  Low:    { color: C.primary, bg: C.primaryGlow, border: C.primary },
 };
 
 /* ─── ConfidenceRing ─────────────────────────────────────── */
@@ -12,7 +12,7 @@ function ConfidenceRing({ score }) {
   const r = 16;
   const circ = 2 * Math.PI * r;
   const fill = (score / 100) * circ;
-  const color = score >= 80 ? C.primary : score >= 60 ? C.amber : '#EF4444';
+  const color = score >= 80 ? C.primary : score >= 60 ? C.amber : C.red;
   return (
     <svg width="40" height="40" viewBox="0 0 40 40" style={{ flexShrink: 0 }}>
       <circle cx="20" cy="20" r={r} fill="none" stroke={C.border} strokeWidth="2.5"/>
@@ -50,15 +50,15 @@ export default function EscalationCard({ escalation, selected, onSelect, onAppro
   const borderColor = animState === 'approving'
     ? C.primary
     : animState === 'denying'
-    ? '#EF4444'
+    ? C.red
     : selected
     ? C.borderHover
     : C.border;
 
   const bgColor = animState === 'approving'
-    ? 'rgba(61,220,132,0.08)'
+    ? C.primaryGlow
     : animState === 'denying'
-    ? 'rgba(239,68,68,0.08)'
+    ? C.redDim
     : C.surface;
 
   return (
@@ -86,7 +86,7 @@ export default function EscalationCard({ escalation, selected, onSelect, onAppro
           <div style={{
             position: 'absolute', inset: 0, zIndex: 2,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            backgroundColor: animState === 'approving' ? 'rgba(61,220,132,0.18)' : 'rgba(239,68,68,0.18)',
+            backgroundColor: animState === 'approving' ? C.primaryGlow : C.redDim,
             borderRadius: R.card,
             animation: 'ecCheckIn 0.3s ease',
           }}>
@@ -97,8 +97,8 @@ export default function EscalationCard({ escalation, selected, onSelect, onAppro
               </svg>
             ) : (
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-                <circle cx="18" cy="18" r="16" fill="rgba(239,68,68,0.12)" stroke="#EF4444" strokeWidth="1.5"/>
-                <path d="M12 12l12 12M24 12L12 24" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/>
+                <circle cx="18" cy="18" r="16" fill={C.redDim} stroke={C.red} strokeWidth="1.5"/>
+                <path d="M12 12l12 12M24 12L12 24" stroke={C.red} strokeWidth="2" strokeLinecap="round"/>
               </svg>
             )}
           </div>
@@ -157,7 +157,7 @@ export default function EscalationCard({ escalation, selected, onSelect, onAppro
               {escalation.situation}
             </p>
           </div>
-          <div style={{ backgroundColor: `${sev.color}0A`, border: `1px solid ${sev.border}`, borderRadius: R.md, padding: S[3] }}>
+          <div style={{ backgroundColor: sev.bg, border: `1px solid ${sev.border}`, borderRadius: R.md, padding: S[3] }}>
             <div style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: sev.color, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[2] }}>
               Freya Recommendation
             </div>
@@ -220,7 +220,7 @@ export default function EscalationCard({ escalation, selected, onSelect, onAppro
             <button
               style={{
                 ...btn.secondary, fontSize: '12px',
-                color: '#EF4444', borderColor: '#EF444440',
+                color: C.red, borderColor: C.red,
               }}
               onClick={(e) => { e.stopPropagation(); handleDeny(); }}
               disabled={!!animState}
@@ -245,7 +245,7 @@ export default function EscalationCard({ escalation, selected, onSelect, onAppro
           }}>
             <span style={{
               fontFamily: F.mono, fontSize: '11px', fontWeight: 700,
-              color: escalation.status === 'approved' ? C.primary : '#EF4444',
+              color: escalation.status === 'approved' ? C.primary : C.red,
               display: 'flex', alignItems: 'center', gap: '5px',
             }}>
               {escalation.status === 'approved' ? (
@@ -258,7 +258,7 @@ export default function EscalationCard({ escalation, selected, onSelect, onAppro
               ) : (
                 <>
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path d="M2 2l8 8M10 2L2 10" stroke="#EF4444" strokeWidth="1.5" strokeLinecap="round"/>
+                    <path d="M2 2l8 8M10 2L2 10" stroke={C.red} strokeWidth="1.5" strokeLinecap="round"/>
                   </svg>
                   Denied · {escalation.resolvedAt}
                 </>

@@ -9,13 +9,24 @@ const INK = '#1C2B27';
 
 export default function AntariousLogo({ variant = 'dark', height = 28, showWordmark = true }) {
   const slashColor = variant === 'dark' ? '#FFFFFF' : INK;
-  const wordmarkColor = variant === 'dark' ? '#FFFFFF' : INK;
+  const wordmarkColor = variant === 'dark' ? 'var(--c-primary)' : INK;
+  const slashFill = showWordmark && variant === 'dark' ? 'currentColor' : slashColor;
 
   const markHeight = height;
   const markWidth = height * (32 / 24);
   const dotR = (height / 24) * 2.5;
   const dotCx = (height / 24) * 5;
   const dotCy = height / 2;
+
+  const svgStyle = {
+    flexShrink: 0,
+    ...(variant === 'dark' && { backgroundColor: 'var(--c-border-hover)' }),
+    ...(showWordmark && variant === 'dark' && {
+      backgroundClip: 'unset',
+      WebkitBackgroundClip: 'unset',
+      color: 'rgba(74, 124, 111, 1)',
+    }),
+  };
 
   return (
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: (height / 24) * 4 }}>
@@ -26,7 +37,7 @@ export default function AntariousLogo({ variant = 'dark', height = 28, showWordm
         viewBox="0 0 32 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        style={{ flexShrink: 0 }}
+        style={svgStyle}
         aria-hidden
       >
         {/* The Dot — Sage #4A7C6F */}
@@ -34,7 +45,7 @@ export default function AntariousLogo({ variant = 'dark', height = 28, showWordm
         {/* The Slash Form — diagonal A with notch (Ink on light, white on dark) */}
         <path
           d="M12 21 L16 3 L20 21 L18 21 L16 13 L14 21 Z"
-          fill={slashColor}
+          fill={slashFill}
           fillRule="evenodd"
         />
       </svg>

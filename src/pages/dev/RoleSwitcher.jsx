@@ -21,11 +21,11 @@ const ROLES = [
   {
     id: 'founder',
     name: 'Founder',
-    description: 'Solo founder view · 5-item sidebar · Daily brief dashboard',
+    description: 'Same full sidebar as Owner',
     color: '#3DDC84',
     icon: 'user',
-    permissions: ["Today's tasks", 'Content queue', 'Outreach', 'Analytics', 'ARIA'],
-    dashboardVariant: 'Founder daily brief',
+    permissions: ['Same as Owner', 'Full sidebar', 'All features'],
+    dashboardVariant: 'Same as Owner',
   },
   {
     id: 'advisor',

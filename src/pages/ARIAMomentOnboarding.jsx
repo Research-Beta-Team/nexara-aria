@@ -47,6 +47,11 @@ export default function ARIAMomentOnboarding() {
     navigate('/', { replace: true });
   }, [completeOnboarding, navigate]);
 
+  const handleBackToSetup = useCallback(() => navigate('/onboarding/setup', { replace: true }), [navigate]);
+  const handleBackToWelcome = useCallback(() => setStep(STEPS.WELCOME), []);
+  const handleBackToReading = useCallback(() => setStep(STEPS.READING), []);
+  const handleBackToExtracted = useCallback(() => setStep(STEPS.EXTRACTED), []);
+
   const handleEdit = useCallback(() => {
     // In prototype, "Let me correct" still advances; could open inline edit later
     setStep(STEPS.AUTO_FILL);
@@ -68,6 +73,25 @@ export default function ARIAMomentOnboarding() {
   if (step === STEPS.WELCOME) {
     return (
       <div style={screenStyle}>
+        <div style={{ position: 'absolute', top: S[6], left: S[6] }}>
+          <button
+            type="button"
+            onClick={handleBackToSetup}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: C.textSecondary,
+              fontFamily: F.body,
+              fontSize: 14,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: S[1],
+            }}
+          >
+            ← Back to setup
+          </button>
+        </div>
         <style>{`
           @keyframes ariaOrbPulse {
             0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 40px rgba(61,220,132,0.4); }
@@ -133,6 +157,7 @@ export default function ARIAMomentOnboarding() {
       <ARIAReadingAnimation
         fileName={droppedFileName}
         onComplete={handleReadingComplete}
+        onBack={handleBackToWelcome}
       />
     );
   }
@@ -141,6 +166,25 @@ export default function ARIAMomentOnboarding() {
   if (step === STEPS.EXTRACTED) {
     return (
       <div style={{ ...screenStyle, justifyContent: 'flex-start', paddingTop: S[8] }}>
+        <div style={{ position: 'absolute', top: S[6], left: S[6] }}>
+          <button
+            type="button"
+            onClick={handleBackToReading}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: C.textSecondary,
+              fontFamily: F.body,
+              fontSize: 14,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: S[1],
+            }}
+          >
+            ← Back
+          </button>
+        </div>
         <ExtractedPreview
           extraction={extraction}
           onConfirm={handleExtractedConfirm}
@@ -154,6 +198,25 @@ export default function ARIAMomentOnboarding() {
   if (step === STEPS.AUTO_FILL) {
     return (
       <div style={{ ...screenStyle, justifyContent: 'flex-start', paddingTop: S[6] }}>
+        <div style={{ position: 'absolute', top: S[6], left: S[6] }}>
+          <button
+            type="button"
+            onClick={handleBackToExtracted}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: C.textSecondary,
+              fontFamily: F.body,
+              fontSize: 14,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: S[1],
+            }}
+          >
+            ← Back
+          </button>
+        </div>
         <CampaignAutoFillDemo extraction={extraction} onComplete={handleAutoFillComplete} />
       </div>
     );

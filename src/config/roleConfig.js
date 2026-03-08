@@ -32,7 +32,7 @@ export const ROLES = {
   founder: {
     id: 'founder',
     displayName: 'Founder',
-    sidebarVariant: 'founder',
+    sidebarVariant: 'full',
     ariaOpening: "Ready. What needs your attention first?",
     ariaQuickActions: [
       'Show me what needs a decision',
@@ -156,7 +156,6 @@ export function getAssignedClients(roleId) {
 const FULL_SIDEBAR_SECTIONS = ['core', 'ops', 'teamManagement', 'research', 'campaigns', 'abmPlaybooks', 'revenue', 'crm', 'content', 'socialMediaAds', 'analyticsReports', 'ariaIntelligence', 'admin', 'aria'];
 
 export function getSidebarSections(roleId) {
-  if (roleId === 'founder') return 'founder'; // special: FOUNDER_NAV_ITEMS
   const role = getRoleConfig(roleId);
   const variant = role.sidebarVariant;
   if (variant === 'full') return FULL_SIDEBAR_SECTIONS;

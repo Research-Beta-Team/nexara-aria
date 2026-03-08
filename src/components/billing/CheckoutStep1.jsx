@@ -174,7 +174,7 @@ export default function CheckoutStep1({ fromPlanId, toPlanId, billing, setBillin
               <div style={{ display: 'flex', flexDirection: 'column', gap: S[2] }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>Agent credits/month</span>
-                  <span style={{ fontFamily: F.mono, fontSize: '12px', color: '#3DDC84', fontWeight: 700 }}>
+                  <span style={{ fontFamily: F.mono, fontSize: '12px', color: C.primary, fontWeight: 700 }}>
                     {formatCredits(fromCredits)} → {formatCredits(toCredits)}
                   </span>
                 </div>
@@ -189,9 +189,9 @@ export default function CheckoutStep1({ fromPlanId, toPlanId, billing, setBillin
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
-                    <div style={{ fontFamily: F.body, fontSize: '11px', color: '#3DDC84', width: '60px' }}>{toPlan.displayName}</div>
+                    <div style={{ fontFamily: F.body, fontSize: '11px', color: C.primary, width: '60px' }}>{toPlan.displayName}</div>
                     <div style={{ flex: 1, height: '5px', borderRadius: R.pill, backgroundColor: C.surface3 }}>
-                      <div style={{ width: '100%', height: '100%', borderRadius: R.pill, backgroundColor: '#3DDC84' }} />
+                      <div style={{ width: '100%', height: '100%', borderRadius: R.pill, backgroundColor: C.primary }} />
                     </div>
                   </div>
                 </div>
@@ -201,7 +201,7 @@ export default function CheckoutStep1({ fromPlanId, toPlanId, billing, setBillin
               {toSeats !== fromSeats && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: S[2], borderTop: `1px solid ${C.border}` }}>
                   <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>Team seats</span>
-                  <span style={{ fontFamily: F.mono, fontSize: '12px', color: '#3DDC84', fontWeight: 700 }}>
+                  <span style={{ fontFamily: F.mono, fontSize: '12px', color: C.primary, fontWeight: 700 }}>
                     {formatSeats(fromSeats)} → {formatSeats(toSeats)}
                   </span>
                 </div>
@@ -217,7 +217,7 @@ export default function CheckoutStep1({ fromPlanId, toPlanId, billing, setBillin
                     <div key={key} style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                         <circle cx="6" cy="6" r="6" fill="rgba(61,220,132,0.15)"/>
-                        <path d="M3 6l2 2 4-4" stroke="#3DDC84" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M3 6l2 2 4-4" stroke={C.primary} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                       <span style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary }}>
                         {featName(key)}
@@ -248,8 +248,8 @@ export default function CheckoutStep1({ fromPlanId, toPlanId, billing, setBillin
                   padding: `${S[1]} ${S[3]}`,
                   borderRadius: R.pill, border: 'none',
                   fontFamily: F.body, fontSize: '12px', fontWeight: billing === opt ? 600 : 400,
-                  color: billing === opt ? (opt === 'annual' ? '#070D09' : C.textPrimary) : C.textSecondary,
-                  backgroundColor: billing === opt ? (opt === 'annual' ? '#3DDC84' : C.surface3) : 'transparent',
+                  color: billing === opt ? (opt === 'annual' ? C.textInverse : C.textPrimary) : C.textSecondary,
+                  backgroundColor: billing === opt ? (opt === 'annual' ? C.primary : C.surface3) : 'transparent',
                   cursor: 'pointer', transition: T.color, whiteSpace: 'nowrap',
                 }}
               >
@@ -289,7 +289,7 @@ export default function CheckoutStep1({ fromPlanId, toPlanId, billing, setBillin
                 </span>
                 <span style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted }}>~30 days remaining</span>
               </div>
-              <span style={{ fontFamily: F.mono, fontSize: '13px', color: '#3DDC84' }}>
+              <span style={{ fontFamily: F.mono, fontSize: '13px', color: C.primary }}>
                 –${proration.toLocaleString()}
               </span>
             </div>
@@ -338,7 +338,7 @@ export default function CheckoutStep1({ fromPlanId, toPlanId, billing, setBillin
             onClick={goNext}
             style={{
               width: '100%', padding: `${S[4]} ${S[5]}`,
-              backgroundColor: '#3DDC84', color: '#070D09',
+              backgroundColor: C.primary, color: C.textInverse,
               border: 'none', borderRadius: R.button,
               fontFamily: F.body, fontSize: '15px', fontWeight: 700,
               cursor: 'pointer', transition: T.color,

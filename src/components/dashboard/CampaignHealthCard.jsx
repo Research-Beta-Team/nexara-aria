@@ -35,7 +35,7 @@ export default function CampaignHealthCard({ name, goal, current, health, spend,
     display: 'flex',
     flexDirection: 'column',
     gap: S[4],
-    transition: T.base,
+    transition: 'box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease',
   };
 
   const statBox = {

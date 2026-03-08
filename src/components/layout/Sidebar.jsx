@@ -10,7 +10,6 @@ import useWorkspace from '../../hooks/useWorkspace';
 import CreditBar from '../plan/CreditBar';
 import PlanBadge from '../plan/PlanBadge';
 import UpgradeModal from '../plan/UpgradeModal';
-import FounderModeToggle from './FounderModeToggle';
 import { getSidebarSections } from '../../config/roleConfig';
 import { getTemplateById } from '../../data/workspaceTemplates';
 import AntariousLogo from '../ui/AntariousLogo';
@@ -49,15 +48,6 @@ const IconAria = () => (
   </svg>
 );
 
-// ── Founder mode: 5 items only ─────────────────
-const FOUNDER_NAV_ITEMS = [
-  { label: "Today's Tasks", path: '/tasks', icon: <IconTasks />, stub: true },
-  { label: 'Content Queue', path: '/content', icon: <IconContent /> },
-  { label: 'Outreach Pipeline', path: '/campaigns', icon: <IconOutreach /> },
-  { label: 'Campaign Health', path: '/analytics', icon: <IconChart /> },
-  { label: 'Freya', path: null, icon: <IconAria />, openAria: true },
-];
-
 // ── Startup segment: simplified nav for startup companies ──
 const STARTUP_NAV_ITEMS = [
   { label: 'Dashboard', path: '/', exact: true, icon: <IconChart /> },
@@ -70,58 +60,6 @@ const STARTUP_NAV_ITEMS = [
   { label: 'Freya', path: null, icon: <IconAria />, openAria: true },
   { label: 'Settings', path: '/settings', icon: <IconTasks /> },
 ];
-
-function FounderNavItem({ item, onOpenAria }) {
-  const baseStyle = {
-    display:        'flex',
-    alignItems:     'center',
-    gap:            S[3],
-    padding:        `${S[2]} ${S[3]}`,
-    borderRadius:   R.md,
-    fontFamily:     F.body,
-    fontSize:       '13px',
-    fontWeight:     500,
-    transition:     T.color,
-    margin:         `0 ${S[2]}`,
-    textDecoration: 'none',
-    color:          C.textSecondary,
-    backgroundColor: 'transparent',
-    border:         'none',
-    width:          '100%',
-    textAlign:      'left',
-    cursor:         'pointer',
-  };
-
-  if (item.openAria) {
-    return (
-      <button
-        type="button"
-        style={baseStyle}
-        onClick={() => onOpenAria?.()}
-        onMouseEnter={(e) => { e.currentTarget.style.color = C.primary; e.currentTarget.style.backgroundColor = C.primaryGlow; }}
-        onMouseLeave={(e) => { e.currentTarget.style.color = C.textSecondary; e.currentTarget.style.backgroundColor = 'transparent'; }}
-      >
-        <span style={{ flexShrink: 0, display: 'flex', color: 'inherit' }}>{item.icon}</span>
-        <span style={{ flex: 1 }}>{item.label}</span>
-      </button>
-    );
-  }
-
-  return (
-    <NavLink
-      to={item.path}
-      end={item.exact}
-      style={({ isActive }) => ({
-        ...baseStyle,
-        color: isActive ? C.primary : C.textSecondary,
-        backgroundColor: isActive ? C.primaryGlow : 'transparent',
-      })}
-    >
-      <span style={{ flexShrink: 0, display: 'flex', color: 'inherit' }}>{item.icon}</span>
-      <span style={{ flex: 1 }}>{item.label}</span>
-    </NavLink>
-  );
-}
 
 // ── Nav section / item definitions ────────────
 const NAV_SECTIONS = [
@@ -695,7 +633,6 @@ function Logo({ collapsed }) {
   return (
     <div style={{
       display: 'flex',
-      alignItems: 'center',
       gap: S[3],
       padding: collapsed ? `${S[3]} ${S[3]}` : `${S[5]} ${S[5]}`,
       borderBottom: `1px solid ${C.border}`,
@@ -1067,10 +1004,8 @@ export default function Sidebar({ onOpenAria }) {
   const collapsed     = useStore((s) => s.sidebarCollapsed);
   const toggleSidebar = useStore((s) => s.toggleSidebar);
   const currentRole   = useStore((s) => s.currentRole);
-  const setRole       = useStore((s) => s.setRole);
   const segment       = useStore((s) => s.segment);
   const toast         = useToast();
-  const isFounder     = currentRole === 'founder';
   const isStartup     = segment === 'startup';
 
   const { isModuleVisible, profile } = useWorkspace();
@@ -1098,7 +1033,6 @@ export default function Sidebar({ onOpenAria }) {
   // Role-based section visibility (same design for enterprise & startup)
   const visibleSections = (() => {
     const sections = getSidebarSections(currentRole);
-    if (sections === 'founder') return [];
     return NAV_SECTIONS.filter((s) => sections.includes(s.id));
   })();
 
@@ -1108,8 +1042,8 @@ export default function Sidebar({ onOpenAria }) {
   };
 
   const sidebarStyle = {
-    width:           isFounder ? '220px' : (collapsed ? '60px' : '220px'),
-    minWidth:        isFounder ? '220px' : (collapsed ? '60px' : '220px'),
+    width:           collapsed ? '60px' : '220px',
+    minWidth:        collapsed ? '60px' : '220px',
     height:          '100vh',
     backgroundColor: C.surface,
     borderRight:     `1px solid ${C.border}`,
@@ -1155,34 +1089,7 @@ export default function Sidebar({ onOpenAria }) {
       <Logo collapsed={collapsed} />
 
       <nav style={navStyle}>
-        {isFounder ? (
-          <>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: S[2],
-              padding: `${S[2]} ${S[4]}`,
-              marginBottom: S[1],
-            }}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ color: C.textMuted, flexShrink: 0 }}>
-                <circle cx="7" cy="4.5" r="2.5" stroke="currentColor" strokeWidth="1.2"/>
-                <path d="M1.5 12.5c0-3 2.5-5.5 5.5-5.5s5.5 2.5 5.5 5.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-              </svg>
-              <span style={{
-                fontFamily: F.body,
-                fontSize: '12px',
-                fontWeight: 500,
-                color: C.textMuted,
-              }}>
-                Founder Mode
-              </span>
-            </div>
-            {FOUNDER_NAV_ITEMS.map((item) => (
-              <FounderNavItem key={item.label} item={item} onOpenAria={onOpenAria} />
-            ))}
-          </>
-        ) : (
-          visibleSections.map((section) => {
+        {visibleSections.map((section) => {
             const filteredItems = section.items
               .filter((item) => isItemVisibleForRole(item) && (!item.moduleId || isModuleVisible(item.moduleId)))
               .sort((a, b) => orderIndex(a.moduleId) - orderIndex(b.moduleId));
@@ -1214,42 +1121,11 @@ export default function Sidebar({ onOpenAria }) {
             ))}
           </div>
         );
-          })
-        )}
+        })}
       </nav>
 
-      {isFounder && (
-        <div style={{ borderTop: `1px solid ${C.border}`, padding: S[2] }}>
-          <button
-            type="button"
-            onClick={() => { setRole('owner'); toast.info('Switched to Full Team View'); }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: S[2],
-              width: '100%',
-              padding: `${S[2]} ${S[3]}`,
-              fontFamily: F.body,
-              fontSize: '12px',
-              fontWeight: 500,
-              color: C.textMuted,
-              backgroundColor: 'transparent',
-              border: `1px solid ${C.border}`,
-              borderRadius: R.md,
-              cursor: 'pointer',
-              transition: T.color,
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M9 3L4 7l5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            ← Full Mode
-          </button>
-        </div>
-      )}
-
-      {/* Plan status panel — above the collapse toggle (hidden in founder mode) */}
-      {!isFounder && profile && (
+      {/* Plan status panel — above the collapse toggle */}
+      {profile && (
         <div style={{
           borderTop: `1px solid ${C.border}`,
           padding: collapsed ? S[2] : S[3],
@@ -1281,33 +1157,7 @@ export default function Sidebar({ onOpenAria }) {
           )}
         </div>
       )}
-      {!isFounder && !isStartup && <PlanStatusSection collapsed={collapsed} />}
-
-      {/* Founder mode toggle — when not in founder mode, so user can switch */}
-      {!isFounder && !isStartup && <FounderModeToggle />}
-
-      {/* Dev: Role Switcher — only in development */}
-      {typeof import.meta !== 'undefined' && import.meta.env?.DEV && (
-        <div style={{ borderTop: `1px solid ${C.border}`, padding: S[2] }}>
-          <NavLink
-            to="/dev/roles"
-            style={({ isActive }) => ({
-              display: 'flex',
-              alignItems: 'center',
-              gap: S[2],
-              padding: S[2],
-              borderRadius: R.md,
-              fontFamily: F.body,
-              fontSize: '11px',
-              color: C.textMuted,
-              textDecoration: 'none',
-              backgroundColor: isActive ? C.surface2 : 'transparent',
-            })}
-          >
-            <span style={{ opacity: 0.8 }}>Dev:</span> Switch Role
-          </NavLink>
-        </div>
-      )}
+      {!isStartup && <PlanStatusSection collapsed={collapsed} />}
 
       {/* Collapse toggle */}
       <div style={{ borderTop: `1px solid ${C.border}`, padding: S[2] }}>

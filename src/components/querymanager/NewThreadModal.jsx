@@ -62,7 +62,7 @@ export default function NewThreadModal({ onClose, onCreate }) {
                   padding: `${S[2]} ${S[3]}`, fontFamily: F.body, fontSize: '13px', outline: 'none',
                 }}
               />
-              {err && <div style={{ fontFamily: F.body, fontSize: '11px', color: '#EF4444', marginTop: '4px' }}>{err}</div>}
+              {err && <div style={{ fontFamily: F.body, fontSize: '11px', color: C.red, marginTop: '4px' }}>{err}</div>}
             </div>
 
             {/* Type */}

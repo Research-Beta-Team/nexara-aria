@@ -54,12 +54,22 @@ export default function KPIHeader({ kpisConfig, kpiValues = {} }) {
         const barColor = progressColor(pct);
 
         return (
-          <div key={metricId} style={{ ...cardStyle, padding: S[4], display: 'flex', flexDirection: 'column', gap: S[2] }}>
+          <div
+            key={metricId}
+            style={{
+              ...cardStyle,
+              padding: S[5],
+              display: 'flex',
+              flexDirection: 'column',
+              gap: S[3],
+              transition: 'box-shadow 0.2s ease, border-color 0.2s ease',
+            }}
+          >
             <div style={{ fontFamily: F.body, fontSize: '11px', fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
               {spec?.label ?? metricId}
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: S[2], flexWrap: 'wrap' }}>
-              <span style={{ fontFamily: F.mono, fontSize: '24px', fontWeight: 700, color: C.textPrimary, lineHeight: 1 }}>
+              <span style={{ fontFamily: F.mono, fontSize: '26px', fontWeight: 700, color: C.textPrimary, lineHeight: 1, letterSpacing: '-0.02em' }}>
                 {formatValue(value, spec?.unit)}
               </span>
               <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted }}>

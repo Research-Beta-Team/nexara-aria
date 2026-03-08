@@ -170,12 +170,12 @@ export default function CheckoutStep4({ fromPlanId, toPlanId, onClose }) {
         <div style={{ display: 'flex', gap: S[3], justifyContent: 'center', marginTop: S[3], flexWrap: 'wrap' }}>
           <span style={{
             fontFamily: F.mono, fontSize: '13px', fontWeight: 700,
-            color: '#3DDC84', backgroundColor: 'rgba(61,220,132,0.12)',
+            color: C.primary, backgroundColor: C.primaryGlow,
             border: '1px solid rgba(61,220,132,0.25)', borderRadius: R.pill,
             padding: `3px ${S[3]}`,
             display: 'inline-flex', alignItems: 'center', gap: 6,
           }}>
-            <IconZap color="#3DDC84" w={14} /> {formatCredits(toPlan.credits.included)} credits added
+            <IconZap color={C.primary} w={14} /> {formatCredits(toPlan.credits.included)} credits added
           </span>
           <span style={{
             fontFamily: F.body, fontSize: '13px', color: C.textSecondary,
@@ -266,7 +266,7 @@ export default function CheckoutStep4({ fromPlanId, toPlanId, onClose }) {
           onClick={handleDashboard}
           style={{
             width: '100%', padding: `${S[4]} ${S[5]}`,
-            backgroundColor: '#3DDC84', color: '#070D09',
+            backgroundColor: '#3DDC84', color: C.textInverse,
             border: 'none', borderRadius: R.button,
             fontFamily: F.body, fontSize: '15px', fontWeight: 700,
             cursor: 'pointer', transition: T.color,

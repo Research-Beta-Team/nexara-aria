@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { C, F, S } from '../../tokens';
 import { ARIA_READING_STATES } from '../../data/onboardingMock';
 
-export default function ARIAReadingAnimation({ fileName, onComplete }) {
+export default function ARIAReadingAnimation({ fileName, onComplete, onBack }) {
   const [stateIndex, setStateIndex] = useState(0);
 
   useEffect(() => {
@@ -67,24 +67,43 @@ export default function ARIAReadingAnimation({ fileName, onComplete }) {
       />
 
       {/* File name card — top left */}
-      {fileName && (
-        <div
-          style={{
-            position: 'absolute',
-            top: S[6],
-            left: S[6],
-            padding: `${S[2]} ${S[4]}`,
-            borderRadius: 8,
-            backgroundColor: C.surface,
-            border: `1px solid ${C.border}`,
-            fontFamily: F.mono,
-            fontSize: 13,
-            color: C.textSecondary,
-          }}
-        >
-          {fileName}
-        </div>
-      )}
+      <div style={{ position: 'absolute', top: S[6], left: S[6], display: 'flex', flexDirection: 'column', gap: S[2], alignItems: 'flex-start' }}>
+        {onBack && (
+          <button
+            type="button"
+            onClick={onBack}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: C.textSecondary,
+              fontFamily: F.body,
+              fontSize: 14,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: S[1],
+              padding: 0,
+            }}
+          >
+            ← Back
+          </button>
+        )}
+        {fileName && (
+          <div
+            style={{
+              padding: `${S[2]} ${S[4]}`,
+              borderRadius: 8,
+              backgroundColor: C.surface,
+              border: `1px solid ${C.border}`,
+              fontFamily: F.mono,
+              fontSize: 13,
+              color: C.textSecondary,
+            }}
+          >
+            {fileName}
+          </div>
+        )}
+      </div>
 
       {/* Particles */}
       {[0, 1, 2].map((i) => (

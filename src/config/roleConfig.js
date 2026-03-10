@@ -8,11 +8,9 @@ export const ROLE_IDS = [
   'founder',
   'advisor',
   'csm',
-  'mediaBuyer',
   'contentStrategist',
   'sdr',
   'analyst',
-  'client',
 ];
 
 export const ROLES = {
@@ -68,19 +66,6 @@ export const ROLES = {
     access: { escalations: true, inbox: true, team: false },
     assignedClients: ['Medglobal', 'Delta Garments', 'BGMEA Member Co', 'Apex Corp'],
   },
-  mediaBuyer: {
-    id: 'mediaBuyer',
-    displayName: 'Media Buyer',
-    sidebarVariant: 'mediaBuyer',
-    ariaOpening: 'Meta is performing. One audience showing burnout — want to fix it?',
-    ariaQuickActions: [
-      'Optimize ad spend',
-      'Refresh audience',
-      'Pull performance report',
-    ],
-    access: { escalations: true, inbox: false },
-    assignedClients: null,
-  },
   contentStrategist: {
     id: 'contentStrategist',
     displayName: 'Content Strategist',
@@ -120,19 +105,6 @@ export const ROLES = {
     access: { escalations: 'readonly', inbox: false },
     assignedClients: null,
   },
-  client: {
-    id: 'client',
-    displayName: 'Client',
-    sidebarVariant: 'client',
-    ariaOpening: "Hi! Your campaign is on track — 312 leads so far this month.",
-    ariaQuickActions: [
-      'How are my results?',
-      'When will I hit my goal?',
-      'What happens next week?',
-    ],
-    access: { escalations: false, inbox: true },
-    assignedClients: null,
-  },
 };
 
 export function getRoleConfig(roleId) {
@@ -160,10 +132,8 @@ export function getSidebarSections(roleId) {
   const variant = role.sidebarVariant;
   if (variant === 'full') return FULL_SIDEBAR_SECTIONS;
   const map = {
-    client: ['core', 'content', 'admin'],
     sdr: ['core', 'ops', 'teamManagement', 'campaigns', 'crm', 'admin'],
     csm: ['core', 'revenue', 'crm', 'content', 'admin'],
-    mediaBuyer: ['core', 'ops', 'teamManagement', 'revenue', 'content', 'socialMediaAds', 'admin'],
     contentStrategist: ['core', 'content', 'ariaIntelligence', 'admin'],
     analyst: ['core', 'ops', 'teamManagement', 'research', 'revenue', 'analyticsReports', 'admin'],
   };

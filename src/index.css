@@ -1,37 +1,37 @@
 /* ─────────────────────────────────────────────
    Antarious — CSS Design Token Variables
-   Product UI uses Marketing brand palette (ink, sage, cream)
-   per Antarious Brand Guidelines v1.1.
+   Product UI uses Charged Teal palette
+   per Antarious Brand Guidelines v1.2.
    Light theme via [data-theme="light"].
 ───────────────────────────────────────────── */
 
-/* ── Dark theme (Product UI — Marketing palette) ── */
+/* ── Dark theme (Product UI — Charged Teal) ── */
 :root {
-  /* Backgrounds — ink base, stepped (ink-2, darker ink steps) */
-  --c-bg:       #1C2B27;
-  --c-surface:  #2D3F3B;
-  --c-surface2: #364a44;
-  --c-surface3: #3e554d;
+  /* Backgrounds — deep navy/ink */
+  --c-bg:       #060D10;  /* dark-bg */
+  --c-surface:  #091520;  /* dark-surf */
+  --c-surface2: #0A1628;  /* navy */
+  --c-surface3: #0B1B2F;  /* slightly lighter navy */
 
-  /* Borders — subtle sage/stone */
-  --c-border:       rgba(200, 221, 216, 0.12);
-  --c-border-hover: rgba(107, 163, 150, 0.45);
+  /* Borders — teal-tinted */
+  --c-border:       rgba(14, 165, 233, 0.18); /* dark-border */
+  --c-border-hover: rgba(56, 189, 248, 0.6);  /* sky / hover */
 
-  /* Brand accents — sage primary, sage-light secondary */
-  --c-primary:      #4A7C6F;
-  --c-primary-dim:  #3a6358;
-  --c-primary-glow: rgba(74, 124, 111, 0.25);
-  --c-secondary:    #6BA396;
-  --c-secondary-dim: #3a6358;
+  /* Brand accents — Charged Teal primary, Electric secondary */
+  --c-primary:       #0EA5E9;                       /* teal */
+  --c-primary-dim:   #0891B2;                       /* teal-dark */
+  --c-primary-glow:  rgba(14, 165, 233, 0.25);      /* teal glow */
+  --c-secondary:     #2563EB;                       /* electric */
+  --c-secondary-dim: #1D4ED8;                       /* electric-2 */
 
-  /* Sage (alias for primary / Freya accent) */
-  --c-sage: #4A7C6F;
+  /* Legacy alias (previously sage) now maps to primary teal */
+  --c-sage: #0EA5E9;
 
-  /* Text — cream and sage-pale on dark */
-  --c-text-primary:   #FAF8F3;
-  --c-text-secondary: #C8DDD8;
-  --c-text-muted:     #8B9E98;
-  --c-text-inverse:   #1C2B27;
+  /* Text — light ink on dark */
+  --c-text-primary:   #E5F3FF;
+  --c-text-secondary: rgba(226, 232, 240, 0.85);
+  --c-text-muted:     #64748B;
+  --c-text-inverse:   #060D10;
 
   /* Semantic */
   --c-red:       #EF4444;
@@ -41,41 +41,41 @@
   --c-green:     #10B981;
   --c-green-dim: rgba(16, 185, 129, 0.15);
 
-  /* Overlays — ink */
-  --c-overlay:       rgba(28, 43, 39, 0.78);
-  --c-overlay-heavy: rgba(28, 43, 39, 0.94);
+  /* Overlays — dark ink */
+  --c-overlay:       rgba(6, 13, 16, 0.78);
+  --c-overlay-heavy: rgba(6, 13, 16, 0.94);
 
-  /* Shadows — sage tint */
-  --shadow-card:       0 1px 3px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(200, 221, 216, 0.08);
-  --shadow-card-hover: 0 4px 16px rgba(74, 124, 111, 0.18), 0 0 0 1px rgba(74, 124, 111, 0.25);
-  --shadow-glow:       0 0 20px rgba(74, 124, 111, 0.2);
-  --shadow-glow-sm:    0 0 8px rgba(74, 124, 111, 0.15);
-  --shadow-modal:      0 24px 64px rgba(0, 0, 0, 0.6);
-  --shadow-dropdown:   0 8px 24px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(200, 221, 216, 0.1);
+  /* Shadows — teal tint */
+  --shadow-card:       0 1px 3px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(14, 165, 233, 0.16);
+  --shadow-card-hover: 0 4px 16px rgba(14, 165, 233, 0.32), 0 0 0 1px rgba(14, 165, 233, 0.4);
+  --shadow-glow:       0 0 20px rgba(14, 165, 233, 0.3);
+  --shadow-glow-sm:    0 0 8px rgba(14, 165, 233, 0.2);
+  --shadow-modal:      0 24px 64px rgba(0, 0, 0, 0.7);
+  --shadow-dropdown:   0 8px 24px rgba(6, 13, 16, 0.85), 0 0 0 1px rgba(14, 165, 233, 0.25);
   --shadow-inset:      inset 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
-/* ── Light theme (Marketing / onboarding style) ── */
+/* ── Light theme (Marketing / onboarding — Charged Teal) ── */
 [data-theme="light"] {
   /* Backgrounds — cream/stone */
-  --c-bg:       #F7F5F0;
+  --c-bg:       #F7F5F0; /* cream */
   --c-surface:  #FFFFFF;
-  --c-surface2: #FAF8F3;
-  --c-surface3: #EEF5F3;
+  --c-surface2: #FAF8F3; /* cream */
+  --c-surface3: #F2EDE4; /* parchment */
 
   /* Borders */
-  --c-border:       #C8DDD8;
-  --c-border-hover: #6BA396;
+  --c-border:       #E8E3D8;            /* stone */
+  --c-border-hover: #0EA5E9;           /* teal */
 
-  /* Brand accents — sage for light */
-  --c-primary:      #4A7C6F;
-  --c-primary-dim:  #3a6358;
-  --c-primary-glow: rgba(74, 124, 111, 0.15);
-  --c-secondary:    #6BA396;
-  --c-secondary-dim: #3a6358;
+  /* Brand accents — Charged Teal primary, Electric secondary */
+  --c-primary:       #0EA5E9;
+  --c-primary-dim:   #0891B2;
+  --c-primary-glow:  rgba(14, 165, 233, 0.15);
+  --c-secondary:     #2563EB;
+  --c-secondary-dim: #1D4ED8;
 
-  /* Sage — Freya / bridge (same in light) */
-  --c-sage: #4A7C6F;
+  /* Legacy alias (previously sage) now maps to primary teal */
+  --c-sage: #0EA5E9;
 
   /* Text — ink */
   --c-text-primary:   #1C2B27;

@@ -55,7 +55,7 @@ function writeAriaChatsToStorage(folders, chats, currentChatId) {
 
 const initialAuth = readAuthFromStorage();
 
-// Valid roles: owner | founder | advisor | csm | mediaBuyer | contentStrategist | sdr | analyst | client
+// Valid roles: owner | founder | advisor | csm | contentStrategist | sdr | analyst
 
 const useStore = create((set, get) => ({
   // ── Identity / Context ──────────────────────
@@ -386,6 +386,8 @@ const useStore = create((set, get) => ({
   toggleTheme: () => set((s) => ({ isDarkMode: !s.isDarkMode })),
 
   toggleAria: () => set((state) => ({ ariaOpen: !state.ariaOpen })),
+
+  setAriaOpen: (open) => set({ ariaOpen: Boolean(open) }),
 
   setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
 

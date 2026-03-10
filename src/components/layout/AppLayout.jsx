@@ -12,7 +12,8 @@ import PlanChangeToast from '../plan/PlanChangeToast';
 import { C, F, R, S, scrollbarStyle } from '../../tokens';
 
 export default function AppLayout({ children }) {
-  const [ariaOpen, setAriaOpen] = useState(false);
+  const ariaOpen = useStore((s) => s.ariaOpen);
+  const setAriaOpen = useStore((s) => s.setAriaOpen);
   const location = useLocation();
   const navigate = useNavigate();
   const previousClientIdBeforePreview = useStore((s) => s.previousClientIdBeforePreview);

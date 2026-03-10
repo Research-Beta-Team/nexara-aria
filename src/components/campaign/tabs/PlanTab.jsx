@@ -1,22 +1,24 @@
 import { useState } from 'react';
 import useToast from '../../../hooks/useToast';
 import { C, F, R, S, T, Z, btn, inputStyle } from '../../../tokens';
-import { IconCheck } from '../../ui/Icons';
 import { CAMPAIGN_PLAN } from '../../../data/campaignPlan';
 
 // ── Layout constants ──────────────────────────
-const PANEL_W   = 280;  // px — left label column
-const RULER_H   = 52;   // px — date ruler height
-const PHASE_H   = 38;   // px — phase header row
-const TASK_H    = 38;   // px — each task row
-
-const ZOOM_LEVELS = [8, 14, 22, 32]; // px per day
+const TASK_H = 40; // px — each task row
 
 // ── Status palette ────────────────────────────
 const STATUS = {
   done:        { label: 'Done',        color: '#3DDC84', bg: 'rgba(61,220,132,0.12)',  border: 'rgba(61,220,132,0.25)'  },
   in_progress: { label: 'In Progress', color: '#5EEAD4', bg: 'rgba(94,234,212,0.12)',  border: 'rgba(94,234,212,0.25)'  },
   pending:     { label: 'Pending',     color: '#3A5242', bg: 'rgba(58,82,66,0.18)',     border: 'rgba(58,82,66,0.35)'    },
+};
+
+const thStyle = {
+  fontFamily: F.body, fontSize: '11px', fontWeight: 700, color: C.textMuted,
+  textTransform: 'uppercase', letterSpacing: '0.06em', padding: `${S[2]} ${S[3]}`,
+};
+const tdStyle = {
+  padding: `${S[2]} ${S[3]}`, fontSize: '12px', verticalAlign: 'middle',
 };
 
 // ── Date helpers ──────────────────────────────
@@ -33,50 +35,10 @@ function fmtShort(d) {
 function fmtFull(d) {
   return `${MONTHS_SHORT[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 }
-function getWeekTicks(startDateStr, totalDays) {
-  const ticks = [];
-  for (let day = 0; day < totalDays; day += 7) {
-    ticks.push({ day, date: addDays(startDateStr, day) });
-  }
-  return ticks;
-}
-function getMonthBoundaries(startDateStr, totalDays) {
-  const labels = [];
-  const origin = new Date(startDateStr);
-  let cursor   = new Date(origin);
-  while (true) {
-    const dayOffset = Math.round((cursor - origin) / 86400000);
-    if (dayOffset >= totalDays) break;
-    labels.push({ day: dayOffset, label: MONTHS_SHORT[cursor.getMonth()] });
-    cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
-  }
-  return labels;
-}
 
-// ── Gantt position helpers ────────────────────
+// ── Table helpers ─────────────────────────────
 function getAllTasks(phases) {
   return phases.flatMap(p => p.tasks);
-}
-
-// Y center of a task measured from top of phases area (below ruler)
-function getTaskSvgY(taskId, phases, collapsed) {
-  let y = 0;
-  for (const phase of phases) {
-    y += PHASE_H;
-    if (!collapsed.has(phase.id)) {
-      for (let i = 0; i < phase.tasks.length; i++) {
-        if (phase.tasks[i].id === taskId) return y + i * TASK_H + TASK_H / 2;
-      }
-      y += phase.tasks.length * TASK_H;
-    }
-  }
-  return null;
-}
-
-function totalPhasesH(phases, collapsed) {
-  return phases.reduce((acc, ph) => {
-    return acc + PHASE_H + (collapsed.has(ph.id) ? 0 : ph.tasks.length * TASK_H);
-  }, 0);
 }
 
 // ── OwnerAvatar ───────────────────────────────
@@ -108,171 +70,6 @@ function StatusBadge({ status }) {
     }}>
       {st.label}
     </span>
-  );
-}
-
-// ── GanttBar ──────────────────────────────────
-function GanttBar({ task, dayPx, status }) {
-  const st        = STATUS[status] ?? STATUS.pending;
-  const isDone    = status === 'done';
-  const isInProg  = status === 'in_progress';
-  const isPending = status === 'pending';
-  const left  = task.start * dayPx;
-  const width = Math.max(task.duration * dayPx, 6);
-
-  return (
-    <div style={{
-      position: 'absolute',
-      left,
-      top: '9px',
-      width,
-      height: TASK_H - 18,
-      borderRadius: R.pill,
-      backgroundColor: isPending ? '#0C1510' : st.color,
-      border: isPending ? `1.5px dashed ${C.border}` : 'none',
-      boxShadow: isDone ? `0 0 8px ${st.color}50` : 'none',
-      overflow: 'hidden',
-    }}>
-      {/* Animated shimmer stripe for in_progress */}
-      {isInProg && (
-        <div
-          className="plan-shimmer"
-          style={{
-            position: 'absolute',
-            top: 0, bottom: 0,
-            width: '45%',
-            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent)',
-            transform: 'skewX(-18deg)',
-          }}
-        />
-      )}
-      {/* Checkmark for done */}
-      {isDone && (
-        <span style={{
-          position: 'absolute', right: '5px', top: '50%',
-          transform: 'translateY(-50%)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <IconCheck color="#070D09" width={12} height={12} />
-        </span>
-      )}
-    </div>
-  );
-}
-
-// ── DependencyArrows (SVG overlay) ───────────
-function DependencyArrows({ phases, collapsed, dayPx, totalH }) {
-  const allTasks = getAllTasks(phases);
-  const taskMap  = Object.fromEntries(allTasks.map(t => [t.id, t]));
-  const arrows   = [];
-
-  for (const phase of phases) {
-    if (collapsed.has(phase.id)) continue;
-    for (const task of phase.tasks) {
-      for (const depId of task.dependencies) {
-        const dep      = taskMap[depId];
-        if (!dep) continue;
-        const depPhase = phases.find(p => p.tasks.some(t => t.id === depId));
-        if (depPhase && collapsed.has(depPhase.id)) continue;
-
-        const x1 = (dep.start + dep.duration) * dayPx;
-        const y1 = getTaskSvgY(depId, phases, collapsed);
-        const x2 = task.start * dayPx;
-        const y2 = getTaskSvgY(task.id, phases, collapsed);
-
-        if (y1 === null || y2 === null) continue;
-
-        // Cubic bezier S-curve
-        const mx   = x1 + Math.max((x2 - x1) * 0.5, 16);
-        const path = `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
-        arrows.push({ id: `${depId}→${task.id}`, path });
-      }
-    }
-  }
-
-  return (
-    <svg
-      style={{
-        position: 'absolute',
-        top: RULER_H,
-        left: 0,
-        width: '100%',
-        height: totalH,
-        pointerEvents: 'none',
-        overflow: 'visible',
-        zIndex: 2,
-      }}
-    >
-      {arrows.map(a => (
-        <path
-          key={a.id}
-          d={a.path}
-          stroke="#F5C842"
-          strokeWidth="1.5"
-          strokeOpacity="0.55"
-          fill="none"
-          strokeDasharray="4 3"
-        />
-      ))}
-    </svg>
-  );
-}
-
-// ── DateRuler ─────────────────────────────────
-function DateRuler({ dayPx, totalDays, startDate }) {
-  const weeks  = getWeekTicks(startDate, totalDays);
-  const months = getMonthBoundaries(startDate, totalDays);
-  const half   = RULER_H / 2;
-
-  return (
-    <div style={{
-      height: RULER_H,
-      position: 'relative',
-      backgroundColor: C.surface2,
-      borderBottom: `1px solid ${C.border}`,
-      overflow: 'hidden',
-    }}>
-      {/* Month labels — upper half */}
-      {months.map(m => (
-        <div
-          key={m.day}
-          style={{
-            position: 'absolute',
-            left: m.day * dayPx,
-            top: 0, height: half,
-            display: 'flex', alignItems: 'center',
-            paddingLeft: '8px',
-            fontFamily: F.mono, fontSize: '11px', fontWeight: 700,
-            color: C.textMuted,
-            letterSpacing: '0.08em', textTransform: 'uppercase',
-            borderLeft: `1px solid ${C.border}`,
-            whiteSpace: 'nowrap', pointerEvents: 'none',
-          }}
-        >
-          {m.label}
-        </div>
-      ))}
-
-      {/* Week ticks — lower half */}
-      {weeks.map(w => (
-        <div
-          key={w.day}
-          style={{
-            position: 'absolute',
-            left: w.day * dayPx,
-            top: half, height: half,
-            display: 'flex', alignItems: 'center',
-            paddingLeft: '5px',
-            fontFamily: F.mono, fontSize: '9px',
-            color: C.textMuted,
-            borderLeft: `1px solid ${C.border}`,
-            whiteSpace: 'nowrap', pointerEvents: 'none',
-          }}
-        >
-          {fmtShort(w.date)}
-        </div>
-      ))}
-    </div>
   );
 }
 
@@ -563,19 +360,16 @@ const PLAN_TYPES = [
 // ── PlanTab ───────────────────────────────────
 export default function PlanTab({ setTab }) {
   const toast = useToast();
-  const [zoomIdx,      setZoomIdx]      = useState(1);
-  const [collapsed,    setCollapsed]    = useState(new Set());
   const [selectedTask, setSelectedTask] = useState(null);
   const [taskStatuses, setTaskStatuses] = useState({});
-  const [taskNotes,    setTaskNotes]    = useState({});
-  const [planType,     setPlanType]     = useState('phased');
+  const [taskNotes, setTaskNotes] = useState({});
+  const [planType, setPlanType] = useState('phased');
   const [ariaModifying, setAriaModifying] = useState(false);
-  const [approved,     setApproved]     = useState(false);
+  const [approved, setApproved] = useState(false);
 
   const { phases, totalDays, start: planStart, title } = CAMPAIGN_PLAN;
-  const dayPx     = ZOOM_LEVELS[zoomIdx];
-  const timelineW = totalDays * dayPx;
-  const phasesH   = totalPhasesH(phases, collapsed);
+
+  const getStatus = (task) => taskStatuses[task.id] ?? task.status;
 
   const handlePlanTypeChange = (typeId) => {
     if (typeId === planType) return;
@@ -593,33 +387,8 @@ export default function PlanTab({ setTab }) {
     if (typeof setTab === 'function') setTab('content');
   };
 
-  // Today line position
-  const originDate  = new Date(planStart);
-  const todayOffset = Math.floor((new Date() - originDate) / 86400000);
-  const showToday   = todayOffset >= 0 && todayOffset <= totalDays;
-
-  const weekTicks = getWeekTicks(planStart, totalDays);
-
-  const getStatus = (task) => taskStatuses[task.id] ?? task.status;
-
-  const togglePhase = (phaseId) => {
-    setCollapsed(prev => {
-      const next = new Set(prev);
-      next.has(phaseId) ? next.delete(phaseId) : next.add(phaseId);
-      return next;
-    });
-  };
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <style>{`
-        @keyframes planShimmer {
-          0%   { left: -60%; }
-          100% { left: 130%; }
-        }
-        .plan-shimmer { animation: planShimmer 2s linear infinite; }
-      `}</style>
-
       <TaskDetailPanel
         task={selectedTask}
         phases={phases}
@@ -715,290 +484,80 @@ export default function PlanTab({ setTab }) {
         </div>
       </div>
 
-      {/* ── Toolbar ─────────────────────────── */}
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: `${S[3]} ${S[5]}`,
-        borderBottom: `1px solid ${C.border}`,
-        backgroundColor: C.surface2,
-        flexWrap: 'wrap', gap: S[3],
-      }}>
-        {/* Plan title */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: S[3] }}>
-          <span style={{
-            fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.textPrimary,
-          }}>
-            {CAMPAIGN_PLAN.title}
-          </span>
-          <span style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted }}>
-            {CAMPAIGN_PLAN.start} → {CAMPAIGN_PLAN.end}
-          </span>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: S[4] }}>
-          {/* Legend */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: S[4] }}>
-            {Object.entries(STATUS).map(([key, st]) => (
-              <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <div style={{
-                  width: '10px', height: '10px', borderRadius: '3px',
-                  backgroundColor: key === 'pending' ? '#0C1510' : st.color,
-                  border: key === 'pending' ? `1.5px dashed ${C.border}` : 'none',
-                  boxShadow: key === 'done' ? `0 0 5px ${st.color}60` : 'none',
-                }} />
-                <span style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted }}>
-                  {st.label}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          {/* Zoom controls */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '2px',
-            backgroundColor: C.surface, border: `1px solid ${C.border}`,
-            borderRadius: R.md, padding: '2px',
-          }}>
-            <button
-              style={{ ...btn.icon, padding: '2px 9px', fontSize: '16px', lineHeight: 1, opacity: zoomIdx <= 0 ? 0.35 : 1 }}
-              onClick={() => setZoomIdx(i => Math.max(0, i - 1))}
-              disabled={zoomIdx <= 0}
-            >
-              −
-            </button>
-            <span style={{
-              fontFamily: F.mono, fontSize: '10px', color: C.textMuted,
-              padding: '0 4px', minWidth: '44px', textAlign: 'center',
-            }}>
-              {dayPx}px/d
-            </span>
-            <button
-              style={{ ...btn.icon, padding: '2px 9px', fontSize: '16px', lineHeight: 1, opacity: zoomIdx >= ZOOM_LEVELS.length - 1 ? 0.35 : 1 }}
-              onClick={() => setZoomIdx(i => Math.min(ZOOM_LEVELS.length - 1, i + 1))}
-              disabled={zoomIdx >= ZOOM_LEVELS.length - 1}
-            >
-              +
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Main Gantt (two-panel) ───────────── */}
-      <div style={{ display: 'flex', overflow: 'hidden' }}>
-
-        {/* Left label panel (no horizontal scroll) */}
-        <div style={{
-          width: PANEL_W, minWidth: PANEL_W, flexShrink: 0,
-          borderRight: `1px solid ${C.border}`,
-          backgroundColor: C.surface,
-        }}>
-          {/* Ruler placeholder */}
-          <div style={{
-            height: RULER_H,
-            display: 'flex', alignItems: 'flex-end',
-            padding: `0 ${S[4]} ${S[2]}`,
-            backgroundColor: C.surface2,
-            borderBottom: `1px solid ${C.border}`,
-          }}>
-            <span style={{
-              fontFamily: F.body, fontSize: '10px', fontWeight: 700,
-              color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em',
-            }}>
-              Phase / Task
-            </span>
-          </div>
-
-          {/* Phase + task cells */}
-          {phases.map(phase => (
-            <div key={phase.id}>
-              {/* Phase header cell */}
-              <div
-                style={{
-                  height: PHASE_H,
-                  display: 'flex', alignItems: 'center', gap: S[2],
-                  padding: `0 ${S[3]}`,
-                  backgroundColor: C.surface3,
-                  borderBottom: `1px solid ${C.border}`,
-                  borderLeft: `4px solid ${phase.color}`,
-                  cursor: 'pointer',
-                  userSelect: 'none',
-                }}
-                onClick={() => togglePhase(phase.id)}
-              >
-                {/* Chevron */}
-                <svg
-                  width="11" height="11" viewBox="0 0 11 11" fill="none"
-                  style={{
-                    transform: collapsed.has(phase.id) ? 'rotate(-90deg)' : 'rotate(0deg)',
-                    transition: T.fast, flexShrink: 0,
-                  }}
-                >
-                  <path d="M2 4l3.5 3.5L9 4" stroke={phase.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-
-                <span style={{
-                  fontFamily: F.display, fontSize: '12px', fontWeight: 700,
-                  color: C.textPrimary, flex: 1,
-                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                }}>
-                  {phase.name}
-                </span>
-
-                {/* Completion chip */}
-                {(() => {
-                  const doneCt = phase.tasks.filter(t => getStatus(t) === 'done').length;
-                  const pct    = Math.round((doneCt / phase.tasks.length) * 100);
-                  return (
-                    <span style={{
-                      fontFamily: F.mono, fontSize: '10px', fontWeight: 700,
-                      color: phase.color, backgroundColor: `${phase.color}18`,
-                      borderRadius: R.pill, padding: '1px 6px', flexShrink: 0,
-                    }}>
-                      {pct}%
-                    </span>
-                  );
-                })()}
-              </div>
-
-              {/* Task label cells */}
-              {!collapsed.has(phase.id) && phase.tasks.map(task => {
+      {/* ── Phases table ───────────────────────── */}
+      <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: F.body }}>
+          <thead>
+            <tr style={{ backgroundColor: C.surface3, borderBottom: `2px solid ${C.border}` }}>
+              <th style={{ ...thStyle, position: 'sticky', top: 0, zIndex: 1, backgroundColor: C.surface3, width: '14%', minWidth: 120, textAlign: 'left', paddingLeft: S[4] }}>Phase</th>
+              <th style={{ ...thStyle, position: 'sticky', top: 0, zIndex: 1, backgroundColor: C.surface3, width: '12%', minWidth: 100 }}>Date range</th>
+              <th style={{ ...thStyle, position: 'sticky', top: 0, zIndex: 1, backgroundColor: C.surface3, width: '22%', minWidth: 160, textAlign: 'left' }}>Task</th>
+              <th style={{ ...thStyle, position: 'sticky', top: 0, zIndex: 1, backgroundColor: C.surface3, width: '8%', minWidth: 56 }}>Owner</th>
+              <th style={{ ...thStyle, position: 'sticky', top: 0, zIndex: 1, backgroundColor: C.surface3, width: '12%', minWidth: 90 }}>Start</th>
+              <th style={{ ...thStyle, position: 'sticky', top: 0, zIndex: 1, backgroundColor: C.surface3, width: '12%', minWidth: 90 }}>End</th>
+              <th style={{ ...thStyle, position: 'sticky', top: 0, zIndex: 1, backgroundColor: C.surface3, width: '8%', minWidth: 64 }}>Duration</th>
+              <th style={{ ...thStyle, position: 'sticky', top: 0, zIndex: 1, backgroundColor: C.surface3, width: '12%', minWidth: 90 }}>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {phases.map((phase) =>
+              phase.tasks.map((task, taskIndex) => {
                 const status = getStatus(task);
-                const st     = STATUS[status] ?? STATUS.pending;
+                const startDate = addDays(planStart, task.start);
+                const endDate = addDays(planStart, task.start + task.duration - 1);
+                const isFirstTaskInPhase = taskIndex === 0;
                 return (
-                  <div
+                  <tr
                     key={task.id}
                     style={{
                       height: TASK_H,
-                      display: 'flex', alignItems: 'center', gap: S[2],
-                      padding: `0 ${S[3]}`,
-                      borderBottom: `1px solid ${C.border}`,
-                      cursor: 'pointer', transition: T.color,
-                    }}
-                    onClick={() => setSelectedTask(task)}
-                    onMouseEnter={e => { e.currentTarget.style.backgroundColor = C.surface2; }}
-                    onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-                  >
-                    <div style={{
-                      width: '3px', height: '18px', borderRadius: '2px',
-                      backgroundColor: st.color, flexShrink: 0,
-                    }} />
-                    <span style={{
-                      fontFamily: F.body, fontSize: '12px',
-                      color: status === 'pending' ? C.textMuted : C.textSecondary,
-                      flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                    }}>
-                      {task.name}
-                    </span>
-                    <OwnerAvatar initials={task.owner} color={phase.color} />
-                    <StatusBadge status={status} />
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </div>
-
-        {/* Right Gantt area (scrolls horizontally) */}
-        <div style={{
-          flex: 1, overflowX: 'auto', overflowY: 'hidden',
-          position: 'relative',
-          scrollbarWidth: 'thin', scrollbarColor: `${C.border} transparent`,
-        }}>
-          {/* Inner content — fixed min-width drives scroll */}
-          <div style={{ minWidth: timelineW, position: 'relative' }}>
-
-            {/* Date ruler */}
-            <DateRuler dayPx={dayPx} totalDays={totalDays} startDate={planStart} />
-
-            {/* Vertical week grid lines */}
-            {weekTicks.map(w => (
-              <div key={w.day} style={{
-                position: 'absolute',
-                left: w.day * dayPx,
-                top: RULER_H, bottom: 0,
-                width: '1px',
-                backgroundColor: C.border,
-                opacity: 0.3, pointerEvents: 'none', zIndex: 0,
-              }} />
-            ))}
-
-            {/* Today vertical line */}
-            {showToday && (
-              <div style={{
-                position: 'absolute',
-                left: todayOffset * dayPx,
-                top: RULER_H, bottom: 0,
-                width: '2px',
-                backgroundColor: '#F5C842',
-                opacity: 0.6,
-                zIndex: 1,
-                pointerEvents: 'none',
-              }} />
-            )}
-
-            {/* Phase + task Gantt rows */}
-            {phases.map(phase => (
-              <div key={phase.id}>
-                {/* Phase span row */}
-                <div
-                  style={{
-                    height: PHASE_H, position: 'relative',
-                    backgroundColor: `${phase.color}09`,
-                    borderBottom: `1px solid ${C.border}`,
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => togglePhase(phase.id)}
-                >
-                  {/* Phase accent strip */}
-                  <div style={{
-                    position: 'absolute',
-                    left: phase.startDay * dayPx,
-                    top: '50%', marginTop: '6px',
-                    width: (phase.endDay - phase.startDay) * dayPx,
-                    height: '3px',
-                    backgroundColor: `${phase.color}40`,
-                    borderRadius: R.pill,
-                  }} />
-                  {/* Phase label on bar */}
-                  <div style={{
-                    position: 'absolute',
-                    left: phase.startDay * dayPx + 6,
-                    top: '50%', transform: 'translateY(-50%)',
-                    marginTop: '-4px',
-                    fontFamily: F.mono, fontSize: '10px',
-                    color: `${phase.color}BB`, whiteSpace: 'nowrap',
-                    pointerEvents: 'none',
-                  }}>
-                    {phase.dateRange}
-                  </div>
-                </div>
-
-                {/* Task Gantt bar rows */}
-                {!collapsed.has(phase.id) && phase.tasks.map(task => (
-                  <div
-                    key={task.id}
-                    style={{
-                      height: TASK_H, position: 'relative',
+                      backgroundColor: isFirstTaskInPhase ? `${phase.color}0C` : 'transparent',
                       borderBottom: `1px solid ${C.border}`,
                       cursor: 'pointer',
+                      transition: T.color,
                     }}
                     onClick={() => setSelectedTask(task)}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = C.surface2;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = isFirstTaskInPhase ? `${phase.color}0C` : 'transparent';
+                    }}
                   >
-                    <GanttBar task={task} dayPx={dayPx} status={getStatus(task)} />
-                  </div>
-                ))}
-              </div>
-            ))}
-
-            {/* SVG dependency arrows */}
-            <DependencyArrows
-              phases={phases}
-              collapsed={collapsed}
-              dayPx={dayPx}
-              totalH={phasesH}
-            />
-          </div>
-        </div>
+                    <td style={{ ...tdStyle, paddingLeft: S[4], borderLeft: `4px solid ${phase.color}` }}>
+                      {isFirstTaskInPhase ? (
+                        <span style={{ fontFamily: F.display, fontWeight: 700, fontSize: '13px', color: C.textPrimary }}>
+                          {phase.name}
+                        </span>
+                      ) : (
+                        <span style={{ color: C.textMuted, fontSize: '12px' }}>↳</span>
+                      )}
+                    </td>
+                    <td style={tdStyle}>
+                      {isFirstTaskInPhase ? (
+                        <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.textSecondary }}>{phase.dateRange}</span>
+                      ) : (
+                        '—'
+                      )}
+                    </td>
+                    <td style={{ ...tdStyle, fontFamily: F.body, fontSize: '13px', color: C.textPrimary }}>{task.name}</td>
+                    <td style={tdStyle}>
+                      <OwnerAvatar initials={task.owner} color={phase.color} />
+                    </td>
+                    <td style={{ ...tdStyle, fontFamily: F.mono, fontSize: '11px', color: C.textSecondary }}>{fmtShort(startDate)}</td>
+                    <td style={{ ...tdStyle, fontFamily: F.mono, fontSize: '11px', color: C.textSecondary }}>{fmtShort(endDate)}</td>
+                    <td style={tdStyle}>
+                      <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted }}>{task.duration}d</span>
+                    </td>
+                    <td style={tdStyle}>
+                      <StatusBadge status={status} />
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
 
       {/* ── Summary bar ──────────────────────── */}

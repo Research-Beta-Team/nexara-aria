@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import useToast from '../hooks/useToast';
 import useStore from '../store/useStore';
 import { C, F, R, S, btn, badge, flex, shadows, Z } from '../tokens';
-import { IconSend, IconEye, IconLink, IconMessage, IconCalendar, IconCompass, IconPhone, IconPen, IconLinkedIn, IconMail } from '../components/ui/Icons';
+import { IconSend, IconEye, IconLink, IconMessage, IconCalendar, IconCompass, IconPhone, IconPen, IconLinkedIn, IconMail, IconMic, IconDocument } from '../components/ui/Icons';
 import { prospects } from '../data/campaigns';
 
 const TOUCHPOINT_ICONS = {
@@ -36,7 +36,11 @@ function LogActivityModal({ prospect, onClose, onSaved }) {
   const toast = useToast();
   const [type, setType] = useState('note');
   const [note, setNote] = useState('');
+  const [attachments, setAttachments] = useState([]);
+  const [recording, setRecording] = useState(false);
   const ref = useRef(null);
+  const fileInputRef = useRef(null);
+  const recognitionRef = useRef(null);
 
   useEffect(() => {
     const h = (e) => { if (ref.current && !ref.current.contains(e.target)) onClose(); };
@@ -44,17 +48,66 @@ function LogActivityModal({ prospect, onClose, onSaved }) {
     return () => document.removeEventListener('click', h);
   }, [onClose]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+    recognitionRef.current = new SpeechRecognition();
+    recognitionRef.current.continuous = true;
+    recognitionRef.current.interimResults = false;
+    recognitionRef.current.lang = 'en-US';
+    recognitionRef.current.onresult = (e) => {
+      const t = e.results[e.results.length - 1];
+      const transcript = t[0]?.transcript ?? '';
+      if (transcript.trim()) setNote((prev) => (prev ? `${prev} ${transcript}` : transcript).trim());
+    };
+    recognitionRef.current.onend = () => setRecording(false);
+    recognitionRef.current.onerror = () => { setRecording(false); toast.info('Recording stopped'); };
+    return () => { if (recognitionRef.current) recognitionRef.current.abort(); };
+  }, [toast]);
+
+  const handleFileSelect = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setAttachments((prev) => [
+      ...prev,
+      ...files.map((file) => ({ id: `${file.name}-${Date.now()}`, name: file.name, size: file.size })),
+    ]);
+    toast.success(`${files.length} file(s) added`);
+    e.target.value = '';
+  };
+
+  const removeAttachment = (id) => {
+    setAttachments((prev) => prev.filter((a) => a.id !== id));
+  };
+
+  const toggleRecord = () => {
+    if (!recognitionRef.current) {
+      toast.info('Voice input is not supported in this browser. Try Chrome or Edge.');
+      return;
+    }
+    if (recording) {
+      recognitionRef.current.stop();
+      setRecording(false);
+    } else {
+      recognitionRef.current.start();
+      setRecording(true);
+      toast.info('Listening… speak now. Click again to stop.');
+    }
+  };
+
   const handleSave = () => {
     const label = type === 'note' ? 'Note' : type === 'call' ? 'Call' : type === 'email_sent' ? 'Email sent' : 'Meeting';
-    const detail = note.trim() || (type === 'call' ? 'Call logged' : type === 'meeting' ? 'Meeting logged' : 'Note added');
-    onSaved?.({ type, note: note.trim(), label, detail });
+    let detail = note.trim() || (type === 'call' ? 'Call logged' : type === 'meeting' ? 'Meeting logged' : 'Note added');
+    if (attachments.length) detail += ` (${attachments.length} attachment${attachments.length > 1 ? 's' : ''}: ${attachments.map((a) => a.name).join(', ')})`;
+    onSaved?.({ type, note: note.trim(), label, detail, attachmentNames: attachments.map((a) => a.name) });
     toast.success(`Activity logged: ${label}`);
     onClose();
   };
 
   return (
     <div style={{ position: 'fixed', inset: 0, backgroundColor: C.overlayHeavy, zIndex: Z.modal, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: S[4] }} onClick={onClose}>
-      <div ref={ref} style={{ backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card, boxShadow: shadows.modal, width: '100%', maxWidth: '420px', padding: S[5] }} onClick={(e) => e.stopPropagation()}>
+      <div ref={ref} style={{ backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card, boxShadow: shadows.modal, width: '100%', maxWidth: '420px', maxHeight: '90vh', padding: S[5], overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
         <h3 style={{ fontFamily: F.display, fontSize: '16px', fontWeight: 700, color: C.textPrimary, margin: `0 0 ${S[4]}` }}>Log Activity</h3>
         <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: `0 0 ${S[4]}` }}>Log an activity for {prospect.name}</p>
         <div style={{ marginBottom: S[4] }}>
@@ -70,15 +123,63 @@ function LogActivityModal({ prospect, onClose, onSaved }) {
             <option value="meeting">Meeting</option>
           </select>
         </div>
-        <div style={{ marginBottom: S[5] }}>
+        <div style={{ marginBottom: S[4] }}>
           <label style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.textSecondary, display: 'block', marginBottom: S[2] }}>Note (optional)</label>
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="e.g. Left voicemail, will follow up Thursday"
-            rows={3}
-            style={{ width: '100%', padding: S[3], fontFamily: F.body, fontSize: '13px', backgroundColor: C.surface2, border: `1px solid ${C.border}`, borderRadius: R.input, color: C.textPrimary, resize: 'vertical' }}
+            rows={2}
+            style={{ width: '100%', minHeight: '56px', maxHeight: '80px', padding: S[3], fontFamily: F.body, fontSize: '13px', backgroundColor: C.surface2, border: `1px solid ${C.border}`, borderRadius: R.input, color: C.textPrimary, resize: 'vertical', boxSizing: 'border-box' }}
           />
+        </div>
+        <div style={{ marginBottom: S[4] }}>
+          <label style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.textSecondary, display: 'block', marginBottom: S[2] }}>Attach or record</label>
+          <div style={{ display: 'flex', gap: S[2], flexWrap: 'wrap' }}>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="audio/*,image/*,.pdf,.doc,.docx,.txt"
+              multiple
+              style={{ display: 'none' }}
+              onChange={handleFileSelect}
+            />
+            <button
+              type="button"
+              style={{ ...btn.secondary, fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <IconDocument width={14} height={14} color={C.textSecondary} />
+              Upload recording, image, or file
+            </button>
+            <button
+              type="button"
+              style={{
+                ...btn.secondary,
+                fontSize: '12px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                borderColor: recording ? C.red : undefined,
+                backgroundColor: recording ? `${C.red}18` : undefined,
+                color: recording ? C.red : undefined,
+              }}
+              onClick={toggleRecord}
+            >
+              <IconMic w={14} color={recording ? C.red : C.textSecondary} />
+              {recording ? 'Stop recording' : 'Record your words'}
+            </button>
+          </div>
+          {attachments.length > 0 && (
+            <div style={{ marginTop: S[2], display: 'flex', flexDirection: 'column', gap: S[1] }}>
+              {attachments.map((a) => (
+                <div key={a.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', color: C.textSecondary, backgroundColor: C.surface2, padding: `${S[1]} ${S[2]}`, borderRadius: R.sm }}>
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={a.name}>{a.name}</span>
+                  <button type="button" style={{ ...btn.ghost, padding: '2px 6px', fontSize: '11px', minWidth: 0 }} onClick={() => removeAttachment(a.id)} aria-label="Remove">×</button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <div style={{ display: 'flex', gap: S[2], justifyContent: 'flex-end' }}>
           <button type="button" style={{ ...btn.secondary, fontSize: '13px' }} onClick={onClose}>Cancel</button>
@@ -443,13 +544,40 @@ export default function OutreachDetail() {
             <IconPen width={14} height={14} color={C.textSecondary} />
             Log Activity
           </button>
-          <button style={{ ...btn.secondary, fontSize: '12px' }} onClick={handleSendFollowUp}>
+          <button
+            type="button"
+            style={{ ...btn.secondary, fontSize: '12px' }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleSendFollowUp();
+            }}
+            title="Open Freya to draft a follow-up for this prospect"
+          >
             Send Follow-up
           </button>
-          <button style={{ ...btn.secondary, fontSize: '12px' }} onClick={() => setUpdateStageOpen(true)}>
+          <button
+            type="button"
+            style={{ ...btn.secondary, fontSize: '12px' }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setUpdateStageOpen(true);
+            }}
+            title="Move this prospect to a different sequence step"
+          >
             Update Stage
           </button>
-          <button style={{ ...btn.primary, fontSize: '12px' }} onClick={() => setBookDemoOpen(true)}>
+          <button
+            type="button"
+            style={{ ...btn.primary, fontSize: '12px' }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setBookDemoOpen(true);
+            }}
+            title="Send calendar invite so they can book a demo"
+          >
             Book Demo
           </button>
         </div>
@@ -464,11 +592,22 @@ export default function OutreachDetail() {
         />,
         document.body
       )}
-      {updateStageOpen && (
-        <UpdateStageModal prospect={prospect} currentStep={sequenceStep} onClose={() => setUpdateStageOpen(false)} onSaved={handleUpdateStageSaved} />
+      {updateStageOpen && createPortal(
+        <UpdateStageModal
+          prospect={prospect}
+          currentStep={sequenceStep}
+          onClose={() => setUpdateStageOpen(false)}
+          onSaved={handleUpdateStageSaved}
+        />,
+        document.body
       )}
-      {bookDemoOpen && (
-        <BookDemoModal prospect={prospect} onClose={() => setBookDemoOpen(false)} onSent={handleBookDemoSent} />
+      {bookDemoOpen && createPortal(
+        <BookDemoModal
+          prospect={prospect}
+          onClose={() => setBookDemoOpen(false)}
+          onSent={handleBookDemoSent}
+        />,
+        document.body
       )}
 
       {/* Two-column: timeline + ARIA */}

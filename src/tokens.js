@@ -384,28 +384,28 @@ export const statLabel = {
 
 // ── Client Portal (light — literal hex for /client-portal) ──
 export const CLIENT_PORTAL_TOKENS = {
-  bg: '#F7F5F0',
+  bg: '#F7F5F0',          // cream
   surface: '#FFFFFF',
-  border: '#C8DDD8',
-  primary: '#4A7C6F',
-  textPrimary: '#1C2B27',
-  textSecondary: '#5A7168',
+  border: '#E8E3D8',      // stone
+  primary: '#0EA5E9',     // Charged Teal
+  textPrimary: '#1C2B27', // ink
+  textSecondary: '#5A7168', // ink-3
 };
 
-// ── Auth/onboarding pages — Antarious brand palette (matches index.css :root) ──
+// ── Auth/onboarding pages — Antarious Charged Teal palette (matches index.css :root) ──
 export const ANTARIOUS_AUTH = {
-  bg: '#1C2B27',
-  surface: '#2D3F3B',
-  surface2: '#364a44',
-  surface3: '#3e554d',
-  border: 'rgba(200, 221, 216, 0.12)',
-  primary: '#4A7C6F',
-  primaryGlow: 'rgba(74, 124, 111, 0.25)',
-  secondary: '#6BA396',
-  textPrimary: '#FAF8F3',
-  textSecondary: '#C8DDD8',
-  textMuted: '#8B9E98',
-  textInverse: '#1C2B27',
+  bg: '#060D10',                          // dark-bg
+  surface: '#091520',                     // dark-surf
+  surface2: '#0A1628',                    // navy
+  surface3: '#0B1B2F',
+  border: 'rgba(14, 165, 233, 0.18)',     // dark-border
+  primary: '#0EA5E9',                     // Charged Teal
+  primaryGlow: 'rgba(14, 165, 233, 0.25)',
+  secondary: '#2563EB',                   // Electric
+  textPrimary: '#E5F3FF',
+  textSecondary: 'rgba(226, 232, 240, 0.85)',
+  textMuted: '#64748B',
+  textInverse: '#060D10',
   red: '#EF4444',
   redDim: 'rgba(239, 68, 68, 0.15)',
   amber: '#FBBF24',

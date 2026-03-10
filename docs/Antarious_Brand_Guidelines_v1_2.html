@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Antarious — Brand Guidelines v1.2 · Charged Teal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:15px}
+body{font-family:"Plus Jakarta Sans",sans-serif;background:#F7F5F0;color:#1C2B27;line-height:1.7;overflow-x:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#0EA5E9;border-radius:3px}
+a{text-decoration:none;color:inherit}
+
+/* ══════════════════════════════════════
+   DESIGN TOKENS — CHARGED TEAL
+══════════════════════════════════════ */
+:root{
+  /* CHARGED TEAL palette */
+  --teal:#0EA5E9; --teal-dark:#0891B2; --teal-light:#38BDF8;
+  --teal-pale:#E0F5FD; --teal-border:#BAE8FB;
+  /* Neutral surfaces */
+  --cream:#FAF8F3; --stone:#E8E3D8; --parchment:#F2EDE4;
+  --ink:#1C2B27; --ink-2:#2D3F3B; --ink-3:#5A7168; --ink-4:#8B9E98;
+  /* Dark UI */
+  --dark-bg:#060D10; --dark-surf:#091520; --dark-border:rgba(14,165,233,0.18);
+  --navy:#0A1628; --electric:#2563EB; --electric-2:#1d4ed8;
+  --sky:#38BDF8;
+  --success:#10B981; --warning:#FBBF24; --error:#EF4444;
+  /* Typography */
+  --f-brand:"Outfit",sans-serif;
+  --f-body:"Plus Jakarta Sans",sans-serif;
+  --f-data:"DM Sans",sans-serif;
+  --f-serif:"Instrument Serif",Georgia,serif;
+  /* Shape */
+  --r-sm:6px; --r-md:10px; --r-lg:14px; --r-xl:20px; --r-pill:999px;
+  /* Shadows */
+  --shadow-sm:0 1px 3px rgba(14,165,233,0.08),0 2px 8px rgba(14,165,233,0.04);
+  --shadow-md:0 4px 16px rgba(14,165,233,0.12),0 1px 4px rgba(14,165,233,0.06);
+  --shadow-lg:0 12px 40px rgba(14,165,233,0.16),0 4px 12px rgba(14,165,233,0.08);
+}
+
+/* ══════════════════════════════════════
+   DOC NAV
+══════════════════════════════════════ */
+.doc-nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(250,248,243,0.96);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--stone);
+  padding:0 48px;height:56px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px
+}
+.doc-brand{display:flex;align-items:center;gap:10px}
+.doc-brand img{height:22px;width:auto}
+.doc-brand-tag{font-size:11px;font-weight:500;color:var(--ink-4)}
+.doc-nav-links{display:flex;gap:4px}
+.doc-nav-link{
+  font-size:12px;font-weight:600;color:var(--ink-3);
+  padding:5px 12px;border-radius:var(--r-sm);
+  transition:all .18s;cursor:pointer;border:none;background:none
+}
+.doc-nav-link:hover{color:var(--teal);background:var(--teal-pale)}
+.doc-version{
+  font-family:var(--f-data);font-size:10.5px;font-weight:700;
+  color:var(--teal);background:var(--teal-pale);border:1px solid var(--teal-border);
+  padding:4px 12px;border-radius:var(--r-pill);flex-shrink:0
+}
+
+/* ══════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════ */
+.doc-body{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.sidebar{
+  position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto;
+  background:#fff;border-right:1px solid var(--stone);padding:28px 0
+}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar-section{margin-bottom:8px;padding:0 16px}
+.sidebar-label{font-size:9.5px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--ink-4);padding:6px 8px;margin-bottom:4px}
+.sidebar-link{display:block;font-size:13px;font-weight:500;color:var(--ink-3);padding:7px 8px;border-radius:var(--r-sm);transition:all .15s;cursor:pointer;border:none;background:none;text-align:left;width:100%}
+.sidebar-link:hover,.sidebar-link.active{color:var(--teal);background:var(--teal-pale)}
+.sidebar-link.active{font-weight:700}
+.doc-content{padding:56px 72px;max-width:1000px}
+.doc-section{margin-bottom:96px;scroll-margin-top:72px}
+
+/* ══════════════════════════════════════
+   SECTION TYPOGRAPHY
+══════════════════════════════════════ */
+.section-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
+.section-eyebrow::before{content:"";width:16px;height:2px;background:var(--teal);border-radius:2px}
+.section-title{font-family:var(--f-brand);font-size:clamp(26px,3vw,38px);font-weight:800;color:var(--ink);line-height:1.1;letter-spacing:-.5px;margin-bottom:12px}
+.section-lead{font-size:15.5px;color:var(--ink-3);line-height:1.8;max-width:680px;margin-bottom:48px}
+.spec-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--ink-4);margin-bottom:12px;margin-top:32px}
+
+/* ══════════════════════════════════════
+   COVER
+══════════════════════════════════════ */
+.cover{
+  background:var(--dark-bg);min-height:100vh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:80px;position:relative;overflow:hidden
+}
+.cover::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(14,165,233,0.06) 1px,transparent 1px);background-size:36px 36px;pointer-events:none}
+.cover-glow{position:absolute;top:-200px;right:-100px;width:800px;height:800px;background:radial-gradient(circle,rgba(14,165,233,0.14) 0%,transparent 60%);pointer-events:none}
+.cover-glow2{position:absolute;bottom:-100px;left:0;width:500px;height:500px;background:radial-gradient(circle,rgba(8,145,178,0.08) 0%,transparent 60%);pointer-events:none}
+.cover-inner{position:relative;z-index:2}
+.cover-eyebrow{font-family:var(--f-data);font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--teal-light);margin-bottom:36px;display:flex;align-items:center;gap:10px}
+.cover-eyebrow::before{content:"";width:20px;height:1.5px;background:var(--teal-light)}
+.cover-logo-wrap{margin-bottom:40px}
+.cover-logo-wrap img{height:48px;width:auto;filter:brightness(0) invert(1)}
+.cover-title{font-family:var(--f-brand);font-size:clamp(52px,7vw,90px);font-weight:900;color:#fff;line-height:.95;letter-spacing:-1px;margin-bottom:12px}
+.cover-title .teal{color:var(--teal-light)}
+.cover-subtitle{font-family:var(--f-data);font-size:clamp(18px,2vw,26px);font-weight:300;color:rgba(255,255,255,0.35);letter-spacing:0;margin-bottom:52px}
+.cover-meta{display:flex;gap:40px;padding-top:40px;border-top:1px solid rgba(255,255,255,0.08)}
+.cover-meta-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:6px}
+.cover-meta-val{font-family:var(--f-data);font-size:13.5px;font-weight:500;color:rgba(255,255,255,0.65)}
+.cover-scroll{position:absolute;bottom:40px;left:80px;font-family:var(--f-data);font-size:11px;color:rgba(255,255,255,0.25);letter-spacing:1px;display:flex;align-items:center;gap:8px}
+.cover-scroll::after{content:"↓";font-size:14px}
+
+/* ══════════════════════════════════════
+   COMPONENT FRAMES
+══════════════════════════════════════ */
+.component-frame{background:#fff;border:1px solid var(--stone);border-radius:var(--r-xl);overflow:hidden;margin-bottom:28px}
+.component-frame-dark{background:var(--dark-bg);border-color:rgba(255,255,255,0.07)}
+.component-label{padding:12px 20px;border-bottom:1px solid var(--stone);font-size:10.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-4);display:flex;align-items:center;justify-content:space-between}
+.component-label-dark{border-bottom-color:rgba(255,255,255,0.07);color:rgba(255,255,255,0.3);background:var(--dark-bg)}
+.component-body{padding:32px}
+.component-body-dark{padding:32px;background:var(--dark-bg)}
+.component-note{padding:10px 20px;border-top:1px solid var(--stone);font-family:var(--f-data);font-size:11px;color:var(--ink-4);background:var(--cream)}
+.component-note-dark{border-top-color:rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:rgba(255,255,255,0.3)}
+.demo-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+/* ══════════════════════════════════════
+   BUTTONS — MARKETING
+══════════════════════════════════════ */
+.btn-primary-mkt{
+  background:var(--teal);color:#fff;border:none;
+  padding:13px 28px;border-radius:var(--r-lg);
+  font-family:var(--f-brand);font-size:14.5px;font-weight:700;
+  cursor:pointer;transition:all .22s;letter-spacing:-.2px
+}
+.btn-primary-mkt:hover{background:var(--teal-dark);transform:translateY(-2px);box-shadow:0 8px 28px rgba(14,165,233,0.35)}
+.btn-secondary-mkt{
+  background:#fff;color:var(--teal);
+  border:1.5px solid var(--teal-border);
+  padding:13px 28px;border-radius:var(--r-lg);
+  font-family:var(--f-brand);font-size:14.5px;font-weight:700;
+  cursor:pointer;transition:all .22s
+}
+.btn-secondary-mkt:hover{border-color:var(--teal);background:var(--teal-pale);transform:translateY(-2px)}
+.btn-ghost-mkt{
+  background:none;color:var(--ink-3);border:1.5px solid var(--stone);
+  padding:13px 28px;border-radius:var(--r-lg);
+  font-family:var(--f-brand);font-size:14.5px;font-weight:600;
+  cursor:pointer;transition:all .18s
+}
+.btn-ghost-mkt:hover{color:var(--teal);border-color:var(--teal-border);background:var(--teal-pale)}
+.btn-accent-mkt{
+  background:var(--teal-light);color:var(--dark-bg);border:none;
+  padding:13px 28px;border-radius:var(--r-lg);
+  font-family:var(--f-brand);font-size:14.5px;font-weight:800;
+  cursor:pointer;transition:all .22s
+}
+.btn-accent-mkt:hover{background:#fff;transform:translateY(-2px);box-shadow:0 8px 28px rgba(56,189,248,0.3)}
+.btn-sm{padding:8px 18px!important;font-size:13px!important}
+.btn-lg{padding:16px 36px!important;font-size:16px!important;border-radius:14px!important}
+
+/* ══════════════════════════════════════
+   BUTTONS — PRODUCT UI
+══════════════════════════════════════ */
+.btn-primary-ui{
+  background:var(--teal);color:#fff;border:none;
+  padding:9px 20px;border-radius:var(--r-md);
+  font-family:var(--f-brand);font-size:13.5px;font-weight:700;
+  cursor:pointer;transition:all .2s
+}
+.btn-primary-ui:hover{background:var(--teal-light);transform:translateY(-1px)}
+.btn-ghost-ui{
+  background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);
+  border:1px solid rgba(255,255,255,0.1);
+  padding:9px 20px;border-radius:var(--r-md);
+  font-family:var(--f-brand);font-size:13.5px;font-weight:600;
+  cursor:pointer;transition:all .2s
+}
+.btn-ghost-ui:hover{background:rgba(255,255,255,0.1);border-color:var(--teal);color:#fff}
+.btn-danger-ui{
+  background:rgba(239,68,68,0.12);color:#EF4444;
+  border:1px solid rgba(239,68,68,0.25);
+  padding:9px 20px;border-radius:var(--r-md);
+  font-family:var(--f-brand);font-size:13.5px;font-weight:700;
+  cursor:pointer;transition:all .2s
+}
+
+/* ══════════════════════════════════════
+   COLOUR SWATCHES
+══════════════════════════════════════ */
+.swatch-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+.swatch{border-radius:var(--r-lg);overflow:hidden;flex:1;min-width:130px;box-shadow:var(--shadow-sm)}
+.swatch-color{height:80px}
+.swatch-info{padding:12px 14px;background:#fff;border:1px solid var(--stone);border-top:none;border-radius:0 0 var(--r-lg) var(--r-lg)}
+.swatch-name{font-family:var(--f-brand);font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.swatch-hex{font-family:var(--f-data);font-size:11px;color:var(--ink-4);margin-bottom:2px}
+.swatch-role{font-size:11px;color:var(--ink-3)}
+
+/* ══════════════════════════════════════
+   TYPOGRAPHY SPECIMENS
+══════════════════════════════════════ */
+.type-block{padding:28px;border-radius:var(--r-lg);border:1px solid var(--stone);margin-bottom:16px;background:#fff}
+.type-block-dark{background:var(--dark-bg);border-color:rgba(255,255,255,0.07)}
+.type-meta{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:12px;border-top:1px solid var(--stone)}
+.type-meta-dark{border-top-color:rgba(255,255,255,0.08)}
+.type-family{font-family:var(--f-data);font-size:12px;font-weight:700;color:var(--teal)}
+.type-sub{font-family:var(--f-data);font-size:11px;color:var(--ink-4);margin-top:2px}
+.type-use{font-family:var(--f-data);font-size:11px;color:var(--ink-3)}
+.font-row{display:flex;align-items:baseline;gap:14px;padding:10px 0;border-bottom:1px solid var(--stone)}
+.font-label{font-family:var(--f-data);font-size:10.5px;color:var(--ink-4);font-weight:600;min-width:110px}
+.font-label-dark{color:rgba(255,255,255,0.3)}
+.font-row:last-child{border-bottom:none}
+
+/* ══════════════════════════════════════
+   LOGO SECTION
+══════════════════════════════════════ */
+.logo-frame{border-radius:var(--r-xl);overflow:hidden;border:1px solid var(--stone);margin-bottom:20px}
+.logo-on-light{background:var(--cream);padding:52px;display:flex;align-items:center;gap:40px}
+.logo-on-dark{background:var(--dark-bg);padding:52px;display:flex;align-items:center;gap:40px}
+.logo-on-teal{background:var(--teal);padding:52px;display:flex;align-items:center;gap:40px}
+.logo-item{display:flex;flex-direction:column;align-items:center;gap:16px}
+.logo-label{font-family:var(--f-data);font-size:10.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+.logo-label-light{color:var(--ink-4)}
+.logo-label-dark{color:rgba(255,255,255,0.3)}
+
+/* ══════════════════════════════════════
+   INPUTS
+══════════════════════════════════════ */
+.input-group{margin-bottom:16px}
+.input-label{font-size:12px;font-weight:700;color:var(--ink-3);margin-bottom:6px;display:block;letter-spacing:.3px}
+.input-mkt{width:100%;border:1.5px solid var(--stone);border-radius:var(--r-md);padding:11px 14px;font-size:14px;font-family:var(--f-body);color:var(--ink);background:#fff;outline:none;transition:all .18s}
+.input-mkt:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,165,233,0.10)}
+.input-label-ui{font-size:11.5px;font-weight:600;color:rgba(255,255,255,0.4);margin-bottom:5px;display:block;font-family:var(--f-data)}
+.input-ui{width:100%;border:1px solid rgba(255,255,255,0.12);border-radius:var(--r-sm);padding:9px 12px;font-size:13px;font-family:var(--f-data);color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.04);outline:none;transition:all .18s}
+.input-ui:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,165,233,0.08)}
+
+/* ══════════════════════════════════════
+   CARDS
+══════════════════════════════════════ */
+.card-mkt{background:#fff;border:1.5px solid var(--stone);border-radius:var(--r-xl);padding:24px;transition:all .25s;position:relative;overflow:hidden}
+.card-mkt::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--teal);border-radius:0;opacity:0;transition:opacity .25s}
+.card-mkt:hover::before{opacity:1}
+.card-mkt:hover{border-color:var(--teal-border);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.card-mkt-icon{font-size:26px;margin-bottom:14px}
+.card-mkt-title{font-family:var(--f-brand);font-size:16px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.card-mkt-body{font-size:14px;color:var(--ink-3);line-height:1.65}
+.card-ui{background:rgba(255,255,255,0.03);padding:20px;transition:all .2s}
+.card-ui:hover{background:rgba(14,165,233,0.05)}
+.card-ui-num{font-family:var(--f-data);font-size:10.5px;font-weight:700;color:var(--teal);letter-spacing:2px;margin-bottom:10px}
+.card-ui-title{font-family:var(--f-brand);font-size:15px;font-weight:700;color:#fff;margin-bottom:6px}
+.card-ui-body{font-size:13px;color:rgba(255,255,255,0.45);line-height:1.6}
+
+/* ══════════════════════════════════════
+   AGENT COMPONENTS
+══════════════════════════════════════ */
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.35}}
+.agent-pill{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--teal-border);border-radius:var(--r-pill);padding:8px 16px 8px 10px;font-family:var(--f-brand);font-size:13px;font-weight:600;color:var(--ink);box-shadow:var(--shadow-sm)}
+.agent-pill-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--teal-dark),var(--teal-light));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff}
+.agent-pill-status{width:7px;height:7px;border-radius:50%;background:var(--success);margin-left:4px;animation:pulse-dot 2s infinite}
+.agent-row-ui{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-md);transition:background .15s}
+.agent-row-ui:hover{background:rgba(14,165,233,0.05)}
+.agent-row-orb{width:32px;height:32px;border-radius:var(--r-sm);background:rgba(14,165,233,0.1);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.agent-row-name{font-family:var(--f-brand);font-size:13px;font-weight:700;color:#fff;line-height:1.2}
+.agent-row-task{font-family:var(--f-data);font-size:11.5px;color:rgba(255,255,255,0.35);margin-top:2px}
+.agent-status-dot{width:7px;height:7px;border-radius:50%;background:var(--teal-light);animation:pulse-dot 1.8s infinite;flex-shrink:0;margin-left:auto}
+
+/* ══════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════ */
+.nav-ui-links{list-style:none;display:flex;gap:2px}
+.nav-ui-link{font-family:var(--f-brand);font-size:12.5px;font-weight:500;color:rgba(255,255,255,0.5);padding:5px 14px;border-radius:6px;transition:.15s;cursor:pointer}
+.nav-ui-link:hover{color:#fff;background:rgba(255,255,255,0.06)}
+.nav-ui-link.active{color:var(--teal-light);background:rgba(14,165,233,0.1);font-weight:700}
+
+/* ══════════════════════════════════════
+   CHAT / FREYA
+══════════════════════════════════════ */
+.chat-header{background:var(--cream);border-bottom:1px solid var(--stone);padding:14px 20px;display:flex;align-items:center;gap:12px}
+.chat-avatar{width:36px;height:36px;border-radius:var(--r-md);background:linear-gradient(135deg,var(--teal-dark),var(--teal-light));display:flex;align-items:center;justify-content:center;font-family:var(--f-brand);font-size:15px;font-weight:800;color:#fff;flex-shrink:0}
+.chat-agent-name{font-family:var(--f-brand);font-size:14px;font-weight:700;color:var(--ink)}
+.chat-agent-sub{font-size:11.5px;color:var(--ink-4)}
+.chat-live{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--teal)}
+.chat-live-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);animation:pulse-dot 2s infinite}
+.chat-body{padding:20px;display:flex;flex-direction:column;gap:14px;background:var(--cream)}
+.chat-msg{display:flex;gap:10px;align-items:flex-start}
+.chat-msg-user{flex-direction:row-reverse}
+.chat-msg-avatar{width:28px;height:28px;border-radius:var(--r-sm);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:var(--f-brand)}
+.chat-msg-avatar-ai{background:linear-gradient(135deg,var(--teal-dark),var(--teal-light));color:#fff}
+.chat-msg-avatar-user{background:var(--stone);color:var(--ink)}
+.chat-bubble{padding:10px 14px;border-radius:12px;max-width:84%;font-size:13.5px;line-height:1.6}
+.chat-bubble-ai{background:#fff;color:var(--ink);border-radius:4px 12px 12px 12px;border:1px solid var(--teal-border)}
+.chat-bubble-user{background:var(--teal);color:#fff;border-radius:12px 4px 12px 12px}
+.chat-bubble em{color:var(--teal-dark);font-style:normal;font-weight:600}
+.chat-input-row{border-top:1px solid var(--stone);padding:12px 16px;display:flex;align-items:center;gap:10px;background:var(--cream)}
+.chat-input-box{flex:1;background:#fff;border:1.5px solid var(--stone);border-radius:var(--r-md);padding:9px 14px;font-size:13px;color:var(--ink-4);font-family:var(--f-body);outline:none}
+.chat-send{background:var(--teal);color:#fff;border:none;border-radius:var(--r-sm);width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;flex-shrink:0}
+
+/* ══════════════════════════════════════
+   KPI CARDS
+══════════════════════════════════════ */
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.kpi-card-mkt{background:#fff;border:1px solid var(--stone);border-radius:var(--r-lg);padding:20px}
+.kpi-card-mkt-label{font-size:11px;color:var(--ink-4);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.kpi-card-mkt-val{font-family:var(--f-brand);font-size:32px;font-weight:800;color:var(--ink);line-height:1}
+.kpi-card-mkt-delta{font-size:12.5px;color:var(--success);font-weight:600;margin-top:5px}
+.kpi-card-ui{background:rgba(255,255,255,0.04);border:1px solid rgba(14,165,233,0.15);border-radius:var(--r-lg);padding:18px;text-align:center}
+.kpi-card-ui-label{font-size:10.5px;color:rgba(255,255,255,0.35);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.kpi-card-ui-val{font-family:var(--f-brand);font-size:28px;font-weight:800;color:var(--teal-light);line-height:1}
+
+/* ══════════════════════════════════════
+   BADGES
+══════════════════════════════════════ */
+.badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--f-data);font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:var(--r-pill)}
+.badge-teal{background:var(--teal-pale);color:var(--teal-dark);border:1px solid var(--teal-border)}
+.badge-green{background:rgba(16,185,129,0.12);color:#059669;border:1px solid rgba(16,185,129,0.25)}
+.badge-blue{background:rgba(56,189,248,0.12);color:#0284C7;border:1px solid rgba(56,189,248,0.25)}
+.badge-amber{background:rgba(251,191,36,0.12);color:#B45309;border:1px solid rgba(251,191,36,0.25)}
+.badge-red{background:rgba(239,68,68,0.1);color:#B91C1C;border:1px solid rgba(239,68,68,0.2)}
+.badge-stone{background:var(--stone);color:var(--ink-3);border:1px solid var(--stone)}
+.ui-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px}
+.ui-badge-active{background:rgba(16,185,129,0.15);color:#10B981}
+.ui-badge-auto{background:rgba(14,165,233,0.15);color:#38BDF8}
+.ui-badge-pending{background:rgba(251,191,36,0.15);color:#FBBF24}
+.ui-badge-paused{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.4)}
+
+/* ══════════════════════════════════════
+   TABLES
+══════════════════════════════════════ */
+.ui-table{width:100%;border-collapse:collapse;font-size:13px}
+.ui-table th{font-family:var(--f-data);font-size:10.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);padding:10px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.07)}
+.ui-table td{padding:12px 14px;color:rgba(226,232,240,0.85);border-bottom:1px solid rgba(255,255,255,0.04);font-weight:500}
+.ui-table tr:hover td{background:rgba(14,165,233,0.05)}
+.ui-table td:first-child{font-weight:600;color:#fff}
+.spec-table{width:100%;border-collapse:collapse;font-size:13.5px;margin-bottom:24px}
+.spec-table th{background:var(--cream);border:1px solid var(--stone);padding:10px 16px;text-align:left;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-3)}
+.spec-table td{border:1px solid var(--stone);padding:11px 16px;color:var(--ink);vertical-align:top}
+.spec-table td:first-child{font-weight:600;background:var(--cream);white-space:nowrap}
+.spec-table code{font-family:var(--f-data);font-size:12px;background:var(--teal-pale);padding:2px 7px;border-radius:4px;color:var(--teal-dark)}
+
+/* ══════════════════════════════════════
+   TONE CARDS
+══════════════════════════════════════ */
+.tone-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.tone-card{padding:24px;border-radius:var(--r-lg)}
+.tone-card-do{background:#F0FBF7;border:1.5px solid rgba(16,185,129,0.25)}
+.tone-card-dont{background:#FFF5F5;border:1.5px solid rgba(239,68,68,0.2)}
+.tone-tag{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.tone-tag-do{color:#059669}
+.tone-tag-dont{color:#DC2626}
+.tone-example{font-size:14px;line-height:1.65;color:var(--ink)}
+.tone-example-bad{font-size:14px;line-height:1.65;color:var(--ink-3);text-decoration:line-through;text-decoration-color:rgba(239,68,68,0.5)}
+.tone-note{font-size:12px;color:var(--ink-4);margin-top:12px;line-height:1.5}
+
+/* ══════════════════════════════════════
+   MOTION
+══════════════════════════════════════ */
+.motion-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.motion-card{flex:1;min-width:160px;padding:20px;background:#fff;border:1px solid var(--stone);border-radius:var(--r-lg)}
+.motion-title{font-family:var(--f-brand);font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.motion-value{font-family:var(--f-data);font-size:12px;color:var(--teal);font-weight:600;margin-bottom:6px}
+.motion-use{font-size:12px;color:var(--ink-4);line-height:1.5}
+
+/* ══════════════════════════════════════
+   SPACING
+══════════════════════════════════════ */
+.space-row{display:flex;gap:12px;align-items:flex-end;margin-bottom:20px;flex-wrap:wrap}
+.space-block{background:var(--teal-pale);border:1.5px solid var(--teal-border);border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:8px;gap:4px}
+
+/* ══════════════════════════════════════
+   A11Y
+══════════════════════════════════════ */
+.a11y-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+.a11y-card{flex:1;min-width:180px;padding:18px 20px;border-radius:var(--r-lg);background:#fff;border:1px solid var(--stone)}
+.a11y-ratio{font-family:var(--f-data);font-size:22px;font-weight:700;line-height:1;margin-bottom:4px}
+.a11y-pair{font-size:11.5px;color:var(--ink-3);margin-bottom:4px}
+.a11y-pass{font-size:11px;font-weight:700;color:var(--success)}
+
+/* ══════════════════════════════════════
+   CALLOUTS
+══════════════════════════════════════ */
+.highlight-box{background:var(--teal-pale);border:1px solid var(--teal-border);border-radius:var(--r-lg);padding:20px 24px;margin-bottom:24px}
+.highlight-box p{font-size:14px;color:var(--ink-2);line-height:1.7}
+.highlight-box strong{color:var(--teal-dark)}
+.callout{background:#fff3cd;border-left:3px solid #FBBF24;padding:14px 18px;border-radius:0 var(--r-md) var(--r-md) 0;margin-bottom:20px;font-size:13.5px;color:var(--ink)}
+.info-box{background:var(--teal-pale);border-left:3px solid var(--teal);padding:14px 18px;border-radius:0 var(--r-md) var(--r-md) 0;margin-bottom:20px;font-size:13.5px;color:var(--ink)}
+.divider{border:none;border-top:1px solid var(--stone);margin:48px 0}
+
+/* ══════════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════════ */
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+/* ══════════════════════════════════════
+   DEMO SECTION WRAPPER
+══════════════════════════════════════ */
+.demo-label-strip{
+  padding:24px 48px;background:var(--ink);
+  display:flex;align-items:center;justify-content:space-between
+}
+.demo-strip-tag{
+  font-family:var(--f-data);font-size:10px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;
+  padding:4px 14px;border-radius:var(--r-pill);
+  border:1px solid
+}
+.demo-strip-light{color:var(--teal-light);border-color:rgba(56,189,248,0.4)}
+.demo-strip-dark{color:rgba(255,255,255,0.5);border-color:rgba(255,255,255,0.2)}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ TOP NAV ═══════════════════ -->
+<nav class="doc-nav">
+  <div class="doc-brand">
+    <img class="logo-img" alt="Antarious" style="height:22px;width:auto">
+    <span class="doc-brand-tag">Brand Guidelines</span>
+  </div>
+  <div class="doc-nav-links">
+    <button class="doc-nav-link" onclick="scrollTo('brand')">Brand</button>
+    <button class="doc-nav-link" onclick="scrollTo('logo')">Logo</button>
+    <button class="doc-nav-link" onclick="scrollTo('colours')">Colours</button>
+    <button class="doc-nav-link" onclick="scrollTo('typography')">Typography</button>
+    <button class="doc-nav-link" onclick="scrollTo('components')">Components</button>
+    <button class="doc-nav-link" onclick="scrollTo('voice')">Voice</button>
+    <button class="doc-nav-link" onclick="scrollTo('demo')">Demo</button>
+  </div>
+  <div class="doc-version">v1.2 · Charged Teal</div>
+</nav>
+
+<!-- ═══════════════════ COVER ═══════════════════ -->
+<div class="cover">
+  <div class="cover-glow"></div>
+  <div class="cover-glow2"></div>
+  <div class="cover-inner">
+    <div class="cover-eyebrow">Antarious · Brand Identity System</div>
+    <div class="cover-logo-wrap">
+      <img class="logo-img" alt="Antarious" style="height:48px;width:auto;filter:brightness(0) invert(1)">
+    </div>
+    <h1 class="cover-title">Brand<br>Guide<span class="teal">lines</span></h1>
+    <p class="cover-subtitle">v1.2 &mdash; Charged Teal Edition</p>
+    <div class="cover-meta">
+      <div>
+        <div class="cover-meta-label">Colour Direction</div>
+        <div class="cover-meta-val">Option D &mdash; Charged Teal</div>
+      </div>
+      <div>
+        <div class="cover-meta-label">Primary Accent</div>
+        <div class="cover-meta-val">#0EA5E9 &rarr; #38BDF8</div>
+      </div>
+      <div>
+        <div class="cover-meta-label">Date</div>
+        <div class="cover-meta-val">March 2026</div>
+      </div>
+      <div>
+        <div class="cover-meta-label">Status</div>
+        <div class="cover-meta-val">Design Team Review</div>
+      </div>
+    </div>
+  </div>
+  <div class="cover-scroll">Scroll to explore</div>
+</div>
+
+<!-- ═══════════════════ MAIN LAYOUT ═══════════════════ -->
+<div class="doc-body">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-label">Foundation</div>
+    <button class="sidebar-link active" onclick="scrollTo('brand')">01 Brand Story</button>
+    <button class="sidebar-link" onclick="scrollTo('logo')">02 Logo</button>
+    <button class="sidebar-link" onclick="scrollTo('colours')">03 Colours</button>
+    <button class="sidebar-link" onclick="scrollTo('typography')">04 Typography</button>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Components</div>
+    <button class="sidebar-link" onclick="scrollTo('buttons')">05 Buttons</button>
+    <button class="sidebar-link" onclick="scrollTo('forms')">06 Forms</button>
+    <button class="sidebar-link" onclick="scrollTo('cards')">07 Cards &amp; KPIs</button>
+    <button class="sidebar-link" onclick="scrollTo('agents')">08 Agent Components</button>
+    <button class="sidebar-link" onclick="scrollTo('navigation')">09 Navigation</button>
+    <button class="sidebar-link" onclick="scrollTo('data')">10 Data &amp; Tables</button>
+    <button class="sidebar-link" onclick="scrollTo('badges')">11 Badges</button>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Expression</div>
+    <button class="sidebar-link" onclick="scrollTo('voice')">12 Voice &amp; Tone</button>
+    <button class="sidebar-link" onclick="scrollTo('motion')">13 Motion</button>
+    <button class="sidebar-link" onclick="scrollTo('a11y')">14 Accessibility</button>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Live Preview</div>
+    <button class="sidebar-link" onclick="scrollTo('demo')">15 Demo Pages</button>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="doc-content">
+
+<!-- 01 BRAND -->
+<section class="doc-section" id="brand">
+  <div class="section-eyebrow reveal">01 &middot; Foundation</div>
+  <h2 class="section-title reveal">Brand Story</h2>
+  <p class="section-lead reveal">Antarious is the GTM intelligence layer for ambitious B2B companies. We replace manual marketing teams with 13 specialised AI agents &mdash; from ICP research to closed deal. Our brand communicates precision, speed, and operator-grade competence. We never sound like AI. We sound like the best operator you've ever worked with.</p>
+  <div class="info-box reveal">
+    <strong>Colour Direction — Option D, Charged Teal:</strong> Bloomberg meets Palantir. The #0EA5E9 teal signals precision, data intelligence, and enterprise speed. It reads confident rather than aggressive — the colour of a system that's always ahead of you.
+  </div>
+  <div class="spec-label reveal">Brand Pillars</div>
+  <table class="spec-table reveal">
+    <thead><tr><th>Pillar</th><th>What It Means</th><th>How It Shows Up</th></tr></thead>
+    <tbody>
+      <tr><td>Precision</td><td>Every number. Every decision. No vagueness.</td><td>Specific copy, monospaced data, exact values always shown</td></tr>
+      <tr><td>Speed</td><td>Antarious is already done before you ask.</td><td>Short sentences, active voice, "Done." as a complete message</td></tr>
+      <tr><td>Operator-Grade</td><td>Built for revenue teams who know what they're doing.</td><td>Dense information, no hand-holding, no jargon</td></tr>
+      <tr><td>AI-Native, Not AI-Obvious</td><td>Freya never says "AI". She just does it.</td><td>No AI clichés. No "utilising advanced capabilities".</td></tr>
+    </tbody>
+  </table>
+  <div class="spec-label reveal">Two Worlds</div>
+  <table class="spec-table reveal">
+    <thead><tr><th>Context</th><th>Marketing (Public-Facing)</th><th>Product UI (In-App)</th></tr></thead>
+    <tbody>
+      <tr><td>Font Primary</td><td>Outfit — brand & headlines</td><td>Outfit — UI labels & KPIs</td></tr>
+      <tr><td>Font Body</td><td>Plus Jakarta Sans</td><td>DM Sans</td></tr>
+      <tr><td>Background</td><td>Cream <code>#FAF8F3</code></td><td>Dark Void <code>#060D10</code></td></tr>
+      <tr><td>Primary Colour</td><td>Charged Teal <code>#0EA5E9</code></td><td>Teal Light <code>#38BDF8</code></td></tr>
+      <tr><td>Tone</td><td>Confident, accessible, human</td><td>Dense, fast, operator-level</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<hr class="divider">
+
+<!-- 02 LOGO -->
+<section class="doc-section" id="logo">
+  <div class="section-eyebrow reveal">02 &middot; Foundation</div>
+  <h2 class="section-title reveal">Logo</h2>
+  <p class="section-lead reveal">The Antarious mark is a wordmark with an integrated orbital symbol &mdash; the dot preceding the name is not punctuation, it is a planet in orbit. The mark anchors the entire visual identity. Never alter its proportions or colour. The Charged Teal era does not recolour the logo &mdash; it colours everything around it.</p>
+
+  <div class="spec-label reveal">Logo on Backgrounds</div>
+  <div class="logo-frame reveal">
+    <div class="logo-on-light">
+      <div class="logo-item">
+        <img class="logo-img" alt="Antarious" style="height:36px;width:auto">
+        <div class="logo-label logo-label-light">On Cream</div>
+      </div>
+      <div class="logo-item">
+        <img class="logo-img" alt="Antarious" style="height:36px;width:auto;filter:brightness(0) saturate(100%) invert(50%) sepia(80%) saturate(500%) hue-rotate(170deg)">
+        <div class="logo-label logo-label-light">Teal Tint</div>
+      </div>
+    </div>
+    <div class="logo-on-dark">
+      <div class="logo-item">
+        <img class="logo-img" alt="Antarious" style="height:36px;width:auto;filter:brightness(0) invert(1)">
+        <div class="logo-label logo-label-dark">On Dark</div>
+      </div>
+      <div class="logo-item">
+        <img class="logo-img" alt="Antarious" style="height:36px;width:auto;filter:brightness(0) invert(1) opacity(.6)">
+        <div class="logo-label logo-label-dark">Ghosted</div>
+      </div>
+    </div>
+    <div class="logo-on-teal">
+      <div class="logo-item">
+        <img class="logo-img" alt="Antarious" style="height:36px;width:auto;filter:brightness(0) invert(1)">
+        <div class="logo-label" style="color:rgba(255,255,255,0.6)">On Teal</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="spec-label reveal">Clear Space &amp; Sizing</div>
+  <table class="spec-table reveal">
+    <thead><tr><th>Rule</th><th>Specification</th></tr></thead>
+    <tbody>
+      <tr><td>Minimum size</td><td>18px tall in digital · 8mm tall in print</td></tr>
+      <tr><td>Clear space</td><td>Equal to the height of the orbital dot on all sides</td></tr>
+      <tr><td>Nav / app bar</td><td>18–22px · Full colour or white inverted</td></tr>
+      <tr><td>Cover / hero</td><td>40–60px · White on dark backgrounds preferred</td></tr>
+      <tr><td>Forbidden</td><td>Never stretch · Never recolour the mark itself · Never add drop shadows</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<hr class="divider">
+
+<!-- 03 COLOURS -->
+<section class="doc-section" id="colours">
+  <div class="section-eyebrow reveal">03 &middot; Foundation</div>
+  <h2 class="section-title reveal">Colour System — Charged Teal</h2>
+  <p class="section-lead reveal">"Bloomberg meets Palantir." The Charged Teal palette signals precision, enterprise intelligence, and controlled speed. The primary #0EA5E9 leads with confidence &mdash; electric but not garish. It earns trust from CFOs and founders simultaneously.</p>
+
+  <div class="spec-label reveal">Primary Palette</div>
+  <div class="swatch-row reveal">
+    <div class="swatch">
+      <div class="swatch-color" style="background:#0EA5E9"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Charged Teal</div>
+        <div class="swatch-hex">#0EA5E9 · RGB 14,165,233</div>
+        <div class="swatch-role">Primary brand colour · CTAs · Links</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#0891B2"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Teal Dark</div>
+        <div class="swatch-hex">#0891B2 · RGB 8,145,178</div>
+        <div class="swatch-role">Hover states · Deep accents</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#38BDF8"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Teal Light</div>
+        <div class="swatch-hex">#38BDF8 · RGB 56,189,248</div>
+        <div class="swatch-role">Product UI data · Sky highlights</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#E0F5FD;border:1px solid #BAE8FB"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Teal Pale</div>
+        <div class="swatch-hex">#E0F5FD · Border #BAE8FB</div>
+        <div class="swatch-role">Subtle backgrounds · Hover fills</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="spec-label reveal">Neutral &amp; Surface Palette</div>
+  <div class="swatch-row reveal">
+    <div class="swatch">
+      <div class="swatch-color" style="background:#FAF8F3;border:1px solid #E8E3D8"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Cream</div>
+        <div class="swatch-hex">#FAF8F3</div>
+        <div class="swatch-role">Marketing page base</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#1C2B27"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Ink</div>
+        <div class="swatch-hex">#1C2B27</div>
+        <div class="swatch-role">Primary text · Dark backgrounds</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#060D10"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Dark Void</div>
+        <div class="swatch-hex">#060D10</div>
+        <div class="swatch-role">Product UI background</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#091520"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Dark Surface</div>
+        <div class="swatch-hex">#091520</div>
+        <div class="swatch-role">Cards &amp; panels in dark UI</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="spec-label reveal">Semantic Colours</div>
+  <div class="swatch-row reveal">
+    <div class="swatch">
+      <div class="swatch-color" style="background:#10B981"></div>
+      <div class="swatch-info"><div class="swatch-name">Success</div><div class="swatch-hex">#10B981</div><div class="swatch-role">Positive signals · Agent live</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#FBBF24"></div>
+      <div class="swatch-info"><div class="swatch-name">Warning</div><div class="swatch-hex">#FBBF24</div><div class="swatch-role">Optimising · Attention needed</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#EF4444"></div>
+      <div class="swatch-info"><div class="swatch-name">Error</div><div class="swatch-hex">#EF4444</div><div class="swatch-role">Failures · Destructive actions</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:linear-gradient(135deg,#0891B2,#38BDF8)"></div>
+      <div class="swatch-info"><div class="swatch-name">Teal Gradient</div><div class="swatch-hex">#0891B2 → #38BDF8</div><div class="swatch-role">Agent avatars · Feature icons</div></div>
+    </div>
+  </div>
+
+  <div class="spec-label reveal">Colour Usage Rules</div>
+  <table class="spec-table reveal">
+    <thead><tr><th>Colour</th><th>Use</th><th>Never Use</th></tr></thead>
+    <tbody>
+      <tr><td>Charged Teal #0EA5E9</td><td>Primary CTAs, links, active nav, focus rings (marketing)</td><td>Body text, background fills larger than a card</td></tr>
+      <tr><td>Teal Light #38BDF8</td><td>Data values in product UI, active state labels, sky accents</td><td>On white backgrounds — too low contrast</td></tr>
+      <tr><td>Teal Dark #0891B2</td><td>Hover states, pressed states, deep icon fills</td><td>Standalone text below 14px</td></tr>
+      <tr><td>Dark Void #060D10</td><td>Product UI page background only</td><td>Marketing pages, print</td></tr>
+      <tr><td>Cream #FAF8F3</td><td>Marketing page base, cards on light backgrounds</td><td>Product UI (too warm)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<hr class="divider">
+
+<!-- 04 TYPOGRAPHY -->
+<section class="doc-section" id="typography">
+  <div class="section-eyebrow reveal">04 &middot; Foundation</div>
+  <h2 class="section-title reveal">Typography System</h2>
+  <p class="section-lead reveal">Four typefaces, each with a distinct role. Outfit commands attention as our brand voice. Plus Jakarta Sans carries the story. DM Sans handles data without drama. Instrument Serif adds moments of editorial humanity.</p>
+
+  <div class="spec-label reveal">01 — Outfit (Brand &amp; Display)</div>
+  <div class="type-block reveal">
+    <div style="font-family:'Outfit',sans-serif;font-size:clamp(40px,5vw,68px);font-weight:900;color:var(--ink);line-height:1;letter-spacing:-1.5px;margin-bottom:16px">Your marketing team,<br>now <span style="color:var(--teal)">autonomous.</span></div>
+    <div class="type-meta">
+      <div><div class="type-family" style="color:var(--teal)">Outfit — Brand & Headings</div><div class="type-sub">Google Fonts · Free · All weights 300–900</div></div>
+      <div class="type-use">Headlines · Buttons · Navigation · KPI values · Logo text</div>
+    </div>
+  </div>
+  <div style="background:#fff;border:1px solid var(--stone);border-radius:var(--r-lg);padding:20px 24px;margin-bottom:16px" class="reveal">
+    <div class="font-row"><span class="font-label">900 / Display</span><span style="font-family:'Outfit',sans-serif;font-size:36px;font-weight:900;color:var(--ink);letter-spacing:-.5px">GTM Automation</span></div>
+    <div class="font-row"><span class="font-label">800 / Heading</span><span style="font-family:'Outfit',sans-serif;font-size:28px;font-weight:800;color:var(--ink)">Campaign Performance</span></div>
+    <div class="font-row"><span class="font-label">700 / Subheading</span><span style="font-family:'Outfit',sans-serif;font-size:20px;font-weight:700;color:var(--ink)">Meta Ads — AI Managed</span></div>
+    <div class="font-row"><span class="font-label">600 / Nav / Button</span><span style="font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;color:var(--teal)">Start your free trial →</span></div>
+    <div class="font-row"><span class="font-label">500 / UI Label</span><span style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;color:var(--ink-3)">Dashboard · Campaigns · Agents</span></div>
+  </div>
+
+  <div class="spec-label reveal">02 — Plus Jakarta Sans (Body)</div>
+  <div class="type-block reveal">
+    <p style="font-size:17px;color:var(--ink-2);line-height:1.8;max-width:600px">Antarious replaces your manual GTM with 13 AI agents &mdash; from ICP research to closed deal. Your Meta and LinkedIn campaigns, running on <em style="font-style:italic;color:var(--teal-dark)">autopilot</em>.</p>
+    <div class="type-meta">
+      <div><div class="type-family" style="color:var(--teal)">Plus Jakarta Sans — Marketing Body</div><div class="type-sub">Google Fonts · Free · All weights</div></div>
+      <div class="type-use">Page body · Feature descriptions · Long-form content</div>
+    </div>
+  </div>
+
+  <div class="spec-label reveal">03 — DM Sans (Data &amp; UI)</div>
+  <div class="type-block reveal" style="background:var(--dark-bg)">
+    <div style="display:flex;gap:32px;flex-wrap:wrap">
+      <div><div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:6px">REVENUE PIPELINE</div><div style="font-family:'DM Sans',sans-serif;font-size:36px;font-weight:700;color:var(--teal-light);line-height:1">£428K</div><div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#10B981;font-weight:600;margin-top:4px">↑ 24% this month</div></div>
+      <div><div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:6px">AVG ROAS</div><div style="font-family:'DM Sans',sans-serif;font-size:36px;font-weight:700;color:var(--teal-light);line-height:1">4.8x</div><div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#10B981;font-weight:600;margin-top:4px">↑ 12% vs last month</div></div>
+      <div><div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:6px">LEADS QUALIFIED</div><div style="font-family:'DM Sans',sans-serif;font-size:36px;font-weight:700;color:var(--teal-light);line-height:1">247</div><div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#10B981;font-weight:600;margin-top:4px">↑ 38% vs last week</div></div>
+    </div>
+    <div class="type-meta type-meta-dark">
+      <div><div class="type-family" style="color:var(--teal-light)">DM Sans — Product UI</div><div class="type-sub" style="color:rgba(255,255,255,0.35)">Monospaced-feel precision without being monospaced</div></div>
+      <div class="type-use type-use-dark" style="color:rgba(255,255,255,0.35)">Dashboard KPIs · Table headers · Data labels · Meta copy</div>
+    </div>
+  </div>
+
+  <div class="spec-label reveal">04 — Instrument Serif (Editorial Accent)</div>
+  <div class="type-block reveal">
+    <div style="font-size:clamp(32px,4vw,52px);line-height:1.1;color:var(--ink)">Your GTM doesn't need more people.<br>It needs <em style="font-family:'Instrument Serif',serif;font-style:italic;color:var(--teal)">Freya.</em></div>
+    <div class="type-meta">
+      <div><div class="type-family" style="color:var(--teal)">Instrument Serif — Editorial</div><div class="type-sub">Italic only · One or two words maximum · High-impact moments</div></div>
+      <div class="type-use">Hero headline accents · Pull quotes · Brand moments</div>
+    </div>
+  </div>
+
+  <div class="spec-label reveal">Type Scale</div>
+  <table class="spec-table reveal">
+    <thead><tr><th>Role</th><th>Font</th><th>Size</th><th>Weight</th></tr></thead>
+    <tbody>
+      <tr><td>Hero Display</td><td>Outfit</td><td>clamp(52px, 7vw, 90px)</td><td>900</td></tr>
+      <tr><td>Section Title</td><td>Outfit</td><td>clamp(28px, 3.5vw, 44px)</td><td>800</td></tr>
+      <tr><td>Card Title</td><td>Outfit</td><td>16–18px</td><td>700</td></tr>
+      <tr><td>Body Large</td><td>Plus Jakarta Sans</td><td>17–18px</td><td>400–500</td></tr>
+      <tr><td>Body Default</td><td>Plus Jakarta Sans</td><td>14–15px</td><td>400</td></tr>
+      <tr><td>UI Label</td><td>DM Sans</td><td>11–13px</td><td>500–700</td></tr>
+      <tr><td>Data Value</td><td>Outfit or DM Sans</td><td>24–40px</td><td>700–800</td></tr>
+      <tr><td>Micro / Meta</td><td>DM Sans</td><td>10–11px</td><td>600–700 + uppercase</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<hr class="divider">
+
+<!-- 05 BUTTONS -->
+<section class="doc-section" id="buttons">
+  <div class="section-eyebrow reveal">05 &middot; Components</div>
+  <h2 class="section-title reveal">Buttons</h2>
+  <div class="component-frame reveal">
+    <div class="component-label">Marketing buttons — Full set</div>
+    <div class="component-body">
+      <div class="demo-row" style="margin-bottom:20px">
+        <button class="btn-primary-mkt">Start free trial →</button>
+        <button class="btn-secondary-mkt">Learn more</button>
+        <button class="btn-ghost-mkt">Log in</button>
+        <button class="btn-accent-mkt">Book a demo</button>
+      </div>
+      <div class="demo-row">
+        <button class="btn-primary-mkt btn-sm">Primary SM</button>
+        <button class="btn-secondary-mkt btn-sm">Secondary SM</button>
+        <button class="btn-ghost-mkt btn-sm">Ghost SM</button>
+      </div>
+    </div>
+    <div class="component-note">Primary: Charged Teal #0EA5E9 · Hover: translateY(-2px) + box-shadow · Font: Outfit 700 · Radius: 14px</div>
+  </div>
+  <div class="component-frame component-frame-dark reveal">
+    <div class="component-label component-label-dark">Product UI buttons</div>
+    <div class="component-body-dark">
+      <div class="demo-row">
+        <button class="btn-primary-ui">+ New Campaign</button>
+        <button class="btn-ghost-ui">Export CSV</button>
+        <button class="btn-danger-ui">Pause Agent</button>
+      </div>
+    </div>
+    <div class="component-note component-note-dark">Primary: Teal #0EA5E9 · Ghost: rgba white · Danger: rgba red · Font: Outfit 700 · Radius: 10px</div>
+  </div>
+  <table class="spec-table reveal">
+    <thead><tr><th>Button</th><th>Colours</th><th>Usage</th></tr></thead>
+    <tbody>
+      <tr><td>Primary (Marketing)</td><td>BG: #0EA5E9 · Text: #fff · Hover: #0891B2</td><td>Main CTA on marketing pages · Max 1 per section</td></tr>
+      <tr><td>Secondary (Marketing)</td><td>BG: #fff · Border: #BAE8FB · Text: #0EA5E9</td><td>Secondary action alongside primary</td></tr>
+      <tr><td>Ghost (Marketing)</td><td>BG: none · Border: #E8E3D8 · Text: ink-3</td><td>Tertiary / nav actions</td></tr>
+      <tr><td>Accent (Marketing)</td><td>BG: #38BDF8 · Text: #060D10 · Font: 800</td><td>Dark backgrounds only — max visual contrast</td></tr>
+      <tr><td>Primary (UI)</td><td>BG: #0EA5E9 · Text: #fff · Hover: #38BDF8</td><td>Create / confirm actions in product</td></tr>
+      <tr><td>Ghost (UI)</td><td>rgba white bg · border · Text: rgba white</td><td>Secondary actions in product UI</td></tr>
+      <tr><td>Danger (UI)</td><td>rgba red bg · Text: #EF4444</td><td>Destructive / pause / delete</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<hr class="divider">
+
+<!-- 06 FORMS -->
+<section class="doc-section" id="forms">
+  <div class="section-eyebrow reveal">06 &middot; Components</div>
+  <h2 class="section-title reveal">Forms &amp; Inputs</h2>
+  <div class="component-frame reveal">
+    <div class="component-label">Form elements — Marketing</div>
+    <div class="component-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div><div class="input-group"><label class="input-label">Company name</label><input class="input-mkt" placeholder="Acme Corp Ltd"></div><div class="input-group"><label class="input-label">Work email</label><input class="input-mkt" placeholder="you@company.com"></div></div>
+        <div><div class="input-group"><label class="input-label">Monthly ad spend</label><input class="input-mkt" placeholder="£5,000 – £20,000"></div><div class="input-group"><label class="input-label">Platform</label><input class="input-mkt" placeholder="Meta · LinkedIn · GDN"></div></div>
+      </div>
+    </div>
+    <div class="component-note">Font: Plus Jakarta Sans · Focus ring: <code>box-shadow:0 0 0 3px rgba(14,165,233,0.10)</code> · Border on focus: Charged Teal #0EA5E9</div>
+  </div>
+  <div class="component-frame component-frame-dark reveal">
+    <div class="component-label component-label-dark">Form elements — Product UI</div>
+    <div class="component-body-dark">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div><div class="input-group"><label class="input-label-ui">Campaign name</label><input class="input-ui" placeholder="Q2 UK CFO — Meta Retargeting"></div><div class="input-group"><label class="input-label-ui">Daily budget</label><input class="input-ui" placeholder="£500"></div></div>
+        <div><div class="input-group"><label class="input-label-ui">Target platform</label><input class="input-ui" placeholder="Meta · LinkedIn · GDN"></div><div class="input-group"><label class="input-label-ui">ICP segment</label><input class="input-ui" placeholder="SMB CFO · Series A · UK"></div></div>
+      </div>
+    </div>
+    <div class="component-note component-note-dark">Font: DM Sans · Focus ring: <code>box-shadow:0 0 0 3px rgba(14,165,233,0.08)</code> · Border on focus: Teal Light #38BDF8</div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- 07 CARDS -->
+<section class="doc-section" id="cards">
+  <div class="section-eyebrow reveal">07 &middot; Components</div>
+  <h2 class="section-title reveal">Cards &amp; KPI Surfaces</h2>
+  <div class="component-frame reveal">
+    <div class="component-label">Feature cards — Marketing</div>
+    <div class="component-body">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+        <div class="card-mkt reveal"><div class="card-mkt-icon">🎯</div><div class="card-mkt-title">ICP &amp; Strategy</div><div class="card-mkt-body">Auto-generated in 15 minutes from your CRM data and live market signals.</div></div>
+        <div class="card-mkt reveal" style="animation-delay:.08s"><div class="card-mkt-icon">📢</div><div class="card-mkt-title">Paid Media</div><div class="card-mkt-body">Meta, LinkedIn, and GDN campaigns built, launched, and optimised by AI.</div></div>
+        <div class="card-mkt reveal" style="animation-delay:.16s"><div class="card-mkt-icon">⚡</div><div class="card-mkt-title">Lead Response</div><div class="card-mkt-body">ARIA Voice AI responds to every inbound lead in under 90 seconds, 24/7.</div></div>
+      </div>
+    </div>
+    <div class="component-note">Hover: left teal border 4px + shadow-md + translateY(-2px) · Font: Outfit 700 titles · Radius: 20px</div>
+  </div>
+  <div class="component-frame component-frame-dark reveal">
+    <div class="component-label component-label-dark">Feature cards — Product UI</div>
+    <div class="component-body-dark">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:rgba(14,165,233,0.08);border-radius:12px;overflow:hidden;border:1px solid rgba(14,165,233,0.15)">
+        <div class="card-ui"><div class="card-ui-num">01</div><div class="card-ui-title">Meta Ads</div><div class="card-ui-body">AI-managed campaigns with live budget rebalancing.</div></div>
+        <div class="card-ui"><div class="card-ui-num">02</div><div class="card-ui-title">SDR Agent</div><div class="card-ui-body">1,000+ personalised outreach touches per day.</div></div>
+        <div class="card-ui"><div class="card-ui-num">03</div><div class="card-ui-title">Analytics</div><div class="card-ui-body">Real-time dashboards. Zero analyst hours required.</div></div>
+      </div>
+    </div>
+    <div class="component-note component-note-dark">Grid gap 2px creates teal-tinted dividers · Hover: rgba(14,165,233,0.05) fill · Font: Outfit 700 titles</div>
+  </div>
+  <div class="spec-label reveal">KPI Cards</div>
+  <div class="component-frame reveal">
+    <div class="component-label">KPI cards — Marketing</div>
+    <div class="component-body">
+      <div class="kpi-grid">
+        <div class="kpi-card-mkt"><div class="kpi-card-mkt-label">Leads This Week</div><div class="kpi-card-mkt-val">247</div><div class="kpi-card-mkt-delta">↑ 38% vs last week</div></div>
+        <div class="kpi-card-mkt"><div class="kpi-card-mkt-label">Campaign ROAS</div><div class="kpi-card-mkt-val">4.2x</div><div class="kpi-card-mkt-delta">↑ 12% vs last month</div></div>
+        <div class="kpi-card-mkt"><div class="kpi-card-mkt-label">Hours Saved</div><div class="kpi-card-mkt-val">40+</div><div class="kpi-card-mkt-delta">Per week, per team</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="component-frame component-frame-dark reveal">
+    <div class="component-label component-label-dark">KPI cards — Product UI</div>
+    <div class="component-body-dark">
+      <div class="kpi-grid">
+        <div class="kpi-card-ui"><div class="kpi-card-ui-label">Revenue Pipeline</div><div class="kpi-card-ui-val">£428K</div></div>
+        <div class="kpi-card-ui"><div class="kpi-card-ui-label">Active Campaigns</div><div class="kpi-card-ui-val">12</div></div>
+        <div class="kpi-card-ui"><div class="kpi-card-ui-label">Avg ROAS</div><div class="kpi-card-ui-val">4.8x</div></div>
+      </div>
+    </div>
+    <div class="component-note component-note-dark">Value colour: Teal Light #38BDF8 · Border: rgba(14,165,233,0.15) · Font: Outfit 800</div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- 08 AGENTS -->
+<section class="doc-section" id="agents">
+  <div class="section-eyebrow reveal">08 &middot; AI-Native Components</div>
+  <h2 class="section-title reveal">Agent Components</h2>
+  <p class="section-lead reveal">Freya and the agents integrate seamlessly &mdash; never interrupting. The Charged Teal gradient ties agent avatars directly back to the primary brand colour, making them the most visually consistent element across every touchpoint.</p>
+  <div class="component-frame reveal">
+    <div class="component-label">Agent pills — Marketing (hero sections)</div>
+    <div class="component-body">
+      <div class="demo-row">
+        <div class="agent-pill"><div class="agent-pill-avatar">G</div>GTM Strategist<div class="agent-pill-status"></div></div>
+        <div class="agent-pill"><div class="agent-pill-avatar">M</div>Meta Ads Agent<div class="agent-pill-status"></div></div>
+        <div class="agent-pill"><div class="agent-pill-avatar">S</div>SDR Outreach<div class="agent-pill-status"></div></div>
+        <div class="agent-pill"><div class="agent-pill-avatar">A</div>ARIA Voice AI<div class="agent-pill-status"></div></div>
+        <div class="agent-pill"><div class="agent-pill-avatar">C</div>Copywriter<div class="agent-pill-status"></div></div>
+      </div>
+    </div>
+    <div class="component-note">Avatar gradient: Teal Dark → Teal Light · Border: #BAE8FB · Status dot: Success pulsing · Font: Outfit 600</div>
+  </div>
+  <div class="component-frame reveal">
+    <div class="component-label">Freya chat — Marketing widget</div>
+    <div style="max-width:480px;border:1px solid var(--stone);border-radius:var(--r-xl);overflow:hidden">
+      <div class="chat-header">
+        <div class="chat-avatar">F</div>
+        <div><div class="chat-agent-name">Freya</div><div class="chat-agent-sub">GTM Command Centre · 13 agents</div></div>
+        <div class="chat-live"><span class="chat-live-dot"></span>Live</div>
+      </div>
+      <div class="chat-body">
+        <div class="chat-msg"><div class="chat-msg-avatar chat-msg-avatar-ai">F</div><div class="chat-bubble chat-bubble-ai">Your <em>UK CFO Meta campaign</em> is at <em>4.8x ROAS</em>. I reallocated <em>£800</em> from the underperforming ad set automatically.</div></div>
+        <div class="chat-msg chat-msg-user"><div class="chat-msg-avatar chat-msg-avatar-user">Y</div><div class="chat-bubble chat-bubble-user">Yes — and add LinkedIn retargeting to the same ICP.</div></div>
+        <div class="chat-msg"><div class="chat-msg-avatar chat-msg-avatar-ai">F</div><div class="chat-bubble chat-bubble-ai"><span style="color:var(--success);font-weight:600">Done.</span> LinkedIn retargeting live in ~35 minutes. £400/day within your threshold.</div></div>
+      </div>
+      <div class="chat-input-row">
+        <input class="chat-input-box" placeholder="Ask Freya…">
+        <div class="chat-send">→</div>
+      </div>
+    </div>
+    <div style="padding:10px 0 0;font-family:var(--f-data);font-size:11px;color:var(--ink-4)">Freya avatar: Teal gradient · AI bubbles: White with teal border · User bubble: Teal #0EA5E9</div>
+  </div>
+  <div class="component-frame component-frame-dark reveal">
+    <div class="component-label component-label-dark">Agent status rows — Product UI sidebar</div>
+    <div class="component-body-dark">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div class="agent-row-ui"><div class="agent-row-orb">🎯</div><div style="flex:1"><div class="agent-row-name">GTM Strategist</div><div class="agent-row-task">Refining Q2 ICP from CRM data</div></div><div class="agent-status-dot"></div></div>
+        <div class="agent-row-ui"><div class="agent-row-orb">📢</div><div style="flex:1"><div class="agent-row-name">Meta Ads Agent</div><div class="agent-row-task">Rebalancing £12,400 budget</div></div><div class="agent-status-dot"></div></div>
+        <div class="agent-row-ui"><div class="agent-row-orb">📧</div><div style="flex:1"><div class="agent-row-name">SDR Outreach</div><div class="agent-row-task">124 active sequences running</div></div><div class="agent-status-dot"></div></div>
+        <div class="agent-row-ui" style="opacity:.45"><div class="agent-row-orb">📊</div><div style="flex:1"><div class="agent-row-name">Analytics Agent</div><div class="agent-row-task">Idle · next report in 4h</div></div></div>
+      </div>
+    </div>
+    <div class="component-note component-note-dark">Orb bg: rgba(14,165,233,0.1) · Status dot: Teal Light pulsing · Idle agents: opacity 0.45 · Row hover: rgba(14,165,233,0.05)</div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- 09 NAVIGATION -->
+<section class="doc-section" id="navigation">
+  <div class="section-eyebrow reveal">09 &middot; Components</div>
+  <h2 class="section-title reveal">Navigation</h2>
+  <div class="component-frame reveal">
+    <div class="component-label">Marketing nav — Default state</div>
+    <div class="component-body" style="padding:0">
+      <nav style="background:var(--cream);border-bottom:1px solid var(--stone);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between">
+        <img class="logo-img" alt="Antarious" style="height:20px;width:auto">
+        <div style="display:flex;gap:4px">
+          <span style="font-family:var(--f-brand);font-size:13.5px;font-weight:500;color:var(--ink-3);padding:6px 14px;border-radius:6px;cursor:pointer">Platform</span>
+          <span style="font-family:var(--f-brand);font-size:13.5px;font-weight:500;color:var(--ink-3);padding:6px 14px;border-radius:6px;cursor:pointer">Agents</span>
+          <span style="font-family:var(--f-brand);font-size:13.5px;font-weight:500;color:var(--ink);padding:6px 14px;border-radius:6px;background:var(--teal-pale);color:var(--teal);cursor:pointer;font-weight:700">Pricing</span>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-ghost-mkt btn-sm">Log in</button>
+          <button class="btn-primary-mkt btn-sm">Start free →</button>
+        </div>
+      </nav>
+    </div>
+    <div class="component-note">BG: Cream #FAF8F3 · Active: Teal Pale bg + Teal text · Height: 62px · Sticky + backdrop-blur(20px)</div>
+  </div>
+  <div class="component-frame component-frame-dark reveal">
+    <div class="component-label component-label-dark">Product nav — App bar</div>
+    <div class="component-body-dark" style="padding:0">
+      <nav style="background:rgba(6,13,16,0.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(14,165,233,0.15);padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between">
+        <img class="logo-img" alt="Antarious" style="height:18px;width:auto;filter:brightness(0) invert(1)">
+        <ul class="nav-ui-links">
+          <li><span class="nav-ui-link active">Dashboard</span></li>
+          <li><span class="nav-ui-link">Campaigns</span></li>
+          <li><span class="nav-ui-link">Agents</span></li>
+          <li><span class="nav-ui-link">Analytics</span></li>
+        </ul>
+        <div style="display:flex;gap:10px;align-items:center">
+          <span class="ui-badge ui-badge-active" style="display:flex;gap:5px;align-items:center;padding:5px 12px"><span style="width:5px;height:5px;border-radius:50%;background:#10B981;display:inline-block;animation:pulse-dot 2s infinite"></span>13 Live</span>
+          <button class="btn-primary-ui" style="padding:7px 16px;font-size:12px">+ Campaign</button>
+        </div>
+      </nav>
+    </div>
+    <div class="component-note component-note-dark">Height: 52px · Backdrop blur: 16px · Active: Teal Light #38BDF8 + rgba(14,165,233,0.1) bg · Border: rgba(14,165,233,0.15)</div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- 10 DATA -->
+<section class="doc-section" id="data">
+  <div class="section-eyebrow reveal">10 &middot; Data Display</div>
+  <h2 class="section-title reveal">Tables &amp; Data</h2>
+  <div class="component-frame component-frame-dark reveal">
+    <div class="component-label component-label-dark">Campaign table — Product UI</div>
+    <div class="component-body-dark" style="overflow-x:auto">
+      <table class="ui-table">
+        <thead><tr><th>Campaign</th><th>Platform</th><th>Status</th><th>Budget</th><th>ROAS</th><th>Leads</th></tr></thead>
+        <tbody>
+          <tr><td>UK CFO — Meta Q2</td><td style="color:rgba(255,255,255,0.45)">Meta Ads</td><td><span class="ui-badge ui-badge-auto">AI Managed</span></td><td style="color:rgba(255,255,255,0.45)">£1,200</td><td style="color:#10B981;font-family:var(--f-brand);font-weight:800">4.8x</td><td style="color:rgba(255,255,255,0.45)">74</td></tr>
+          <tr><td>SMB LinkedIn Brand</td><td style="color:rgba(255,255,255,0.45)">LinkedIn</td><td><span class="ui-badge ui-badge-active">Running</span></td><td style="color:rgba(255,255,255,0.45)">£800</td><td style="color:#10B981;font-family:var(--f-brand);font-weight:800">3.2x</td><td style="color:rgba(255,255,255,0.45)">41</td></tr>
+          <tr><td>Series A Outreach</td><td style="color:rgba(255,255,255,0.45)">Email</td><td><span class="ui-badge ui-badge-pending">Optimising</span></td><td style="color:rgba(255,255,255,0.45)">£400</td><td style="color:#FBBF24;font-family:var(--f-brand);font-weight:800">2.1x</td><td style="color:rgba(255,255,255,0.45)">29</td></tr>
+          <tr><td>GDN Retargeting</td><td style="color:rgba(255,255,255,0.45)">Google</td><td><span class="ui-badge ui-badge-auto">AI Managed</span></td><td style="color:rgba(255,255,255,0.45)">£600</td><td style="color:#10B981;font-family:var(--f-brand);font-weight:800">5.1x</td><td style="color:rgba(255,255,255,0.45)">62</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="component-note component-note-dark">ROAS: Outfit 800 · Positive: #10B981 · Warning: #FBBF24 · Row hover: rgba(14,165,233,0.05) · AI badge: Teal #38BDF8</div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- 11 BADGES -->
+<section class="doc-section" id="badges">
+  <div class="section-eyebrow reveal">11 &middot; Components</div>
+  <h2 class="section-title reveal">Badges &amp; Status Tags</h2>
+  <div class="component-frame reveal">
+    <div class="component-label">Badge system — Marketing context</div>
+    <div class="component-body">
+      <div class="demo-row">
+        <span class="badge badge-teal">● Charged Teal</span>
+        <span class="badge badge-green">● Active</span>
+        <span class="badge badge-blue">● AI Managed</span>
+        <span class="badge badge-amber">● Optimising</span>
+        <span class="badge badge-red">● Error</span>
+        <span class="badge badge-stone">Paused</span>
+      </div>
+    </div>
+    <div class="component-note">Font: DM Sans 700 · Radius: 999px (pill) · Padding: 3px 10px · All include coloured border</div>
+  </div>
+  <div class="component-frame component-frame-dark reveal">
+    <div class="component-label component-label-dark">Status badges — Product UI</div>
+    <div class="component-body-dark">
+      <div class="demo-row">
+        <span class="ui-badge ui-badge-active">● Running</span>
+        <span class="ui-badge ui-badge-auto">● AI Managed</span>
+        <span class="ui-badge ui-badge-pending">● Optimising</span>
+        <span class="ui-badge ui-badge-paused">Paused</span>
+      </div>
+    </div>
+    <div class="component-note component-note-dark">AI Managed badge colour: Teal Light #38BDF8 · Radius: 5px (squared pill) · All purely background-tinted</div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- 12 VOICE -->
+<section class="doc-section" id="voice">
+  <div class="section-eyebrow reveal">12 &middot; Expression</div>
+  <h2 class="section-title reveal">Voice &amp; Tone</h2>
+  <p class="section-lead reveal">Antarious sounds like a confident, experienced GTM operator. Freya speaks directly and specifically &mdash; never hedging, never self-referencing as AI, never using jargon as a substitute for clarity.</p>
+  <div class="tone-grid reveal">
+    <div class="tone-card tone-card-do">
+      <div class="tone-tag tone-tag-do">✓ Sound like this</div>
+      <div class="tone-example">"Your Q2 Meta campaign is live. ROAS at 4.8x &mdash; I reallocated £800 from the underperforming ad set automatically."</div>
+      <div class="tone-note">Direct, specific, owns the action, no hedging. States what happened, what changed, what it means.</div>
+    </div>
+    <div class="tone-card tone-card-dont">
+      <div class="tone-tag tone-tag-dont">✕ Avoid this</div>
+      <div class="tone-example-bad">"I have successfully utilised advanced AI capabilities to optimise your campaign performance metrics."</div>
+      <div class="tone-note">Passive voice, AI self-referencing, jargon. Freya never says "AI" in her own responses &mdash; she just does it.</div>
+    </div>
+  </div>
+  <table class="spec-table reveal" style="margin-top:24px">
+    <thead><tr><th>Rule</th><th>Correct</th><th>Incorrect</th></tr></thead>
+    <tbody>
+      <tr><td>Identify as AI</td><td>"I have updated your ICP."</td><td>"As an AI, I have updated..."</td></tr>
+      <tr><td>Completions</td><td>"Done. Your campaign is live."</td><td>"Task completed successfully!"</td></tr>
+      <tr><td>Numbers</td><td>Always specific: "£4,200" "23 sequences"</td><td>Vague: "a significant amount"</td></tr>
+      <tr><td>Headlines</td><td>"Your marketing team, now autonomous."</td><td>"Revolutionising marketing with AI."</td></tr>
+      <tr><td>Forbidden words</td><td colspan="2">Revolutionise · Cutting-edge · Leverage · Synergy · Harness · Next-gen · Empower</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<hr class="divider">
+
+<!-- 13 MOTION -->
+<section class="doc-section" id="motion">
+  <div class="section-eyebrow reveal">13 &middot; Motion</div>
+  <h2 class="section-title reveal">Motion &amp; Animation</h2>
+  <p class="section-lead reveal">Subtle, purposeful, never distracting. One orchestrated entrance per section &mdash; not scattered micro-animations everywhere. Motion should reinforce that Antarious is always working.</p>
+  <div class="motion-row reveal">
+    <div class="motion-card"><div class="motion-title">Page Reveal</div><div class="motion-value">opacity 0→1 + translateY 14px→0</div><div class="motion-use">All sections on scroll enter. Stagger children 80ms. Duration: 500ms ease.</div></div>
+    <div class="motion-card"><div class="motion-title">Button Hover</div><div class="motion-value">translateY(−2px) + shadow</div><div class="motion-use">Primary & accent only. 220ms ease. Never rotate or scale buttons.</div></div>
+    <div class="motion-card"><div class="motion-title">Card Hover</div><div class="motion-value">border-color + shadow + left bar</div><div class="motion-use">250ms ease. Left 4px teal bar opacity 0→1 on marketing cards.</div></div>
+    <div class="motion-card"><div class="motion-title">Status Pulse</div><div class="motion-value">opacity 1→0.35→1</div><div class="motion-use">Agent status dots only. 1.8–2s infinite. Never on static indicators.</div></div>
+    <div class="motion-card"><div class="motion-title">Input Focus</div><div class="motion-value">border-color + box-shadow ring</div><div class="motion-use">200ms ease. Teal ring marketing, Teal Light ring UI.</div></div>
+  </div>
+  <div class="callout reveal">⚠️ Always respect <code>prefers-reduced-motion: reduce</code>. Wrap all animations in a media query check. All reveals should be instant when reduced motion is enabled.</div>
+</section>
+
+<hr class="divider">
+
+<!-- 14 A11Y -->
+<section class="doc-section" id="a11y">
+  <div class="section-eyebrow reveal">14 &middot; Accessibility</div>
+  <h2 class="section-title reveal">Accessibility</h2>
+  <p class="section-lead reveal">All Antarious interfaces must meet WCAG 2.1 AA minimum. Target AAA for primary text. Verify all Charged Teal colour pairings before shipping — teal is bright, contrast must be validated carefully.</p>
+  <div class="a11y-row reveal">
+    <div class="a11y-card"><div class="a11y-ratio" style="color:var(--ink)">#1C2B27</div><div class="a11y-pair">Ink on Cream #FAF8F3</div><div style="font-size:11px;color:var(--ink-4);margin-bottom:6px">~14.5:1</div><div class="a11y-pass">✓ AAA Pass</div></div>
+    <div class="a11y-card"><div class="a11y-ratio" style="color:var(--teal-dark)">#0891B2</div><div class="a11y-pair">Teal Dark on Cream</div><div style="font-size:11px;color:var(--ink-4);margin-bottom:6px">~4.7:1</div><div class="a11y-pass">✓ AA Pass</div></div>
+    <div class="a11y-card"><div class="a11y-ratio" style="color:#fff;background:var(--dark-bg);padding:4px 8px;border-radius:4px">Cream</div><div class="a11y-pair">White on Dark Void</div><div style="font-size:11px;color:var(--ink-4);margin-bottom:6px">~18:1</div><div class="a11y-pass">✓ AAA Pass</div></div>
+    <div class="a11y-card"><div class="a11y-ratio" style="color:#38BDF8;background:var(--dark-bg);padding:4px 8px;border-radius:4px">Teal</div><div class="a11y-pair">Teal Light on Dark Void</div><div style="font-size:11px;color:var(--ink-4);margin-bottom:6px">~7.8:1</div><div class="a11y-pass">✓ AA+ Pass</div></div>
+  </div>
+  <div class="highlight-box reveal">
+    <p><strong>Note on Charged Teal on white:</strong> #0EA5E9 on pure white yields ~3.0:1 — below AA for body text. Always use <strong>#0891B2 (Teal Dark)</strong> for text on white backgrounds. #0EA5E9 is approved only for large text (18px+ or 14px bold+) and UI controls.</p>
+  </div>
+  <table class="spec-table reveal">
+    <thead><tr><th>Requirement</th><th>Specification</th></tr></thead>
+    <tbody>
+      <tr><td>Minimum contrast</td><td>4.5:1 body (AA) · 3:1 large text (AA) · 7:1 target for primary text (AAA)</td></tr>
+      <tr><td>Focus indicators</td><td>Visible focus ring on all interactive elements — Teal (marketing) / Teal Light (product)</td></tr>
+      <tr><td>Touch targets</td><td>Minimum 44×44px on all touch devices</td></tr>
+      <tr><td>Semantic HTML</td><td>Proper heading hierarchy h1→h6. Never skip levels for visual sizing.</td></tr>
+      <tr><td>ARIA</td><td>All icon-only buttons need aria-label. Status dots need aria-hidden="true".</td></tr>
+      <tr><td>Colour alone</td><td>Never use colour as the only differentiator — always pair with label, icon, or pattern.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+</div><!-- /doc-body -->
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION 15 — LIVE DEMO PAGES (Light + Dark)
+═══════════════════════════════════════════════════════════════ -->
+<div id="demo" style="scroll-margin-top:56px">
+
+<!-- DEMO HEADER STRIP -->
+<div style="background:var(--ink);padding:40px 80px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px">
+  <div>
+    <div style="font-family:var(--f-brand);font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--teal-light);margin-bottom:8px">15 · Live Demo</div>
+    <div style="font-family:var(--f-brand);font-size:26px;font-weight:800;color:#fff;letter-spacing:-.3px">Charged Teal in Practice</div>
+  </div>
+  <div style="font-size:13px;color:rgba(255,255,255,0.4);max-width:400px;line-height:1.6">Two variants — same system. The light marketing page and dark product dashboard show how Charged Teal performs across every surface.</div>
+</div>
+
+<!-- ════════════════════════════════
+     DEMO A — LIGHT (MARKETING PAGE)
+════════════════════════════════ -->
+<div class="demo-label-strip">
+  <div>
+    <div style="font-family:var(--f-brand);font-size:18px;font-weight:800;color:#fff">Demo A — Light Theme</div>
+    <div style="font-family:var(--f-data);font-size:12px;color:rgba(255,255,255,0.4);margin-top:4px">Marketing landing page · Cream base · Charged Teal accent</div>
+  </div>
+  <span class="demo-strip-tag demo-strip-light">Light Variant</span>
+</div>
+
+<!-- MARKETING NAV -->
+<nav style="background:rgba(250,248,243,0.97);backdrop-filter:blur(20px);border-bottom:1px solid #E8E3D8;padding:0 48px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100">
+  <img class="logo-img" alt="Antarious" style="height:21px;width:auto">
+  <div style="display:flex;gap:4px">
+    <span style="font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:500;color:#5A7168;padding:6px 14px;border-radius:6px;cursor:pointer">Platform</span>
+    <span style="font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:500;color:#5A7168;padding:6px 14px;border-radius:6px;cursor:pointer">Agents</span>
+    <span style="font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:500;color:#5A7168;padding:6px 14px;border-radius:6px;cursor:pointer">Pricing</span>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="btn-ghost-mkt btn-sm">Log in</button>
+    <button class="btn-primary-mkt btn-sm">Start free →</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section style="background:#FAF8F3;padding:96px 0 80px">
+  <div style="max-width:1100px;margin:0 auto;padding:0 48px;text-align:center">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:#E0F5FD;border:1px solid #BAE8FB;border-radius:999px;padding:6px 16px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:#0891B2;margin-bottom:28px;letter-spacing:1px;text-transform:uppercase">
+      <span style="width:6px;height:6px;border-radius:50%;background:#0EA5E9;animation:pulse-dot 2s infinite;display:inline-block"></span>
+      GTM Automation, Finally Intelligent
+    </div>
+    <h1 style="font-family:'Outfit',sans-serif;font-size:clamp(44px,6vw,72px);font-weight:900;color:#1C2B27;line-height:1.04;letter-spacing:-1.5px;margin-bottom:22px">Your marketing team,<br>now <em style="font-family:'Instrument Serif',serif;font-style:italic;color:#0EA5E9">autonomous.</em></h1>
+    <p style="font-size:18px;color:#5A7168;line-height:1.8;margin:0 auto 40px;max-width:580px">Antarious replaces your manual GTM with 13 AI agents &mdash; from ICP research to closed deal. Your Meta and LinkedIn campaigns, running on autopilot.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:52px">
+      <button class="btn-primary-mkt btn-lg">Start your free trial →</button>
+      <button class="btn-secondary-mkt btn-lg">Watch a demo</button>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <div class="agent-pill"><div class="agent-pill-avatar">G</div>GTM Strategist<div class="agent-pill-status"></div></div>
+      <div class="agent-pill"><div class="agent-pill-avatar">M</div>Meta Ads Agent<div class="agent-pill-status"></div></div>
+      <div class="agent-pill"><div class="agent-pill-avatar">S</div>SDR Outreach<div class="agent-pill-status"></div></div>
+      <div class="agent-pill"><div class="agent-pill-avatar">A</div>ARIA Voice AI<div class="agent-pill-status"></div></div>
+      <div class="agent-pill"><div class="agent-pill-avatar">C</div>Copywriter<div class="agent-pill-status"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div style="background:#fff;border-top:1px solid #E8E3D8;border-bottom:1px solid #E8E3D8;display:grid;grid-template-columns:repeat(4,1fr)">
+  <div style="padding:28px;text-align:center;border-right:1px solid #E8E3D8"><div style="font-family:'Outfit',sans-serif;font-size:38px;font-weight:900;color:#0EA5E9;line-height:1;margin-bottom:6px">13</div><div style="font-family:'DM Sans',sans-serif;font-size:13px;color:#5A7168">Specialised AI agents</div></div>
+  <div style="padding:28px;text-align:center;border-right:1px solid #E8E3D8"><div style="font-family:'Outfit',sans-serif;font-size:38px;font-weight:900;color:#0EA5E9;line-height:1;margin-bottom:6px">40+</div><div style="font-family:'DM Sans',sans-serif;font-size:13px;color:#5A7168">Hours saved per week</div></div>
+  <div style="padding:28px;text-align:center;border-right:1px solid #E8E3D8"><div style="font-family:'Outfit',sans-serif;font-size:38px;font-weight:900;color:#0EA5E9;line-height:1;margin-bottom:6px">&lt;90s</div><div style="font-family:'DM Sans',sans-serif;font-size:13px;color:#5A7168">Lead response time</div></div>
+  <div style="padding:28px;text-align:center"><div style="font-family:'Outfit',sans-serif;font-size:38px;font-weight:900;color:#0EA5E9;line-height:1;margin-bottom:6px">£149</div><div style="font-family:'DM Sans',sans-serif;font-size:13px;color:#5A7168">Starting per month</div></div>
+</div>
+
+<!-- FEATURES -->
+<section style="background:#fff;padding:72px 0">
+  <div style="max-width:1100px;margin:0 auto;padding:0 48px">
+    <div style="text-align:center;margin-bottom:48px">
+      <h2 style="font-family:'Outfit',sans-serif;font-size:clamp(28px,3.5vw,44px);font-weight:800;color:#1C2B27;letter-spacing:-.5px">Built for operators, not engineers.</h2>
+      <p style="font-family:'DM Sans',sans-serif;font-size:16px;color:#5A7168;margin-top:10px">Everything your GTM team needs &mdash; running while you sleep.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+      <div class="card-mkt"><div class="card-mkt-icon">🎯</div><div class="card-mkt-title">ICP Built From Data</div><div class="card-mkt-body">Freya generates your ideal customer profile in 15 minutes from CRM data, market signals, and past campaigns.</div></div>
+      <div class="card-mkt"><div class="card-mkt-icon">📢</div><div class="card-mkt-title">Meta &amp; LinkedIn — Automated</div><div class="card-mkt-body">The same campaigns you run manually, now built and optimised by the Meta Ads Agent — live in under an hour.</div></div>
+      <div class="card-mkt"><div class="card-mkt-icon">⚡</div><div class="card-mkt-title">Every Lead in &lt;90 Seconds</div><div class="card-mkt-body">ARIA Voice AI responds to every inbound lead instantly. 68% fewer lost leads from day one.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA DARK BAND -->
+<section style="background:#060D10;padding:88px 48px;text-align:center;position:relative;overflow:hidden">
+  <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(14,165,233,0.05) 1px,transparent 1px);background-size:36px 36px;pointer-events:none"></div>
+  <div style="position:absolute;top:-200px;right:-100px;width:700px;height:700px;background:radial-gradient(circle,rgba(14,165,233,0.1) 0%,transparent 60%);pointer-events:none"></div>
+  <div style="position:relative;z-index:2">
+    <h2 style="font-family:'Outfit',sans-serif;font-size:clamp(30px,4vw,52px);font-weight:800;color:#fff;margin-bottom:16px;letter-spacing:-.5px">Your GTM doesn't need more people.<br>It needs <em style="font-family:'Instrument Serif',serif;font-style:italic;color:#38BDF8">Freya.</em></h2>
+    <p style="font-family:'DM Sans',sans-serif;font-size:17px;color:rgba(255,255,255,0.45);margin-bottom:40px">Start free — no credit card, no setup, no headcount.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button class="btn-accent-mkt btn-lg">Get started free →</button>
+      <button style="background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.65);border:1px solid rgba(255,255,255,0.15);padding:16px 36px;border-radius:14px;font-family:'Outfit',sans-serif;font-size:16px;font-weight:500;cursor:pointer">Book a demo</button>
+    </div>
+  </div>
+</section>
+
+<!-- LIGHT FOOTER -->
+<footer style="background:#FAF8F3;border-top:1px solid #E8E3D8;padding:32px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+  <img class="logo-img" alt="Antarious" style="height:20px;width:auto">
+  <div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#8B9E98">© 2026 Antarious · All rights reserved</div>
+  <div style="font-family:'DM Sans',sans-serif;font-size:11px;color:#8B9E98">Outfit · Plus Jakarta Sans · Instrument Serif · DM Sans</div>
+</footer>
+
+<!-- ════════════════════════════════
+     DEMO B — DARK (PRODUCT DASHBOARD)
+════════════════════════════════ -->
+<div class="demo-label-strip" style="margin-top:48px">
+  <div>
+    <div style="font-family:var(--f-brand);font-size:18px;font-weight:800;color:#fff">Demo B — Dark Theme</div>
+    <div style="font-family:var(--f-data);font-size:12px;color:rgba(255,255,255,0.4);margin-top:4px">Product dashboard · Dark Void base · Teal Light accent</div>
+  </div>
+  <span class="demo-strip-tag demo-strip-dark">Dark Variant</span>
+</div>
+
+<!-- PRODUCT APP BAR -->
+<div style="background:#060D10">
+  <div style="background:rgba(6,13,16,0.97);backdrop-filter:blur(16px);border-bottom:1px solid rgba(14,165,233,0.15);padding:0 32px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:99">
+    <img class="logo-img" alt="Antarious" style="height:18px;width:auto;filter:brightness(0) invert(1)">
+    <ul class="nav-ui-links">
+      <li><span class="nav-ui-link active">Dashboard</span></li>
+      <li><span class="nav-ui-link">Campaigns</span></li>
+      <li><span class="nav-ui-link">Agents</span></li>
+      <li><span class="nav-ui-link">Analytics</span></li>
+    </ul>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="ui-badge ui-badge-active" style="display:flex;gap:6px;align-items:center;padding:5px 12px"><span style="width:5px;height:5px;border-radius:50%;background:#10B981;animation:pulse-dot 2s infinite;display:inline-block"></span>13 Agents Live</span>
+      <button class="btn-primary-ui" style="padding:7px 16px;font-size:12px">+ New Campaign</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD BODY -->
+  <div style="max-width:1200px;margin:0 auto;padding:36px 32px">
+
+    <!-- KPI ROW -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
+      <div class="kpi-card-ui" style="text-align:left;padding:20px 18px"><div class="kpi-card-ui-label">Revenue Pipeline</div><div class="kpi-card-ui-val" style="font-size:32px;text-align:left">£428K</div><div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#10B981;font-weight:600;margin-top:4px">↑ 24% this month</div></div>
+      <div class="kpi-card-ui" style="text-align:left;padding:20px 18px"><div class="kpi-card-ui-label">Leads Qualified</div><div class="kpi-card-ui-val" style="font-size:32px;text-align:left">247</div><div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#10B981;font-weight:600;margin-top:4px">↑ 38% vs last week</div></div>
+      <div class="kpi-card-ui" style="text-align:left;padding:20px 18px"><div class="kpi-card-ui-label">Avg ROAS</div><div class="kpi-card-ui-val" style="font-size:32px;text-align:left">4.8x</div><div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#10B981;font-weight:600;margin-top:4px">↑ 12% vs last month</div></div>
+      <div class="kpi-card-ui" style="text-align:left;padding:20px 18px"><div class="kpi-card-ui-label">Budget Saved (AI)</div><div class="kpi-card-ui-val" style="font-size:32px;text-align:left">£4.2K</div><div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#38BDF8;font-weight:600;margin-top:4px">Auto-rebalanced today</div></div>
+    </div>
+
+    <!-- MAIN GRID: TABLE + AGENT STATUS -->
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:20px;margin-bottom:24px">
+
+      <!-- CAMPAIGNS TABLE -->
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(14,165,233,0.15);border-radius:14px;overflow:hidden">
+        <div style="background:rgba(14,165,233,0.06);border-bottom:1px solid rgba(14,165,233,0.15);padding:14px 18px;display:flex;align-items:center;justify-content:space-between">
+          <span style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:#fff">Active Campaigns</span>
+          <span class="ui-badge ui-badge-active" style="display:flex;gap:5px;align-items:center"><span style="width:5px;height:5px;border-radius:50%;background:#10B981;animation:pulse-dot 2s infinite;display:inline-block"></span>Live</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="ui-table">
+            <thead><tr><th>Campaign</th><th>Platform</th><th>Status</th><th>ROAS</th><th>Leads</th></tr></thead>
+            <tbody>
+              <tr><td>UK CFO — Meta Q2</td><td style="color:rgba(255,255,255,0.45)">Meta</td><td><span class="ui-badge ui-badge-auto">AI Managed</span></td><td style="color:#10B981;font-family:'Outfit',sans-serif;font-weight:800">4.8x</td><td style="color:rgba(255,255,255,0.45)">74</td></tr>
+              <tr><td>SMB LinkedIn Brand</td><td style="color:rgba(255,255,255,0.45)">LinkedIn</td><td><span class="ui-badge ui-badge-active">Running</span></td><td style="color:#10B981;font-family:'Outfit',sans-serif;font-weight:800">3.2x</td><td style="color:rgba(255,255,255,0.45)">41</td></tr>
+              <tr><td>Series A Outreach</td><td style="color:rgba(255,255,255,0.45)">Email</td><td><span class="ui-badge ui-badge-pending">Optimising</span></td><td style="color:#FBBF24;font-family:'Outfit',sans-serif;font-weight:800">2.1x</td><td style="color:rgba(255,255,255,0.45)">29</td></tr>
+              <tr><td>GDN Retargeting</td><td style="color:rgba(255,255,255,0.45)">Google</td><td><span class="ui-badge ui-badge-auto">AI Managed</span></td><td style="color:#10B981;font-family:'Outfit',sans-serif;font-weight:800">5.1x</td><td style="color:rgba(255,255,255,0.45)">62</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- AGENT STATUS PANEL -->
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(14,165,233,0.15);border-radius:14px;overflow:hidden">
+        <div style="background:rgba(14,165,233,0.06);border-bottom:1px solid rgba(14,165,233,0.15);padding:14px 18px">
+          <span style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:#fff">Agent Status</span>
+        </div>
+        <div style="padding:12px;display:flex;flex-direction:column;gap:4px">
+          <div class="agent-row-ui"><div class="agent-row-orb">🎯</div><div style="flex:1"><div class="agent-row-name">GTM Strategist</div><div class="agent-row-task">Refining Q2 ICP...</div></div><div class="agent-status-dot"></div></div>
+          <div class="agent-row-ui"><div class="agent-row-orb">📢</div><div style="flex:1"><div class="agent-row-name">Meta Ads Agent</div><div class="agent-row-task">Rebalancing £12K</div></div><div class="agent-status-dot"></div></div>
+          <div class="agent-row-ui"><div class="agent-row-orb">📧</div><div style="flex:1"><div class="agent-row-name">SDR Outreach</div><div class="agent-row-task">124 active sequences</div></div><div class="agent-status-dot"></div></div>
+          <div class="agent-row-ui"><div class="agent-row-orb">🎙️</div><div style="flex:1"><div class="agent-row-name">ARIA Voice AI</div><div class="agent-row-task">3 calls qualified today</div></div><div class="agent-status-dot"></div></div>
+          <div class="agent-row-ui" style="opacity:.4"><div class="agent-row-orb">📊</div><div style="flex:1"><div class="agent-row-name">Analytics Agent</div><div class="agent-row-task">Idle · report in 4h</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FREYA CHAT WIDGET (dark) -->
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(14,165,233,0.15);border-radius:14px;overflow:hidden;max-width:680px;margin-bottom:48px">
+      <div style="background:rgba(14,165,233,0.06);border-bottom:1px solid rgba(14,165,233,0.15);padding:14px 18px;display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#0891B2,#38BDF8);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-size:13px;font-weight:900;color:#fff;flex-shrink:0">F</div>
+        <div><div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:#fff">Freya</div><div style="font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,0.4)">GTM Command Centre · 13 agents active</div></div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;color:#10B981"><span style="width:6px;height:6px;border-radius:50%;background:#10B981;animation:pulse-dot 2s infinite;display:inline-block"></span>Live</div>
+      </div>
+      <div style="padding:18px;display:flex;flex-direction:column;gap:12px;background:rgba(6,13,16,0.5)">
+        <div style="display:flex;gap:10px"><div style="width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#0891B2,#38BDF8);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">F</div><div style="padding:10px 14px;border-radius:4px 12px 12px 12px;font-size:13px;line-height:1.6;color:#E2E8F0;background:rgba(14,165,233,0.06);border:1px solid rgba(14,165,233,0.15);max-width:84%">Your <span style="color:#38BDF8;font-weight:600">UK CFO Meta campaign</span> is at 4.8x ROAS. I reallocated <span style="color:#38BDF8;font-weight:600">£800</span> from the underperforming ad set automatically. Scale the winner?</div></div>
+        <div style="display:flex;gap:10px;flex-direction:row-reverse"><div style="width:28px;height:28px;border-radius:7px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">Y</div><div style="padding:10px 14px;border-radius:12px 4px 12px 12px;font-size:13px;line-height:1.6;color:#fff;background:rgba(14,165,233,0.2);border:1px solid rgba(14,165,233,0.35);max-width:84%">Yes — and add LinkedIn retargeting to the same ICP.</div></div>
+        <div style="display:flex;gap:10px"><div style="width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#0891B2,#38BDF8);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">F</div><div style="padding:10px 14px;border-radius:4px 12px 12px 12px;font-size:13px;line-height:1.6;color:#E2E8F0;background:rgba(14,165,233,0.06);border:1px solid rgba(14,165,233,0.15);max-width:84%"><span style="color:#10B981;font-weight:600">Done.</span> LinkedIn retargeting live in <span style="color:#38BDF8;font-weight:600">~35 minutes.</span> £400/day within your approved threshold.</div></div>
+      </div>
+      <div style="border-top:1px solid rgba(14,165,233,0.12);padding:12px 16px;display:flex;align-items:center;gap:10px;background:rgba(6,13,16,0.7)">
+        <input style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:9px 14px;font-size:13px;color:rgba(255,255,255,0.4);font-family:'DM Sans',sans-serif;outline:none" placeholder="Ask Freya…">
+        <button class="btn-primary-ui" style="padding:9px 18px;font-size:12.5px">Send</button>
+      </div>
+    </div>
+
+  </div><!-- /dashboard body -->
+
+</div><!-- /dark demo bg -->
+
+<!-- DARK FOOTER -->
+<footer style="background:#030709;padding:32px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;border-top:1px solid rgba(14,165,233,0.1)">
+  <img class="logo-img" alt="Antarious" style="height:20px;width:auto;filter:brightness(0) invert(1)">
+  <div style="font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,0.25)">Brand Guidelines v1.2 · Charged Teal · March 2026 · Confidential — Design team use only</div>
+  <div style="font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,0.2)">Outfit · Plus Jakarta Sans · Instrument Serif · DM Sans</div>
+</footer>
+
+</div><!-- /demo -->
+
+<script>
+// ── Logo injection ──────────────────────────────────────
+const LOGO_SRC = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAYbBhsDASIAAhEBAxEB/8QAHAABAAMBAQEBAQAAAAAAAAAAAAECAwgHBAUG/8QAQBABAAIBAQUEBwcBBQgDAAAAAAECAxEEBSExUQYSQXEHCBMigaGxMlJhkcHR8OEUFTNCUxYjJDZUcnODkpPC/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAEC/8QAFxEBAQEBAAAAAAAAAAAAAAAAAAERIf/aAAwDAQACEQMRAD8A4yAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/9k=";
+document.querySelectorAll("img.logo-img").forEach(img => { img.src = LOGO_SRC; });
+
+// ── Smooth scroll ───────────────────────────────────────
+function scrollTo(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})}
+
+// ── Scroll reveal ───────────────────────────────────────
+const io=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}})},{threshold:0.06,rootMargin:"0px 0px -30px 0px"});
+document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+
+// ── Sidebar active state ────────────────────────────────
+const sections=document.querySelectorAll(".doc-section");
+const sidebarLinks=document.querySelectorAll(".sidebar-link");
+const navObserver=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      sidebarLinks.forEach(l=>l.classList.remove("active"));
+      const id=e.target.id;
+      const match=Array.from(sidebarLinks).find(l=>l.getAttribute("onclick")&&l.getAttribute("onclick").includes("'"+id+"'"));
+      if(match)match.classList.add("active");
+    }
+  });
+},{threshold:0.3});
+sections.forEach(s=>navObserver.observe(s));
+</script>
+</body>
+</html>

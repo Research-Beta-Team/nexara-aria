@@ -46,15 +46,6 @@ const ROLES = [
     dashboardVariant: 'CSM clients',
   },
   {
-    id: 'mediaBuyer',
-    name: 'Media Buyer',
-    description: 'Paid media · Meta/Google/LinkedIn management · Budget decisions',
-    color: '#5B9BD5',
-    icon: 'target',
-    permissions: ['Paid channels', 'Budget & creatives', 'Campaign performance'],
-    dashboardVariant: 'Media dashboard',
-  },
-  {
     id: 'contentStrategist',
     name: 'Content Strategist',
     description: 'Content approval · Knowledge Base · SEO management',
@@ -80,15 +71,6 @@ const ROLES = [
     icon: 'chart',
     permissions: ['Read-only analytics', 'Reports', 'No edits'],
     dashboardVariant: 'Analytics view',
-  },
-  {
-    id: 'client',
-    name: 'Client (Read-Only)',
-    description: 'Their campaigns only · Approvals · Reports',
-    color: 'rgba(61,220,132,0.5)',
-    icon: 'eye',
-    permissions: ['Own campaigns', 'Approvals', 'Reports only'],
-    dashboardVariant: 'Client portal',
   },
 ];
 

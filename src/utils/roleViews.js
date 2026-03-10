@@ -9,7 +9,7 @@ import { getRoleConfig, getAssignedClients } from '../config/roleConfig';
 export function getDashboardViewKey(role) {
   if (role === 'owner' || role === 'founder') return 'owner';
   const key = role;
-  const valid = ['owner', 'advisor', 'csm', 'mediaBuyer', 'contentStrategist', 'sdr', 'analyst', 'client'];
+  const valid = ['owner', 'advisor', 'csm', 'contentStrategist', 'sdr', 'analyst'];
   return valid.includes(key) ? key : 'owner';
 }
 
@@ -29,16 +29,12 @@ export function getCampaignDetailConfig(role) {
     case 'advisor':
     case 'csm':
       return { ...base, showContextSwitcher: role === 'owner' || role === 'advisor' };
-    case 'mediaBuyer':
-      return { ...base, layout: 'ads', defaultTab: 'paidads', visibleTabs: ['paidads'] };
     case 'contentStrategist':
       return { ...base, layout: 'content', defaultTab: 'content', visibleTabs: ['content', 'overview'] };
     case 'sdr':
       return { ...base, layout: 'outreach', defaultTab: 'outreach', visibleTabs: ['outreach', 'overview'] };
     case 'analyst':
       return { ...base, layout: 'analytics', defaultTab: 'analytics', visibleTabs: ['analytics', 'overview'] };
-    case 'client':
-      return { ...base, layout: 'client', defaultTab: null, visibleTabs: [] };
     default:
       return base;
   }
@@ -55,8 +51,6 @@ export function getInboxConfig(role) {
       return { access: true, filter: 'client', layout: 'default' };
     case 'contentStrategist':
       return { access: true, filter: 'content', layout: 'default' };
-    case 'client':
-      return { access: true, filter: 'team', layout: 'default' };
     default:
       return { access: true, filter: 'all', layout: 'default' };
   }
@@ -70,8 +64,6 @@ export function getEscalationsConfig(role) {
   switch (role) {
     case 'csm':
       return { access: true, filter: 'client', readOnly: false };
-    case 'mediaBuyer':
-      return { access: true, filter: 'ads', readOnly: false };
     case 'contentStrategist':
       return { access: true, filter: 'content', readOnly: false };
     default:
@@ -141,16 +133,6 @@ export function getContentLibraryConfig(role) {
         defaultFilterStatus: 'pending',
         defaultView: 'By Type',
       };
-    case 'client':
-      return {
-        layout: 'client',
-        defaultFilterStatus: 'pending',
-        defaultView: 'List',
-        showAgentFilter: false,
-        showCampaignFilter: false,
-        showTypeFilter: true,
-        showStatusFilter: true,
-      };
     case 'csm':
       return {
         ...full,
@@ -161,7 +143,6 @@ export function getContentLibraryConfig(role) {
     case 'owner':
     case 'founder':
     case 'advisor':
-    case 'mediaBuyer':
     case 'sdr':
     case 'analyst':
     default:

@@ -131,7 +131,7 @@ export default function DualApprovalCard({
           <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, margin: 0, lineHeight: '1.6' }}>{escalation.situation}</p>
         </div>
         <div style={{ backgroundColor: `${sev.color}0A`, border: `1px solid ${sev.border}`, borderRadius: R.md, padding: S[3] }}>
-          <div style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: sev.color, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[2] }}>ARIA Recommendation</div>
+          <div style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: sev.color, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[2] }}>Freya Recommendation</div>
           <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textPrimary, margin: 0, lineHeight: '1.6', fontWeight: 500 }}>{escalation.recommendation}</p>
         </div>
       </div>
@@ -152,7 +152,7 @@ export default function DualApprovalCard({
           <StatusChip status={strategyStatus} />
           {(escalation.ariaRecommendation || escalation.recommendation) && (
             <div style={{ marginTop: S[3], padding: S[2], backgroundColor: C.bg, borderRadius: R.sm }}>
-              <div style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted, marginBottom: '4px' }}>ARIA</div>
+              <div style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted, marginBottom: '4px' }}>Freya</div>
               <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textSecondary, lineHeight: 1.4 }}>
                 {escalation.ariaRecommendation ?? escalation.recommendation}
               </div>

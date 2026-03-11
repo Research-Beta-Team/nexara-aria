@@ -60,7 +60,7 @@ export default function ICPBuilder() {
         <div style={{ display: 'flex', gap: S[2] }}>
           <button
             style={{ ...btn.secondary, fontSize: '13px', gap: S[2] }}
-            onClick={() => toast.info('ARIA is regenerating your ICP from 12 recent closed-won deals…')}
+            onClick={() => toast.info('Freya is regenerating your ICP from 12 recent closed-won deals…')}
           >
             <AriaIcon size={14} />
             Regenerate from wins
@@ -88,7 +88,7 @@ export default function ICPBuilder() {
         <AriaIcon size={18} />
         <div style={{ flex: 1 }}>
           <span style={{ fontFamily: F.body, fontSize: '13px', color: C.textPrimary, fontWeight: 600 }}>
-            ARIA has high confidence ({icpScore}/100) in this ICP
+            Freya has high confidence ({icpScore}/100) in this ICP
           </span>
           <span style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, marginLeft: S[2] }}>
             — derived from 12 recent closed-won deals across Vietnam and Bangladesh.

@@ -30,7 +30,7 @@ const MOCK_ESCALATIONS = [
 export default function StartupDashboard({ embedded }) {
   const navigate = useNavigate();
   const startupFlow = useStore((s) => s.startupFlow);
-  const toggleAria = useStore((s) => s.toggleAria);
+  const toggleFreya = useStore((s) => s.toggleFreya);
   const setSegment = useStore((s) => s.setSegment);
 
   const companyName = startupFlow.companyName || 'Your company';
@@ -183,7 +183,7 @@ export default function StartupDashboard({ embedded }) {
               Chat with Freya to set strategy, change direction, or ask for a replan. Your team can do the same from the main app.
             </p>
           </div>
-          <button type="button" onClick={() => { toggleAria(); navigate('/'); }} style={{ ...btn.primary }}>
+          <button type="button" onClick={() => { toggleFreya(); navigate('/'); }} style={{ ...btn.primary }}>
             Open Freya
           </button>
         </div>

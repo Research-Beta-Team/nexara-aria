@@ -41,7 +41,7 @@ function TestAgentModal({ agent, onClose }) {
       setRunning(false);
       setResult({
         score: 88 + Math.floor(Math.random() * 10),
-        text: `[ARIA Test Output — ${agent.name}]\n\nBased on your prompt: "${prompt.slice(0, 60)}${prompt.length > 60 ? '…' : ''}"\n\nThis is a simulated response from the ${agent.name} agent. In production, the agent would execute your prompt using its configured tools (${agent.tools.slice(0, 2).join(', ')}) and return a full output with brand scoring, accuracy metrics, and approval routing.\n\nAgent tools active: ${agent.tools.join(', ')}\nApproval gate: ${agent.config?.approvalGate ?? 'N/A'}`,
+        text: `[Freya Test Output — ${agent.name}]\n\nBased on your prompt: "${prompt.slice(0, 60)}${prompt.length > 60 ? '…' : ''}"\n\nThis is a simulated response from the ${agent.name} agent. In production, the agent would execute your prompt using its configured tools (${agent.tools.slice(0, 2).join(', ')}) and return a full output with brand scoring, accuracy metrics, and approval routing.\n\nAgent tools active: ${agent.tools.join(', ')}\nApproval gate: ${agent.config?.approvalGate ?? 'N/A'}`,
       });
     }, 2000);
   };
@@ -354,7 +354,7 @@ export default function AgentRoster() {
             borderRadius: R.pill, padding: `${S[1]} ${S[3]}`,
           }}>
             <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: C.primary, animation: 'rosterPulse 2s ease-in-out infinite' }}/>
-            <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, color: C.primary, letterSpacing: '0.04em' }}>ARIA LIVE</span>
+            <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, color: C.primary, letterSpacing: '0.04em' }}>FREYA LIVE</span>
           </div>
         </div>
 

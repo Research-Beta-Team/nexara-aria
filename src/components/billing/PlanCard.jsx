@@ -28,7 +28,7 @@ const PLAN_FEATURES = {
   scale: [
     'Competitive Intelligence',
     'Predictive Forecasting + Pipeline',
-    'ARIA Voice AI — 500 min/month',
+    'Freya Voice AI — 500 min/month',
     'White-Label + API Access (10K calls/mo)',
     '1 Custom Agent build included',
     'Customer Success module',

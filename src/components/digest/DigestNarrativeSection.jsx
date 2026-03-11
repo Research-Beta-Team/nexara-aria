@@ -1,5 +1,5 @@
 /**
- * ARIA avatar + written summary paragraph. Narrative is the hero.
+ * Freya avatar + written summary paragraph. Narrative is the hero.
  */
 import { C, F, R, S } from '../../tokens';
 

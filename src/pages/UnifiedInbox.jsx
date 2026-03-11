@@ -279,7 +279,7 @@ function TouchpointPills({ touchpoints, theme }) {
 function MsgBubble({ msg, theme, channelForIcon }) {
   const t = theme || C;
   const out = msg.from === 'outbound';
-  const auto = msg.author?.includes('ARIA') || msg.author?.includes('Freya') || msg.author === 'Auto-Reply';
+  const auto = msg.author?.includes('Freya') || msg.author === 'Auto-Reply';
   const channel = channelForIcon ?? msg.channel;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: out ? 'flex-end' : 'flex-start', marginBottom: S[4] }}>

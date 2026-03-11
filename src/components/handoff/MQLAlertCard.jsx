@@ -130,7 +130,7 @@ export default function MQLAlertCard({
             <option value="">SDR...</option>
             {sdrs.map((sdr) => (
               <option key={sdr.id} value={sdr.id}>
-                {sdr.name} {sdr.availability === 'available' ? '✓' : ''}
+                {sdr.name}{sdr.availability === 'available' ? ' (Available)' : ''}
               </option>
             ))}
           </select>

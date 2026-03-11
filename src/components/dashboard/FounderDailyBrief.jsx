@@ -48,7 +48,7 @@ const ARIA_RECOMMENDATION = "The LinkedIn sequence for CFO Vietnam has a 31% rep
 export default function FounderDailyBrief({ onTellAria }) {
   const navigate = useNavigate();
   const userFirstName = useStore((s) => s.userFirstName) || 'Founder';
-  const toggleAria = useStore((s) => s.toggleAria);
+  const toggleFreya = useStore((s) => s.toggleFreya);
 
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
@@ -79,7 +79,7 @@ export default function FounderDailyBrief({ onTellAria }) {
   };
 
   const handleTellAria = () => {
-    toggleAria();
+    toggleFreya();
     onTellAria?.(ARIA_RECOMMENDATION);
   };
 
@@ -140,7 +140,7 @@ export default function FounderDailyBrief({ onTellAria }) {
         <button
           type="button"
           style={chipStyle}
-          onClick={() => toggleAria()}
+          onClick={() => toggleFreya()}
           onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = C.surface; e.currentTarget.style.borderColor = C.borderHover; }}
           onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = C.surface3; e.currentTarget.style.borderColor = C.border; }}
         >

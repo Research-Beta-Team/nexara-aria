@@ -47,7 +47,7 @@ const AGENT_NAMES = {
   forecasting: 'Forecasting Agent',
   cs_success: 'Customer Success Agent',
   meeting_intel: 'Meeting Intel',
-  aria_cs: 'ARIA CS',
+  aria_cs: 'Freya CS',
   copywriter: 'Copywriter',
   sdr: 'SDR Agent',
   analytics: 'Analytics Agent',
@@ -59,7 +59,7 @@ const AGENT_NAMES = {
   creative_intel: 'Creative Intel',
   geo: 'Geo Agent',
   video_script: 'Video Script',
-  aria_voice: 'ARIA Voice',
+  aria_voice: 'Freya Voice',
 };
 function agentLabel(id) {
   return AGENT_NAMES[id] ?? id.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());

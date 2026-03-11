@@ -1,6 +1,6 @@
 /**
  * Role-adaptive design: single source of truth for role display, sidebar, Freya (co-pilot), and access.
- * Used by Sidebar, AriaPanel, useRoleView, and RoleSwitcher.
+ * Used by Sidebar, FreyaPanel, useRoleView, and RoleSwitcher.
  */
 
 export const ROLE_IDS = [
@@ -18,8 +18,8 @@ export const ROLES = {
     id: 'owner',
     displayName: 'Owner/CEO',
     sidebarVariant: 'full',
-    ariaOpening: "Ready. What needs your attention first?",
-    ariaQuickActions: [
+    freyaOpening: "Ready. What needs your attention first?",
+    freyaQuickActions: [
       'Show me what needs a decision',
       'Which campaign is at risk?',
       'Generate weekly brief',
@@ -31,8 +31,8 @@ export const ROLES = {
     id: 'founder',
     displayName: 'Founder',
     sidebarVariant: 'full',
-    ariaOpening: "Ready. What needs your attention first?",
-    ariaQuickActions: [
+    freyaOpening: "Ready. What needs your attention first?",
+    freyaQuickActions: [
       'Show me what needs a decision',
       'Which campaign is at risk?',
       'Generate weekly brief',
@@ -44,8 +44,8 @@ export const ROLES = {
     id: 'advisor',
     displayName: 'Strategic Advisor',
     sidebarVariant: 'full',
-    ariaOpening: "I've reviewed all client briefs. 3 need your strategic input.",
-    ariaQuickActions: [
+    freyaOpening: "I've reviewed all client briefs. 3 need your strategic input.",
+    freyaQuickActions: [
       'Review strategy items',
       'Run competitive scan',
       'Draft positioning memo',
@@ -57,8 +57,8 @@ export const ROLES = {
     id: 'csm',
     displayName: 'Client Success Manager',
     sidebarVariant: 'csm',
-    ariaOpening: 'Medglobal call is tomorrow. Want me to prep your brief?',
-    ariaQuickActions: [
+    freyaOpening: 'Medglobal call is tomorrow. Want me to prep your brief?',
+    freyaQuickActions: [
       'Prepare call brief',
       'Generate client report',
       'Draft check-in email',
@@ -70,8 +70,8 @@ export const ROLES = {
     id: 'contentStrategist',
     displayName: 'Content Strategist',
     sidebarVariant: 'contentStrategist',
-    ariaOpening: '3 content pieces are waiting for your review.',
-    ariaQuickActions: [
+    freyaOpening: '3 content pieces are waiting for your review.',
+    freyaQuickActions: [
       'Show pending reviews',
       'Check brand consistency',
       'Draft content calendar',
@@ -83,8 +83,8 @@ export const ROLES = {
     id: 'sdr',
     displayName: 'SDR / Outreach',
     sidebarVariant: 'sdr',
-    ariaOpening: 'You have 3 hot replies. Want me to draft responses?',
-    ariaQuickActions: [
+    freyaOpening: 'You have 3 hot replies. Want me to draft responses?',
+    freyaQuickActions: [
       'Draft replies for hot leads',
       'Who should I contact next?',
       'Write a follow-up for Karim',
@@ -96,8 +96,8 @@ export const ROLES = {
     id: 'analyst',
     displayName: 'Analyst',
     sidebarVariant: 'analyst',
-    ariaOpening: "This week's data is ready. CPL improved 18% — want the breakdown?",
-    ariaQuickActions: [
+    freyaOpening: "This week's data is ready. CPL improved 18% — want the breakdown?",
+    freyaQuickActions: [
       "Explain what's driving performance",
       'Generate weekly report',
       'Find the top channel',
@@ -125,7 +125,7 @@ export function getAssignedClients(roleId) {
 }
 
 // ── Sidebar: which section ids to show per role ──
-const FULL_SIDEBAR_SECTIONS = ['core', 'ops', 'teamManagement', 'research', 'campaigns', 'abmPlaybooks', 'revenue', 'crm', 'content', 'socialMediaAds', 'analyticsReports', 'ariaIntelligence', 'admin', 'aria'];
+const FULL_SIDEBAR_SECTIONS = ['core', 'ops', 'teamManagement', 'research', 'campaigns', 'abmPlaybooks', 'revenue', 'crm', 'content', 'socialMediaAds', 'analyticsReports', 'freyaIntelligence', 'admin', 'freya'];
 
 export function getSidebarSections(roleId) {
   const role = getRoleConfig(roleId);
@@ -134,7 +134,7 @@ export function getSidebarSections(roleId) {
   const map = {
     sdr: ['core', 'ops', 'teamManagement', 'campaigns', 'crm', 'admin'],
     csm: ['core', 'revenue', 'crm', 'content', 'admin'],
-    contentStrategist: ['core', 'content', 'ariaIntelligence', 'admin'],
+    contentStrategist: ['core', 'content', 'freyaIntelligence', 'admin'],
     analyst: ['core', 'ops', 'teamManagement', 'research', 'revenue', 'analyticsReports', 'admin'],
   };
   return map[variant] ?? FULL_SIDEBAR_SECTIONS;

@@ -15,16 +15,16 @@ function AriaIcon() {
   );
 }
 
-export default function AriaInsightStrip({ insights = [], personaLabel, greeting, onAskAria }) {
+export default function AriaInsightStrip({ insights = [], personaLabel, greeting, onAskFreya }) {
   const [expanded, setExpanded] = useState(false);
   const toast = useToast();
 
-  const handleAskAria = (insight) => {
-    if (onAskAria) {
-      onAskAria(insight);
+  const handleAskFreya = (insight) => {
+    if (onAskFreya) {
+      onAskFreya(insight);
     } else {
       toast.info('Opening Freya…');
-      useStore.getState().toggleAria?.();
+      useStore.getState().toggleFreya?.();
     }
   };
 
@@ -163,7 +163,7 @@ export default function AriaInsightStrip({ insights = [], personaLabel, greeting
                   flexShrink: 0,
                   transition: T.color,
                 }}
-                onClick={() => handleAskAria(insight)}
+                onClick={() => handleAskFreya(insight)}
               >
                 Ask Freya
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none">

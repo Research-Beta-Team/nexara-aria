@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { C, F, R, S, T, btn } from '../../tokens';
 
 const MENTION_SUGGESTIONS = [
-  { id: 'aria',   label: 'ARIA',              desc: 'AI system' },
+  { id: 'freya',   label: 'Freya',              desc: 'AI system' },
   { id: 'jd',     label: 'James D.',           desc: 'Account Executive' },
   { id: 'ln',     label: 'Linh N.',            desc: 'Campaign Manager' },
   { id: 'sk',     label: 'Sarah K.',           desc: 'Strategist' },

@@ -45,7 +45,7 @@ export default function ForecastEngine() {
             Revenue Forecast — Q1 2026
           </h1>
           <span style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary }}>
-            ARIA confidence: 72% · Based on 18 open deals + historical data
+            Freya confidence: 72% · Based on 18 open deals + historical data
           </span>
         </div>
         <div style={{ display: 'flex', gap: S[2] }}>
@@ -98,7 +98,7 @@ export default function ForecastEngine() {
                     borderRadius: R.pill,
                   }}
                 >
-                  ARIA Recommended
+                  Freya Recommended
                 </span>
               )}
               <div style={{ fontFamily: F.mono, fontSize: '24px', fontWeight: 700, color: C.textPrimary, marginBottom: 4 }}>

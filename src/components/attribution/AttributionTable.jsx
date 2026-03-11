@@ -3,6 +3,7 @@
  */
 import { useState, useMemo } from 'react';
 import { C, F, R, S } from '../../tokens';
+import { IconTrendUp, IconTrendDown } from '../ui/Icons';
 
 const COLUMNS = [
   { key: 'campaign', label: 'Campaign', sortable: true },
@@ -72,7 +73,7 @@ export default function AttributionTable({ data = [] }) {
                 }}
               >
                 {col.label}
-                {col.sortable && sortKey === col.key && (sortDir === 'asc' ? ' ↑' : ' ↓')}
+                {col.sortable && sortKey === col.key && (sortDir === 'asc' ? <IconTrendUp w={14} color={C.primary} style={{ marginLeft: 4 }} /> : <IconTrendDown w={14} color={C.primary} style={{ marginLeft: 4 }} />)}
               </th>
             ))}
           </tr>

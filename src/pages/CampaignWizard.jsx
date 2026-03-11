@@ -68,7 +68,7 @@ function DeployAnimation({ campaignName, onDone }) {
   }, [onDone]);
 
   const LINES = [
-    'Briefing ARIA agents…',
+    'Briefing Freya agents…',
     'Loading ICP and KB docs…',
     'Activating channel pipelines…',
   ];
@@ -196,7 +196,7 @@ export default function CampaignWizard() {
   };
 
   const handleDeployDone = () => {
-    toast.success(`Campaign "${data.name || 'New Campaign'}" launched! ARIA agents are live.`);
+    toast.success(`Campaign "${data.name || 'New Campaign'}" launched! Freya agents are live.`);
     navigate('/campaigns');
   };
 
@@ -266,7 +266,7 @@ export default function CampaignWizard() {
             New Campaign
           </h1>
           <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: `${S[1]} 0 0` }}>
-            Configure your campaign and deploy ARIA agents to execute it autonomously.
+            Configure your campaign and deploy Freya agents to execute it autonomously.
           </p>
         </div>
 

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { C, F, R, S, T, badge, cardStyle, btn, shadows, Z } from '../../tokens';
 import { DEFAULT_OUTREACH_CAMPAIGN_ID } from '../../data/outreach';
+import { IconTrendUp, IconTrendDown } from '../ui/Icons';
 
 const INTENT_BADGE = {
   high: { ...badge.base, ...badge.green },
@@ -103,7 +104,7 @@ export default function OutreachTable({
             title={col.tooltip}
           >
             {col.label}
-            {col.sortKey && sortKey === col.sortKey && <span style={{ color: C.primary }}>{sortDir === 'asc' ? '↑' : '↓'}</span>}
+            {col.sortKey && sortKey === col.sortKey && <span style={{ color: C.primary, display: 'inline-flex' }}>{sortDir === 'asc' ? <IconTrendUp w={14} color={C.primary} /> : <IconTrendDown w={14} color={C.primary} />}</span>}
           </button>
         ))}
       </div>

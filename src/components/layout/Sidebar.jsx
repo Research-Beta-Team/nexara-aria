@@ -13,6 +13,7 @@ import UpgradeModal from '../plan/UpgradeModal';
 import { getSidebarSections } from '../../config/roleConfig';
 import { getTemplateById } from '../../data/workspaceTemplates';
 import AntariousLogo from '../ui/AntariousLogo';
+import FreyaLogo from '../ui/FreyaLogo';
 import { C, F, R, S, T, shadows } from '../../tokens';
 
 // ── Founder nav SVG icons (theme: currentColor) ──
@@ -40,13 +41,6 @@ const IconChart = () => (
     <path d="M2 14h14M5 14V9m4 5V6m4 8V3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
   </svg>
 );
-const IconAria = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-    <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.5"/>
-    <circle cx="9" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.5"/>
-    <path d="M9 2v2M9 14v2M2 9h2M14 9h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-  </svg>
-);
 
 // ── Startup segment: simplified nav for startup companies ──
 const STARTUP_NAV_ITEMS = [
@@ -57,7 +51,7 @@ const STARTUP_NAV_ITEMS = [
   { label: 'Escalations', path: '/escalations', icon: <IconTasks /> },
   { label: 'Analytics', path: '/analytics', icon: <IconChart /> },
   { label: 'Founders', path: '/team', icon: <IconTasks /> },
-  { label: 'Freya', path: null, icon: <IconAria />, openAria: true },
+  { label: 'Freya', path: null, icon: <FreyaLogo size={18} />, openFreya: true },
   { label: 'Settings', path: '/settings', icon: <IconTasks /> },
 ];
 
@@ -467,7 +461,7 @@ const NAV_SECTIONS = [
   },
 
   {
-    id: 'ariaIntelligence',
+    id: 'freyaIntelligence',
     dividerBefore: true,
     label: 'FREYA INTELLIGENCE',
     collapsible: true,
@@ -486,17 +480,17 @@ const NAV_SECTIONS = [
       },
       {
         label: 'Freya Knowledge Base',
-        path: '/aria/knowledge',
+        path: '/freya/knowledge',
         icon: <Brain size={18} strokeWidth={1.5} />,
       },
       {
         label: 'Workflow Center',
-        path: '/aria/workflows',
+        path: '/freya/workflows',
         icon: <GitBranch size={18} strokeWidth={1.5} />,
       },
       {
         label: 'Freya Memory',
-        path: '/aria/memory',
+        path: '/freya/memory',
         icon: <Brain size={18} strokeWidth={1.5} />,
       },
       {
@@ -506,7 +500,7 @@ const NAV_SECTIONS = [
       },
       {
         label: 'Persona Config',
-        path: '/settings/aria',
+        path: '/settings/freya',
         icon: <UserCog size={18} strokeWidth={1.5} />,
       },
     ],
@@ -609,14 +603,14 @@ const NAV_SECTIONS = [
   },
 
   {
-    id: 'aria',
+    id: 'freya',
     dividerBefore: true,
     label: 'Freya',
     collapsible: true,
     items: [
       {
         label: 'Freya Intelligence',
-        path: '/aria-brain',
+        path: '/freya-brain',
         icon: (
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
             <path d="M9 2a4 4 0 0 1 4 4v2a4 4 0 0 1-4 4 4 4 0 0 1-4-4V6a4 4 0 0 1 4-4Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -1000,7 +994,7 @@ function PlanStatusSection({ collapsed }) {
 }
 
 // ── Sidebar ───────────────────────────────────
-export default function Sidebar({ onOpenAria }) {
+export default function Sidebar({ onOpenFreya }) {
   const collapsed     = useStore((s) => s.sidebarCollapsed);
   const toggleSidebar = useStore((s) => s.toggleSidebar);
   const currentRole   = useStore((s) => s.currentRole);
@@ -1017,7 +1011,7 @@ export default function Sidebar({ onOpenAria }) {
     return i >= 0 ? i : 999;
   };
 
-  const [openSections, setOpenSections] = useState({ research: true, revenue: true, campaigns: true, abmPlaybooks: true, content: true, teamManagement: true, socialMediaAds: true, analyticsReports: true, crm: true, aria: true, ariaIntelligence: true });
+  const [openSections, setOpenSections] = useState({ research: true, revenue: true, campaigns: true, abmPlaybooks: true, content: true, teamManagement: true, socialMediaAds: true, analyticsReports: true, crm: true, freya: true, freyaIntelligence: true });
 
   const toggleSection = (id) => {
     setOpenSections((prev) => ({ ...prev, [id]: !prev[id] }));

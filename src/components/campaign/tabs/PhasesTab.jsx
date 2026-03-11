@@ -24,7 +24,7 @@ export default function PhasesTab({ campaign, detail }) {
   const showAdvance = activePhase && daysRemaining >= 0 && daysRemaining <= 3;
 
   const handleAdvance = () => {
-    toast.success('Advanced to next phase. ARIA has updated channel activation.');
+    toast.success('Advanced to next phase. Freya has updated channel activation.');
   };
 
   const handlePhasesChange = (nextPhases) => {

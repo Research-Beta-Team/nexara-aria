@@ -37,8 +37,8 @@ export default function CSMWorkspaceConfigurator() {
   const [visibleModules, setVisibleModules] = useState(() => new Set(profile?.layout?.visibleModules ?? []));
   const [activeAgents, setActiveAgents] = useState(() => new Set(profile?.agents?.active ?? []));
   const [primaryAgent, setPrimaryAgent] = useState(profile?.agents?.primaryAgent ?? 'gtm_strategist');
-  const [persona, setPersona] = useState(profile?.aria?.persona ?? 'cro');
-  const [greeting, setGreeting] = useState(profile?.aria?.greeting ?? '');
+  const [persona, setPersona] = useState(profile?.freya?.persona ?? 'cro');
+  const [greeting, setGreeting] = useState(profile?.freya?.greeting ?? '');
   const [escalationThreshold, setEscalationThreshold] = useState(profile?.workflows?.escalationThreshold ?? 3000);
   const [autoApproveBelow, setAutoApproveBelow] = useState(profile?.workflows?.autoApproveBelow ?? 500);
 
@@ -52,8 +52,8 @@ export default function CSMWorkspaceConfigurator() {
     setVisibleModules(new Set(t.layout?.visibleModules ?? []));
     setActiveAgents(new Set(t.agents?.active ?? []));
     setPrimaryAgent(t.agents?.primaryAgent ?? 'gtm_strategist');
-    setPersona(t.aria?.persona ?? 'cro');
-    setGreeting(t.aria?.greeting ?? '');
+    setPersona(t.freya?.persona ?? 'cro');
+    setGreeting(t.freya?.greeting ?? '');
     setEscalationThreshold(t.workflows?.escalationThreshold ?? 3000);
     setAutoApproveBelow(t.workflows?.autoApproveBelow ?? 500);
   };
@@ -102,10 +102,10 @@ export default function CSMWorkspaceConfigurator() {
         disabled: disabledAgents,
         primaryAgent,
       },
-      aria: {
-        ...profile?.aria,
+      freya: {
+        ...profile?.freya,
         persona,
-        greeting: greeting || template?.aria?.greeting,
+        greeting: greeting || template?.freya?.greeting,
       },
       workflows: {
         ...profile?.workflows,

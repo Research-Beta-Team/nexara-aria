@@ -85,7 +85,7 @@ function CampaignHeader({ campaign, detail, roleLayout }) {
         <div style={{ display: 'flex', gap: S[2] }}>
           <button style={{ ...btn.ghost, fontSize: '13px' }} onClick={() => toast.info('Share coming soon')}>Share</button>
           <button style={{ ...btn.secondary, fontSize: '13px' }} onClick={() => toast.info('Settings')}>Settings</button>
-          <button style={{ ...btn.primary, fontSize: '13px' }} onClick={() => toast.success('ARIA report…')}>ARIA Report</button>
+          <button style={{ ...btn.primary, fontSize: '13px' }} onClick={() => toast.success('Freya report…')}>Freya Report</button>
         </div>
       </div>
       <div style={{ display: 'flex', gap: S[6], alignItems: 'flex-start' }}>
@@ -156,8 +156,8 @@ export default function CampaignDetail() {
     overflow: 'hidden',
   };
 
-  const fromAria = searchParams.get('from_aria') === '1';
-  const tabProps = { campaign, detail, setTab, fromAria };
+  const fromFreya = searchParams.get('from_freya') === '1';
+  const tabProps = { campaign, detail, setTab, fromFreya };
 
   const renderTabContent = () => {
     switch (safeTab) {

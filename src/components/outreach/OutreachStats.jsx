@@ -1,4 +1,5 @@
 import { C, F, R, S } from '../../tokens';
+import { IconTrendUp, IconTrendDown } from '../ui/Icons';
 
 export default function OutreachStats({ prospects = [], replyRateTrend }) {
   const replied = prospects.filter((p) => p.replied).length;
@@ -14,7 +15,7 @@ export default function OutreachStats({ prospects = [], replyRateTrend }) {
         label="Reply rate"
         value={`${replyRate}%`}
         color={C.primary}
-        sub={replyRateTrend != null ? `${replyRateTrend > 0 ? '↑' : '↓'} ${Math.abs(replyRateTrend)}% vs last week` : null}
+        sub={replyRateTrend != null ? { trend: replyRateTrend, text: `${Math.abs(replyRateTrend)}% vs last week` } : null}
       />
       <StatBox label="Sequence" value="5-step" />
     </div>
@@ -22,6 +23,9 @@ export default function OutreachStats({ prospects = [], replyRateTrend }) {
 }
 
 function StatBox({ label, value, color, sub }) {
+  const isTrendObj = sub && typeof sub === 'object' && 'trend' in sub;
+  const trend = isTrendObj ? sub.trend : null;
+  const subText = isTrendObj ? sub.text : sub;
   return (
     <div
       style={{
@@ -42,7 +46,12 @@ function StatBox({ label, value, color, sub }) {
       <span style={{ fontFamily: F.mono, fontSize: '18px', fontWeight: 700, color: color ?? C.textPrimary, lineHeight: 1 }}>
         {value}
       </span>
-      {sub && <span style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted }}>{sub}</span>}
+      {subText != null && (
+        <span style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+          {trend != null && (trend > 0 ? <IconTrendUp color={C.primary} w={12} /> : <IconTrendDown color={C.textMuted} w={12} />)}
+          {subText}
+        </span>
+      )}
     </div>
   );
 }

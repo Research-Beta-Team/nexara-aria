@@ -28,7 +28,7 @@ export function WorkspaceProvider({ children }) {
         activeClientId,
         isModuleVisible: (moduleId) => visibleModules.includes(moduleId),
         isAgentActive: () => false,
-        getAriaConfig: () => ({}),
+        getFreyaConfig: () => ({}),
         getKPIs: () => ({}),
         getApprovalChain: () => [],
         canClientEdit: () => false,
@@ -38,7 +38,7 @@ export function WorkspaceProvider({ children }) {
     }
 
     const agents = profile.agents || {};
-    const aria = profile.aria || {};
+    const freya = profile.freya || {};
     const workflows = profile.workflows || {};
     const kpis = profile.kpis || {};
     const activeAgents = agents.active || [];
@@ -53,7 +53,7 @@ export function WorkspaceProvider({ children }) {
       isAgentActive: (agentId) => activeAgents.includes(agentId),
       isAgentDisabled: (agentId) => disabledAgents.includes(agentId),
       getPrimaryAgent: () => agents.primaryAgent || null,
-      getAriaConfig: () => aria,
+      getFreyaConfig: () => freya,
       getKPIs: () => kpis,
       getApprovalChain: () => workflows.approvalChain || [],
       canClientEdit: (field) => clientEditableFields.includes(field),

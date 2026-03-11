@@ -5,7 +5,7 @@ import useStore from '../../store/useStore';
 const ROLES = [
   { id: 'owner',             label: 'Campaign Owner',      desc: 'Oversees the entire campaign. Receives all alerts.',          required: true  },
   { id: 'mediaBuyer',        label: 'Media Buyer',         desc: 'Manages paid channel budgets and bid strategies.',            required: false },
-  { id: 'contentStrategist', label: 'Content Strategist',  desc: 'Reviews and approves all ARIA-generated content.',            required: false },
+  { id: 'contentStrategist', label: 'Content Strategist',  desc: 'Reviews and approves all Freya-generated content.',            required: false },
   { id: 'sdr',               label: 'SDR / Outreach',      desc: 'Handles prospect replies and books demos.',                   required: false },
   { id: 'analyst',           label: 'Analyst',             desc: 'Receives weekly pacing reports and performance dashboards.',  required: false },
 ];
@@ -79,7 +79,7 @@ export default function WizardStep5({ data, onChange, errors, getLimit }) {
           Team Assignment
         </h2>
         <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: 0 }}>
-          Assign team members to each role. Unassigned roles will be handled autonomously by ARIA agents.
+          Assign team members to each role. Unassigned roles will be handled autonomously by Freya agents.
         </p>
       </div>
 
@@ -138,7 +138,7 @@ export default function WizardStep5({ data, onChange, errors, getLimit }) {
           <path d="M8 7v4M8 5v.5" stroke={C.secondary} strokeWidth="1.3" strokeLinecap="round"/>
         </svg>
         <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, margin: 0, lineHeight: '1.5' }}>
-          Roles left unassigned will be executed by ARIA AI agents with full autonomy. You can override agent decisions at any time from the campaign detail view.
+          Roles left unassigned will be executed by Freya AI agents with full autonomy. You can override agent decisions at any time from the campaign detail view.
         </p>
       </div>
     </div>

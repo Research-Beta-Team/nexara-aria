@@ -39,8 +39,8 @@ const defaultTypeIcon = (color) => (
 
 export default function ApprovalThreadPanel({ contentItem, reviewers: reviewerList, onClose, onStatusChange, onAddComment, toast }) {
   const [commentDraft, setCommentDraft] = useState('');
-  const [showAriaPrompt, setShowAriaPrompt] = useState(false);
-  const [ariaPromptText, setAriaPromptText] = useState('');
+  const [showFreyaPrompt, setShowFreyaPrompt] = useState(false);
+  const [freyaPromptText, setFreyaPromptText] = useState('');
   const [expandedPreview, setExpandedPreview] = useState(false);
   const scrollRef = useRef(null);
 
@@ -60,7 +60,7 @@ export default function ApprovalThreadPanel({ contentItem, reviewers: reviewerLi
 
   const handleApprove = () => {
     onStatusChange?.(contentId, 'approved');
-    onAddComment?.(contentId, { authorId: 'current', body: 'Approved ✓', actionTag: 'approved' });
+    onAddComment?.(contentId, { authorId: 'current', body: 'Approved', actionTag: 'approved' });
     toast?.success('Content approved');
     setCommentDraft('');
   };
@@ -74,16 +74,16 @@ export default function ApprovalThreadPanel({ contentItem, reviewers: reviewerLi
     toast?.info('Revision requested');
   };
 
-  const handleAskAria = () => {
-    if (!ariaPromptText.trim()) return;
+  const handleAskFreya = () => {
+    if (!freyaPromptText.trim()) return;
     onAddComment?.(contentId, {
-      authorId: 'aria',
-      body: `Revised based on feedback: "${ariaPromptText.trim()}". Here is the updated version: [Revised content would appear here.]`,
-      actionTag: 'replied_to_aria',
-      ariaReply: true,
+      authorId: 'freya',
+      body: `Revised based on feedback: "${freyaPromptText.trim()}". Here is the updated version: [Revised content would appear here.]`,
+      actionTag: 'replied_to_freya',
+      freyaReply: true,
     });
-    setAriaPromptText('');
-    setShowAriaPrompt(false);
+    setFreyaPromptText('');
+    setShowFreyaPrompt(false);
     toast?.success('Sent to Freya for revision');
   };
 
@@ -239,22 +239,22 @@ export default function ApprovalThreadPanel({ contentItem, reviewers: reviewerLi
 
         {/* Add comment — sticky bottom */}
         <div style={{ padding: S[4], borderTop: `1px solid ${C.border}`, backgroundColor: C.surface, flexShrink: 0 }}>
-          {showAriaPrompt ? (
+          {showFreyaPrompt ? (
             <div style={{ marginBottom: S[3] }}>
               <label style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.textSecondary, display: 'block', marginBottom: S[1] }}>
                 Tell Freya what to change:
               </label>
               <textarea
-                value={ariaPromptText}
-                onChange={(e) => setAriaPromptText(e.target.value)}
+                value={freyaPromptText}
+                onChange={(e) => setFreyaPromptText(e.target.value)}
                 placeholder="e.g. Make the opening line more specific to Vietnam textile industry"
                 style={{ ...inputStyle, minHeight: 60, resize: 'vertical', marginBottom: S[2] }}
               />
               <div style={{ display: 'flex', gap: S[2] }}>
-                <button type="button" style={{ ...btn.primary, fontSize: '12px' }} onClick={handleAskAria}>
+                <button type="button" style={{ ...btn.primary, fontSize: '12px' }} onClick={handleAskFreya}>
                   Send to Freya
                 </button>
-                <button type="button" style={{ ...btn.ghost, fontSize: '12px' }} onClick={() => { setShowAriaPrompt(false); setAriaPromptText(''); }}>
+                <button type="button" style={{ ...btn.ghost, fontSize: '12px' }} onClick={() => { setShowFreyaPrompt(false); setFreyaPromptText(''); }}>
                   Cancel
                 </button>
               </div>
@@ -276,7 +276,7 @@ export default function ApprovalThreadPanel({ contentItem, reviewers: reviewerLi
                   <IconClose color="currentColor" width={14} height={14} />
                   Request changes
                 </button>
-                <button type="button" style={{ ...btn.secondary, fontSize: '12px' }} onClick={() => setShowAriaPrompt(true)}>
+                <button type="button" style={{ ...btn.secondary, fontSize: '12px' }} onClick={() => setShowFreyaPrompt(true)}>
                   ↩ Ask Freya to revise
                 </button>
                 <button type="button" style={{ ...btn.secondary, fontSize: '12px' }} onClick={handlePublish}>

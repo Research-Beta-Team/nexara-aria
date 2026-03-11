@@ -58,7 +58,7 @@ export default function CampaignAutoFillDemo({ extraction, onComplete }) {
           margin: 0,
         }}
       >
-        ARIA is building your campaign
+        Freya is building your campaign
         <span style={{ opacity: 0.7, animation: 'ariaDots 1.5s steps(1) infinite' }}>...</span>
       </h2>
 
@@ -111,7 +111,7 @@ export default function CampaignAutoFillDemo({ extraction, onComplete }) {
                         }}
                       >
                         <IconCheck color={C.primary} width={10} height={10} />
-                        ARIA
+                        Freya
                       </span>
                     )}
                   </div>
@@ -143,7 +143,7 @@ export default function CampaignAutoFillDemo({ extraction, onComplete }) {
           </div>
         </div>
 
-        {/* Right — ARIA commentary (40%) */}
+        {/* Right — Freya commentary (40%) */}
         <div
           style={{
             flex: '0 0 40%',
@@ -163,7 +163,7 @@ export default function CampaignAutoFillDemo({ extraction, onComplete }) {
               letterSpacing: '0.06em',
             }}
           >
-            ARIA
+            Freya
           </span>
           <div style={{ display: 'flex', flexDirection: 'column', gap: S[2] }}>
             {commentary.slice(0, commentaryIndex + 1).map((line, i) => (

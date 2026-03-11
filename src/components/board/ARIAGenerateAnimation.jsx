@@ -2,9 +2,9 @@
  * Steps with checkmarks; progress bar; "6+ hours manually" line. Runs then onComplete().
  */
 import { useEffect, useState } from 'react';
-import { C, F, R, S } from '../../tokens';
-import { Z } from '../../tokens';
+import { C, F, R, S, Z } from '../../tokens';
 import { GENERATION_STEPS } from '../../data/boardReportMock';
+import { IconCheck, IconCircleEmpty } from '../ui/Icons';
 
 const DURATION_MS = 6000;
 
@@ -62,7 +62,9 @@ export default function ARIAGenerateAnimation({ onComplete }) {
               fontSize: '14px',
             }}
           >
-            <span style={{ width: 24, textAlign: 'center' }}>{i < currentStep ? '✓' : i === currentStep ? '…' : '○'}</span>
+            <span style={{ width: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              {i < currentStep ? <IconCheck color={C.primary} width={18} height={18} /> : i === currentStep ? '…' : <IconCircleEmpty color={C.textMuted} width={18} height={18} />}
+            </span>
             {step.label}
           </div>
         ))}

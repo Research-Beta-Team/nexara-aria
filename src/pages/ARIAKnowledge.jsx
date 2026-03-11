@@ -1,1 +1,1 @@
-export { default } from './aria/ARIAKnowledge';
+export { default } from './freya/ARIAKnowledge';

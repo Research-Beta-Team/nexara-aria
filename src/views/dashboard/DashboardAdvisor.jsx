@@ -35,7 +35,7 @@ export default function DashboardAdvisor() {
               <div key={item.id} style={{ ...cardStyle, padding: S[4] }}>
                 <div style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary }}>{item.title}</div>
                 <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>{item.campaign || item.client || ''}</div>
-                {item.confidence && <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.primary }}>ARIA confidence: {item.confidence}%</span>}
+                {item.confidence && <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.primary }}>Freya confidence: {item.confidence}%</span>}
                 <div style={{ display: 'flex', gap: S[2], marginTop: S[3] }}>
                   <button style={{ ...btn.primary, fontSize: '12px' }} onClick={() => toast.success('Review')}>Review</button>
                   <button style={{ ...btn.secondary, fontSize: '12px' }} onClick={() => toast.info('Approve')}>Approve</button>

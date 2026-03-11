@@ -4,7 +4,7 @@ import { C, F, R, S, btn, cardStyle } from '../../tokens';
 
 const CLIENT_PORTFOLIO_MOCK = [
   { name: 'Apex Corp', health: 82, demos: '8/12', status: 'On track', lastTouch: '2 days ago', tip: 'Share win from LinkedIn' },
-  { name: 'BGMEA Member Co', health: 61, demos: '3/10', status: 'Behind', lastTouch: '5 days ago', tip: 'ARIA has a recovery plan', atRisk: true },
+  { name: 'BGMEA Member Co', health: 61, demos: '3/10', status: 'Behind', lastTouch: '5 days ago', tip: 'Freya has a recovery plan', atRisk: true },
   { name: 'Delta Garments', health: 94, demos: '11/10', status: 'Exceeding', lastTouch: 'Yesterday', tip: 'Great for upsell conversation' },
 ];
 const UPCOMING_CALLS = [

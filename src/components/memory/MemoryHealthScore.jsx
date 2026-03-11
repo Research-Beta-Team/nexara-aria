@@ -7,11 +7,11 @@ import { C, F, S } from '../../tokens';
 const MIN_ENTRIES_PER_NAMESPACE = 3;
 const NAMESPACE_KEYS = ['brand', 'audience', 'campaigns', 'performance'];
 
-function getScore(ariaMemory) {
-  if (!ariaMemory) return 0;
+function getScore(freyaMemory) {
+  if (!freyaMemory) return 0;
   let filled = 0;
   for (const key of NAMESPACE_KEYS) {
-    const arr = ariaMemory[key];
+    const arr = freyaMemory[key];
     if (Array.isArray(arr) && arr.length >= MIN_ENTRIES_PER_NAMESPACE) filled += 1;
   }
   return Math.round((filled / NAMESPACE_KEYS.length) * 100);
@@ -31,8 +31,8 @@ function getSubtext(score) {
   return 'Freya is fully context-aware';
 }
 
-export default function MemoryHealthScore({ ariaMemory }) {
-  const score = getScore(ariaMemory);
+export default function MemoryHealthScore({ freyaMemory }) {
+  const score = getScore(freyaMemory);
   const color = getColor(score);
   const circumference = 2 * Math.PI * 36;
   const strokeDash = (score / 100) * circumference;

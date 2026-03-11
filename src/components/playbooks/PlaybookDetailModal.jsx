@@ -22,7 +22,7 @@ export default function PlaybookDetailModal({ playbook, onClose, onLaunch }) {
   const accent = COLOR_MAP[color] || C.primary;
   const IconComponent = PLAYBOOK_ICON_MAP[icon] || IconClipboard;
 
-  const contentItems = contentIncluded.map((c) => (typeof c === 'string' ? { name: c, agent: 'ARIA' } : c));
+  const contentItems = contentIncluded.map((c) => (typeof c === 'string' ? { name: c, agent: 'Freya' } : c));
 
   return (
     <>
@@ -131,7 +131,7 @@ export default function PlaybookDetailModal({ playbook, onClose, onLaunch }) {
                     </p>
                     {step.ariaNote && (
                       <div style={{ fontFamily: F.body, fontSize: '12px', color: accent, fontStyle: 'italic' }}>
-                        What ARIA does: {step.ariaNote}
+                        What Freya does: {step.ariaNote}
                       </div>
                     )}
                   </div>

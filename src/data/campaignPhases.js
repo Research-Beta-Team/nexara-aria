@@ -45,8 +45,8 @@ export function daysBetween(startStr, endStr) {
   return Math.round((b - a) / 86400000);
 }
 
-/** ARIA-suggested phases (e.g. when content was mainly generated with ARIA Intelligence) */
-export function getAriaSuggestedPhases(campaignStartStr, campaignEndStr) {
+/** Freya-suggested phases (e.g. when content was mainly generated with Freya Intelligence) */
+export function getFreyaSuggestedPhases(campaignStartStr, campaignEndStr) {
   const start = campaignStartStr || new Date().toISOString().slice(0, 10);
   const end = campaignEndStr || new Date(Date.now() + 45 * 86400000).toISOString().slice(0, 10);
   const totalDays = Math.max(1, daysBetween(start, end));
@@ -59,11 +59,11 @@ export function getAriaSuggestedPhases(campaignStartStr, campaignEndStr) {
   const d2 = Math.floor(totalDays * 0.55);
   return [
     makePhase({
-      id: `aria-phase-1-${Date.now()}`,
-      name: 'Awareness (ARIA content)',
+      id: `freya-phase-1-${Date.now()}`,
+      name: 'Awareness (Freya content)',
       startDate: start,
       endDate: addDays(start, d1 - 1),
-      goal: 'Deploy ARIA-generated awareness content',
+      goal: 'Deploy Freya-generated awareness content',
       channels: [
         makeChannel('email', true, 2500),
         makeChannel('linkedin', true, 5000),
@@ -73,11 +73,11 @@ export function getAriaSuggestedPhases(campaignStartStr, campaignEndStr) {
       ],
     }),
     makePhase({
-      id: `aria-phase-2-${Date.now()}`,
-      name: 'Nurture (ARIA content)',
+      id: `freya-phase-2-${Date.now()}`,
+      name: 'Nurture (Freya content)',
       startDate: addDays(start, d1),
       endDate: addDays(start, d2 - 1),
-      goal: 'Nurture with ARIA-generated sequences',
+      goal: 'Nurture with Freya-generated sequences',
       channels: [
         makeChannel('email', true, 3500),
         makeChannel('linkedin', true, 6000),
@@ -87,11 +87,11 @@ export function getAriaSuggestedPhases(campaignStartStr, campaignEndStr) {
       ],
     }),
     makePhase({
-      id: `aria-phase-3-${Date.now()}`,
-      name: 'Convert (ARIA content)',
+      id: `freya-phase-3-${Date.now()}`,
+      name: 'Convert (Freya content)',
       startDate: addDays(start, d2),
       endDate: end,
-      goal: 'Convert with ARIA-optimized CTAs',
+      goal: 'Convert with Freya-optimized CTAs',
       channels: CHANNEL_IDS.map((c) => makeChannel(c, true, c === 'whatsapp' ? 400 : 4500)),
     }),
   ];

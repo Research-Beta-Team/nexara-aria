@@ -4,6 +4,7 @@ import { R, S, T, shadows, ANTARIOUS_AUTH } from '../tokens';
 import useStore from '../store/useStore';
 import { PLANS } from '../config/plans';
 import AntariousLogo from '../components/ui/AntariousLogo';
+import OnboardingFreyaPanel from '../components/onboarding/OnboardingFreyaPanel';
 import {
   COMPANY_TYPES,
   getRecommendedPlan,
@@ -180,11 +181,48 @@ export default function Onboarding() {
   };
 
   const handleDoneCreateCampaign = () => {
-    navigate('/first-onboarding/aria');
+    navigate('/first-onboarding/freya');
   };
 
   const handleBack = () => {
     if (stepIndex > 0) setStepIndex(stepIndex - 1);
+  };
+
+  const handleFreyaChip = (chipId) => {
+    switch (chipId) {
+      case 'get_started':
+        setStepIndex(1);
+        break;
+      case 'skip':
+        handleSkipToDashboard();
+        break;
+      case 'solo':
+      case 'startup':
+      case 'agency':
+      case 'enterprise':
+        setCompanyType(chipId);
+        break;
+      case 'choose_recommended':
+        handleConfirmPlan(recommendedPlan?.id ?? 'starter');
+        break;
+      case 'see_all':
+        setShowAllPlans(true);
+        break;
+      case 'finish':
+        handleConnectionsFinish();
+        break;
+      case 'skip_all':
+        handleSkipConnections();
+        break;
+      case 'dashboard':
+        handleDoneDashboard();
+        break;
+      case 'first_campaign':
+        handleDoneCreateCampaign();
+        break;
+      default:
+        break;
+    }
   };
 
   return (
@@ -196,61 +234,74 @@ export default function Onboarding() {
         alignItems: 'center',
         justifyContent: 'center',
         padding: `${S[6]} ${S[4]}`,
+        boxSizing: 'border-box',
       }}
     >
-      <div style={{ width: '100%', maxWidth: '560px' }}>
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: S[5] }}>
-          <div style={{ minWidth: 100 }}>
-            {stepIndex > 0 && (
-              <button
-                type="button"
-                onClick={handleBack}
-                style={{ ...btnGhost, fontSize: '13px', color: N.textSecondary }}
-              >
-                ← Back
-              </button>
-            )}
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '960px',
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          alignItems: 'flex-start',
+          gap: S[8],
+        }}
+      >
+        {/* Left: step content */}
+        <div style={{ flex: '1 1 480px', minWidth: 280, minHeight: 0 }}>
+          {/* Header */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: S[5] }}>
+            <div style={{ minWidth: 100 }}>
+              {stepIndex > 0 && (
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  style={{ ...btnGhost, fontSize: '13px', color: N.textSecondary }}
+                >
+                  ← Back
+                </button>
+              )}
+            </div>
+            <AntariousLogo variant="dark" height={28} />
+            <div style={{ minWidth: 100, display: 'flex', justifyContent: 'flex-end' }}>
+              {stepId !== 'welcome' && stepId !== 'done' && (
+                <button
+                  type="button"
+                  onClick={handleSkipToDashboard}
+                  style={{ ...btnGhost, fontSize: '12px', color: N.textMuted }}
+                >
+                  Skip to Dashboard →
+                </button>
+              )}
+            </div>
           </div>
-          <AntariousLogo variant="dark" height={28} />
-          <div style={{ minWidth: 100, display: 'flex', justifyContent: 'flex-end' }}>
-            {stepId !== 'welcome' && stepId !== 'done' && (
-              <button
-                type="button"
-                onClick={handleSkipToDashboard}
-                style={{ ...btnGhost, fontSize: '12px', color: N.textMuted }}
-              >
-                Skip to Dashboard →
-              </button>
-            )}
+
+          {/* Progress */}
+          <div style={{ display: 'flex', gap: '6px', marginBottom: S[5] }}>
+            {STEPS.map((s, i) => (
+              <div
+                key={s.id}
+                style={{
+                  flex: 1,
+                  height: '4px',
+                  borderRadius: R.pill,
+                  backgroundColor: i <= stepIndex ? N.primary : N.surface3,
+                  opacity: i <= stepIndex ? 1 : 0.5,
+                  transition: T.base,
+                }}
+              />
+            ))}
           </div>
-        </div>
 
-        {/* Progress */}
-        <div style={{ display: 'flex', gap: '6px', marginBottom: S[5] }}>
-          {STEPS.map((s, i) => (
-            <div
-              key={s.id}
-              style={{
-                flex: 1,
-                height: '4px',
-                borderRadius: R.pill,
-                backgroundColor: i <= stepIndex ? N.primary : N.surface3,
-                opacity: i <= stepIndex ? 1 : 0.5,
-                transition: T.base,
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Card */}
-        <div
-          style={{
-            ...cardStyleN,
-            padding: S[6],
-            boxShadow: shadows.modal,
-          }}
-        >
+          {/* Card */}
+          <div
+            style={{
+              ...cardStyleN,
+              padding: S[6],
+              boxShadow: shadows.modal,
+            }}
+          >
           {/* Step: Welcome */}
           {stepId === 'welcome' && (
             <>
@@ -279,7 +330,7 @@ export default function Onboarding() {
               <p style={{ fontFamily: N.fontBody, fontSize: '12px', color: N.textMuted, marginTop: S[4], textAlign: 'center' }}>
                 <button
                   type="button"
-                  onClick={() => navigate('/first-onboarding/aria')}
+                  onClick={() => navigate('/first-onboarding/freya')}
                   style={{ background: 'none', border: 'none', color: N.primary, cursor: 'pointer', fontWeight: 600, padding: 0, textDecoration: 'underline', textUnderlineOffset: 2 }}
                 >
                   Or let Freya build your first campaign →
@@ -516,6 +567,19 @@ export default function Onboarding() {
         <p style={{ textAlign: 'center', fontFamily: N.fontBody, fontSize: '12px', color: N.textMuted, marginTop: S[4] }}>
           Antarious · GTM AI OS
         </p>
+        </div>
+
+        {/* Right: Freya assistant */}
+        <div
+          style={{
+            flex: '0 0 320px',
+            minWidth: 280,
+            position: 'sticky',
+            top: S[6],
+          }}
+        >
+          <OnboardingFreyaPanel stepId={stepId} onChipClick={handleFreyaChip} />
+        </div>
       </div>
     </div>
   );

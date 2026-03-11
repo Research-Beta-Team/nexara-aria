@@ -1,8 +1,8 @@
 import { C, F, R, S, T } from '../../tokens';
 import useToast from '../../hooks/useToast';
 
-// Per-step ARIA context
-const ARIA_CONTENT = {
+// Per-step Freya context
+const FREYA_CONTENT = {
   1: {
     headline: 'Campaign Setup Tips',
     insights: [
@@ -62,7 +62,7 @@ const ARIA_CONTENT = {
     insights: [
       { color: C.primary,   text: 'All agents will be briefed with your ICP, KB docs, and channel strategy before going live.' },
       { color: C.secondary, text: 'First results typically appear within 48–72 hours of launch for paid channels.' },
-      { color: C.amber,     text: 'Review your first ARIA insights 5 days after launch — early signals help optimize week 2 spend.' },
+      { color: C.amber,     text: 'Review your first Freya insights 5 days after launch — early signals help optimize week 2 spend.' },
     ],
     tip: 'After launch, visit your Campaign Detail → Outreach tab daily for the first week to review prospect engagement.',
   },
@@ -70,7 +70,7 @@ const ARIA_CONTENT = {
 
 export default function WizardAriaSidebar({ step }) {
   const toast = useToast();
-  const content = ARIA_CONTENT[step] ?? ARIA_CONTENT[1];
+  const content = FREYA_CONTENT[step] ?? FREYA_CONTENT[1];
 
   const sidebarStyle = {
     width: '300px',
@@ -106,7 +106,7 @@ export default function WizardAriaSidebar({ step }) {
 
   return (
     <div style={sidebarStyle}>
-      {/* ARIA header card */}
+      {/* Freya header card */}
       <div style={{
         backgroundColor: C.surface,
         border: `1px solid ${C.border}`,
@@ -116,7 +116,7 @@ export default function WizardAriaSidebar({ step }) {
         overflow: 'hidden',
       }}>
         <div style={headerStyle}>
-          {/* ARIA icon + pulse */}
+          {/* Freya icon + pulse */}
           <div style={{ position: 'relative', flexShrink: 0 }}>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <circle cx="10" cy="10" r="9" stroke={C.primary} strokeWidth="1.5"/>
@@ -129,12 +129,12 @@ export default function WizardAriaSidebar({ step }) {
               width: '7px', height: '7px', borderRadius: '50%',
               backgroundColor: C.primary,
               boxShadow: `0 0 5px ${C.primary}`,
-              animation: 'ariaSidebarPulse 2s ease-in-out infinite',
+              animation: 'freyaSidebarPulse 2s ease-in-out infinite',
             }}/>
           </div>
           <div>
             <div style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.textPrimary }}>
-              ARIA
+              Freya
             </div>
             <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textSecondary }}>
               {content.headline}
@@ -142,7 +142,7 @@ export default function WizardAriaSidebar({ step }) {
           </div>
         </div>
 
-        <style>{`@keyframes ariaSidebarPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }`}</style>
+        <style>{`@keyframes freyaSidebarPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }`}</style>
 
         {/* Insights */}
         <div style={{ marginTop: S[4] }}>
@@ -155,7 +155,7 @@ export default function WizardAriaSidebar({ step }) {
           ))}
         </div>
 
-        {/* Ask ARIA button */}
+        {/* Ask Freya button */}
         <button
           style={{
             display: 'flex',
@@ -173,9 +173,9 @@ export default function WizardAriaSidebar({ step }) {
             marginTop: S[3],
             transition: T.color,
           }}
-          onClick={() => toast.info('ARIA AI chat coming soon')}
+          onClick={() => toast.info('Freya AI chat coming soon')}
         >
-          Ask ARIA a question
+          Ask Freya a question
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
             <path d="M2 5h6M5 2l3 3-3 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>

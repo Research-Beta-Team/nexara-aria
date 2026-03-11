@@ -1,6 +1,6 @@
 /**
  * Single memory entry row: colored dot, truncated text (80 chars), source badge.
- * Source badge colors: Manual=muted | ARIA-Detected=mint | Campaign Import=teal | CRM Sync=amber
+ * Source badge colors: Manual=muted | Freya-Detected=mint | Campaign Import=teal | CRM Sync=amber
  */
 import { useState } from 'react';
 import { C, F, R, S } from '../../tokens';
@@ -8,7 +8,7 @@ import { C, F, R, S } from '../../tokens';
 const MAX_CHARS = 80;
 const SOURCE_STYLES = {
   Manual: { bg: C.surface3, color: C.textSecondary, border: C.border },
-  'ARIA-Detected': { bg: 'rgba(61,220,132,0.15)', color: C.primary, border: 'rgba(61,220,132,0.35)' },
+  'Freya-Detected': { bg: 'rgba(61,220,132,0.15)', color: C.primary, border: 'rgba(61,220,132,0.35)' },
   'Campaign Import': { bg: 'rgba(94,234,212,0.15)', color: C.secondary, border: 'rgba(94,234,212,0.35)' },
   'CRM Sync': { bg: C.amberDim, color: C.amber, border: C.amber },
 };

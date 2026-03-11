@@ -107,7 +107,7 @@ export default function WizardStep2({ data, onChange, errors, hasFeature, planId
           Ideal Customer Profile
         </h2>
         <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: 0 }}>
-          Define exactly who you're targeting. ARIA uses this for all outreach personalization.
+          Define exactly who you're targeting. Freya uses this for all outreach personalization.
         </p>
       </div>
 
@@ -196,7 +196,7 @@ export default function WizardStep2({ data, onChange, errors, hasFeature, planId
                   )}
                 </div>
                 <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>
-                  ARIA analyzes your best customers and suggests an ICP with fit scores.
+                  Freya analyzes your best customers and suggests an ICP with fit scores.
                 </div>
               </div>
             </button>
@@ -282,7 +282,7 @@ export default function WizardStep2({ data, onChange, errors, hasFeature, planId
           <span style={{ color: C.primary, marginLeft: '4px', fontWeight: 600 }}>browse to upload</span>
         </div>
         <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted, marginTop: '4px' }}>
-          PDF, Word, or CSV · ARIA will extract ICP signals automatically
+          PDF, Word, or CSV · Freya will extract ICP signals automatically
         </div>
       </div>
 

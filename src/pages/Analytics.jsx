@@ -185,7 +185,7 @@ function AriaReportCard() {
                 <circle cx="4.5" cy="4.5" r="1.2" fill={C.primary}/>
               </svg>
             </div>
-            <span style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: C.textPrimary }}>ARIA Report</span>
+            <span style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: C.textPrimary }}>Freya Report</span>
           </div>
           <span style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted }}>Generated Feb 28, 2025 · 90-day data</span>
         </div>

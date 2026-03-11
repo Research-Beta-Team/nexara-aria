@@ -224,7 +224,7 @@ export default function MessageThread({ thread, messages, onTaskToggle }) {
             <div style={{ display: 'flex' }}>
               {thread.participants.map((p, i) => (
                 <div key={p} style={{ marginLeft: i > 0 ? '-6px' : 0, zIndex: thread.participants.length - i }}>
-                  {p === 'ARIA' || p === 'Freya' ? (
+                  {p === 'Freya' ? (
                     <div style={{ width: 26, height: 26, borderRadius: '50%', backgroundColor: C.primaryGlow, border: `2px solid ${C.surface}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                         <circle cx="6" cy="6" r="5" stroke={C.primary} strokeWidth="1" strokeDasharray="2 1.5"/>
@@ -253,7 +253,7 @@ export default function MessageThread({ thread, messages, onTaskToggle }) {
             <div key={msg.id}>
               {showDate && <DateDivider date={msg.date} />}
               {msg.type === 'human'      && <HumanMessage msg={msg} />}
-              {msg.type === 'aria'       && <AriaMessage msg={msg} />}
+              {(msg.type === 'freya') && <AriaMessage msg={msg} />}
               {msg.type === 'task'       && <TaskCard msg={msg} onToggle={onTaskToggle} />}
               {msg.type === 'escalation' && <EscalationCard msg={msg} />}
               {msg.type === 'content'    && <ContentCard msg={msg} />}

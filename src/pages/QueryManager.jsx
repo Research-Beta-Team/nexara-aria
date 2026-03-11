@@ -22,12 +22,12 @@ const INIT_THREADS = [
 const INIT_MESSAGES = {
   t1: [
     { id: 'm1', threadId: 't1', type: 'human', author: 'James D.', avatar: 'JD', time: '9:00 AM', date: 'Feb 19, 2025', body: 'Quick check-in on the Medglobal CFO campaign. Where are we vs targets?' },
-    { id: 'm2', threadId: 't1', type: 'aria', author: 'Freya', time: '9:01 AM', date: 'Feb 19, 2025', body: 'Campaign Update — Medglobal VN CFO Q2 as of Feb 19:\n\n• MQLs: 24 / 15 target (160% ✓)\n• Budget consumed: $7,820 / $8,500 (92%)\n• Top performing channel: Email (CPL $225 vs LinkedIn $267)\n• Pipeline value: $1.4M\n\nAction needed: Budget Guardian has escalated a spend warning.' },
+    { id: 'm2', threadId: 't1', type: 'freya', author: 'Freya', time: '9:01 AM', date: 'Feb 19, 2025', body: 'Campaign Update — Medglobal VN CFO Q2 as of Feb 19:\n\n• MQLs: 24 / 15 target (160% ✓)\n• Budget consumed: $7,820 / $8,500 (92%)\n• Top performing channel: Email (CPL $225 vs LinkedIn $267)\n• Pipeline value: $1.4M\n\nAction needed: Budget Guardian has escalated a spend warning.' },
     { id: 'm3', threadId: 't1', type: 'escalation', author: 'Freya', avatar: 'Freya', time: '9:02 AM', date: 'Feb 19, 2025', body: 'Budget running low — decision needed.', escalationRef: { id: 'e1', title: 'Campaign budget 92% consumed — 19 days remaining', severity: 'High' } },
     { id: 'm4', threadId: 't1', type: 'human', author: 'Linh N.', avatar: 'LN', time: '10:15 AM', date: 'Feb 19, 2025', body: 'I say we approve the top-up. The MQL quality is great — 11 of 24 are stage 2 SQL.' },
     { id: 'm5', threadId: 't1', type: 'task', author: 'James D.', avatar: 'JD', time: '10:20 AM', date: 'Feb 19, 2025', task: { title: 'Get client approval for $2,000 budget top-up', assignee: 'James D.', dueDate: 'Feb 21', done: false } },
     { id: 'm6', threadId: 't1', type: 'content', author: 'Linh N.', avatar: 'LN', time: '2:30 PM', date: 'Feb 19, 2025', body: 'Attaching touch-4 for review before we approve:', contentRef: { id: 'cl4', name: 'CFO Q2 — Touch 4: CFO Case Study', type: 'Email' } },
-    { id: 'm7', threadId: 't1', type: 'aria', author: 'Freya', time: '2:34 PM', date: 'Feb 19, 2025', body: "Campaign hitting 160% of MQL target. Email CPL trending down — sequence is outperforming forecast.\n\nToday's stats: 3 new replies, 1 demo booked (Helen Tan, Dragon Capital). Next touch due for 12 prospects tomorrow." },
+    { id: 'm7', threadId: 't1', type: 'freya', author: 'Freya', time: '2:34 PM', date: 'Feb 19, 2025', body: "Campaign hitting 160% of MQL target. Email CPL trending down — sequence is outperforming forecast.\n\nToday's stats: 3 new replies, 1 demo booked (Helen Tan, Dragon Capital). Next touch due for 12 prospects tomorrow." },
   ],
   t4: [
     { id: 'm10', threadId: 't4', type: 'human', author: 'James D.', avatar: 'JD', time: '10:00 AM', date: 'Feb 21, 2025', body: 'Linh, can you own the ICP model update? Focus on the Vietnam manufacturing signal Freya identified.' },
@@ -35,13 +35,13 @@ const INIT_MESSAGES = {
     { id: 'm12', threadId: 't4', type: 'human', author: 'Linh N.', avatar: 'LN', time: '11:22 AM', date: 'Feb 21, 2025', body: "On it. I'll also check if we can pull the \"recent funding\" signal from LinkedIn data. Should have a draft config by EOW." },
   ],
   t6: [
-    { id: 'm20', threadId: 't6', type: 'aria', author: 'Freya', time: '3:00 PM', date: 'Feb 14, 2025', body: 'Medglobal VN onboarding initiated. KB docs have been uploaded and indexed:\n\n✓ Medglobal VN Company Brief\n✓ CFO Persona Card\n✓ Competitor Analysis\n\nCampaign agents are briefed and ready to launch once the campaign brief is approved.' },
+    { id: 'm20', threadId: 't6', type: 'freya', author: 'Freya', time: '3:00 PM', date: 'Feb 14, 2025', body: 'Medglobal VN onboarding initiated. KB docs have been uploaded and indexed:\n\n✓ Medglobal VN Company Brief\n✓ CFO Persona Card\n✓ Competitor Analysis\n\nCampaign agents are briefed and ready to launch once the campaign brief is approved.' },
     { id: 'm21', threadId: 't6', type: 'human', author: 'James D.', avatar: 'JD', time: '3:15 PM', date: 'Feb 14, 2025', body: 'Great. Also need to get the CFO Pain Point Research into the KB — Linh do you have that doc?' },
     { id: 'm22', threadId: 't6', type: 'human', author: 'Linh N.', avatar: 'LN', time: '9:30 AM', date: 'Feb 15, 2025', body: 'Uploaded — Freya should have it now.' },
-    { id: 'm23', threadId: 't6', type: 'aria', author: 'Freya', time: '9:31 AM', date: 'Feb 15, 2025', body: 'CFO Pain Point Research indexed. ✓\n\nNew insight: 63% of surveyed CFOs report close cycle >7 days. Adding to ICP scoring — companies with manual close cycle now score +15 points.' },
+    { id: 'm23', threadId: 't6', type: 'freya', author: 'Freya', time: '9:31 AM', date: 'Feb 15, 2025', body: 'CFO Pain Point Research indexed. ✓\n\nNew insight: 63% of surveyed CFOs report close cycle >7 days. Adding to ICP scoring — companies with manual close cycle now score +15 points.' },
   ],
   t9: [
-    { id: 'm30', threadId: 't9', type: 'aria', author: 'Freya', time: '9:00 AM', date: 'Feb 1, 2025', body: 'Antarious Platform Update — February 2025\n\nNew capabilities now live:\n\n1. Insight Engine v2 — now surfaces competitive signals from LinkedIn activity\n2. Budget Guardian — real-time spend tracking with configurable alerts\n3. Content Library — multi-type preview with brand scoring\n4. Knowledge Base — drag-and-drop upload with Freya auto-tagging\n\nAll agents have been updated. No action required from your team.' },
+    { id: 'm30', threadId: 't9', type: 'freya', author: 'Freya', time: '9:00 AM', date: 'Feb 1, 2025', body: 'Antarious Platform Update — February 2025\n\nNew capabilities now live:\n\n1. Insight Engine v2 — now surfaces competitive signals from LinkedIn activity\n2. Budget Guardian — real-time spend tracking with configurable alerts\n3. Content Library — multi-type preview with brand scoring\n4. Knowledge Base — drag-and-drop upload with Freya auto-tagging\n\nAll agents have been updated. No action required from your team.' },
   ],
 };
 

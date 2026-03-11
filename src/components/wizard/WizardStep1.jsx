@@ -21,14 +21,14 @@ function Field({ label, children, error }) {
   );
 }
 
-function TextInput({ value, onChange, placeholder, type = 'text' }) {
+function TextInput({ value, onChange, placeholder, type = 'text', style: styleOverride }) {
   return (
     <input
       type={type}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      style={inputStyle}
+      style={{ ...inputStyle, ...styleOverride }}
     />
   );
 }
@@ -129,7 +129,7 @@ export default function WizardStep1({ data, onChange, errors }) {
             type="date"
             value={data.deadline}
             onChange={(e) => onChange('deadline', e.target.value)}
-            style={{ ...inputStyle, colorScheme: 'dark' }}
+            style={{ ...inputStyle, colorScheme: 'dark', width: 'fit-content', minWidth: undefined, maxWidth: undefined }}
           />
         </Field>
       </div>
@@ -140,6 +140,7 @@ export default function WizardStep1({ data, onChange, errors }) {
           value={data.client}
           onChange={(v) => onChange('client', v)}
           placeholder="e.g. Medglobal"
+          style={{ width: '1281px' }}
         />
       </Field>
     </div>

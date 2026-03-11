@@ -533,7 +533,7 @@ export default function ICPDefinitionPanel() {
           </div>
         </div>
 
-        {/* ARIA commentary */}
+        {/* Freya commentary */}
         <div style={{
           backgroundColor: 'rgba(61,220,132,0.06)',
           border:          `1px solid rgba(61,220,132,0.18)`,

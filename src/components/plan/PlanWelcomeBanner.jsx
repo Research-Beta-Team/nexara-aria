@@ -18,7 +18,7 @@ const PLAN_FEATURES = {
   agency: [
     { label: 'White-Label', path: '/workspace/whitelabel' },
     { label: 'Unlimited teams', path: '/team' },
-    { label: 'ARIA Voice', path: '/aria-brain' },
+    { label: 'Freya Voice', path: '/freya-brain' },
   ],
 };
 

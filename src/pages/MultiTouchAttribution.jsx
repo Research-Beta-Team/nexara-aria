@@ -35,7 +35,7 @@ export default function MultiTouchAttribution() {
   const pipelineInfluence = getPipelineInfluence(model);
 
   const handleExport = () => toast.info('Export (mock).');
-  const handleAskAria = () => toast.info('Ask ARIA (mock).');
+  const handleAskFreya = () => toast.info('Ask Freya (mock).');
 
   return (
     <div style={{ minHeight: '100%', backgroundColor: C.bg, padding: S[6] }}>
@@ -71,8 +71,8 @@ export default function MultiTouchAttribution() {
           <button type="button" onClick={handleExport} style={btn.secondary}>
             Export
           </button>
-          <button type="button" onClick={handleAskAria} style={btn.primary}>
-            Ask ARIA
+          <button type="button" onClick={handleAskFreya} style={btn.primary}>
+            Ask Freya
           </button>
         </div>
       </div>

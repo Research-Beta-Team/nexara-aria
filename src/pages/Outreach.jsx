@@ -47,7 +47,7 @@ export default function Outreach() {
   const toast = useToast();
   const activeClientId = useStore((s) => s.activeClientId);
   const currentRole = useStore((s) => s.currentRole);
-  const toggleAria = useStore((s) => s.toggleAria);
+  const toggleFreya = useStore((s) => s.toggleFreya);
 
   const [viewMode, setViewModeState] = useState(() => {
     try {
@@ -151,7 +151,7 @@ export default function Outreach() {
           <button type="button" style={{ ...btn.secondary, fontSize: '13px' }} onClick={() => toast.info('Add prospects flow coming soon')}>
             Add prospects
           </button>
-          <button type="button" style={{ ...btn.secondary, fontSize: '13px' }} onClick={() => { toggleAria(); toast.info('Ask Freya: "Who should I follow up with?"'); }}>
+          <button type="button" style={{ ...btn.secondary, fontSize: '13px' }} onClick={() => { toggleFreya(); toast.info('Ask Freya: "Who should I follow up with?"'); }}>
             Ask Freya
           </button>
           <button type="button" style={{ ...btn.primary, fontSize: '13px' }} onClick={() => navigate('/campaigns/new')}>

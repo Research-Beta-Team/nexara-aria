@@ -9,13 +9,13 @@ export const workspaceTemplates = [
     id: 'b2b-saas',
     name: 'B2B SaaS',
     description: 'Demos, pipeline, ICP research, outreach, paid and analytics.',
-    icon: '🚀',
+    iconKey: 'rocket',
     color: '#3DDC84',
     layout: {
       visibleModules: ['dashboard', 'campaigns', 'outreach', 'content', 'knowledge', 'calendar', 'analytics', 'inbox', 'pipeline', 'forecast', 'customer-success', 'research/icp', 'research/intent', 'research/competitive', 'abm', 'playbooks', 'querymanager', 'meta-monitoring'],
       hiddenModules: ['social', 'escalations'],
       sidebarOrder: ['dashboard', 'campaigns', 'outreach', 'content', 'knowledge', 'calendar', 'analytics', 'inbox', 'pipeline', 'forecast', 'customer-success', 'research/icp', 'research/intent', 'research/competitive', 'abm', 'playbooks', 'querymanager', 'meta-monitoring'],
-      dashboardWidgets: ['campaign_health', 'meta_spend', 'aria_insights', 'agent_activity', 'escalation_queue', 'pipeline_funnel'],
+      dashboardWidgets: ['campaign_health', 'meta_spend', 'freya_insights', 'agent_activity', 'escalation_queue', 'pipeline_funnel'],
       dashboardLayout: '2-col',
     },
     agents: {
@@ -23,7 +23,7 @@ export const workspaceTemplates = [
       disabled: ['competitor_intel', 'social_media'],
       primaryAgent: 'gtm_strategist',
     },
-    aria: {
+    freya: {
       persona: 'cro',
       language: 'en',
       defaultRules: [
@@ -53,13 +53,13 @@ export const workspaceTemplates = [
     id: 'ecommerce-d2c',
     name: 'E-commerce / D2C',
     description: 'ROAS, Meta, social, content. No outreach or pipeline.',
-    icon: '🛒',
+    iconKey: 'cart',
     color: '#5EEAD4',
     layout: {
       visibleModules: ['dashboard', 'campaigns', 'content', 'analytics', 'social', 'meta-monitoring'],
       hiddenModules: ['outreach', 'inbox', 'pipeline', 'research/icp', 'research/intent', 'research/competitive', 'abm', 'playbooks', 'forecast', 'customer-success', 'escalations', 'knowledge', 'querymanager'],
       sidebarOrder: ['dashboard', 'campaigns', 'content', 'analytics', 'social', 'meta-monitoring'],
-      dashboardWidgets: ['campaign_health', 'meta_spend', 'aria_insights', 'agent_activity', 'roas_tracker', 'social_reach'],
+      dashboardWidgets: ['campaign_health', 'meta_spend', 'freya_insights', 'agent_activity', 'roas_tracker', 'social_reach'],
       dashboardLayout: '2-col',
     },
     agents: {
@@ -67,7 +67,7 @@ export const workspaceTemplates = [
       disabled: ['gtm_strategist', 'icp_researcher', 'competitor_intel', 'sdr'],
       primaryAgent: 'growth_marketer',
     },
-    aria: {
+    freya: {
       persona: 'growth_marketer',
       language: 'en',
       defaultRules: [
@@ -96,13 +96,13 @@ export const workspaceTemplates = [
     id: 'professional-services',
     name: 'Professional Services',
     description: 'Referral pipeline, BD lead, competitive intel, outreach.',
-    icon: '💼',
+    iconKey: 'briefcase',
     color: '#F5C842',
     layout: {
       visibleModules: ['dashboard', 'campaigns', 'outreach', 'content', 'analytics', 'research/competitive'],
       hiddenModules: ['inbox', 'pipeline', 'social', 'research/icp', 'research/intent', 'abm', 'playbooks', 'forecast', 'customer-success', 'meta-monitoring', 'escalations', 'knowledge', 'querymanager'],
       sidebarOrder: ['dashboard', 'campaigns', 'outreach', 'content', 'analytics', 'research/competitive'],
-      dashboardWidgets: ['campaign_health', 'aria_insights', 'agent_activity', 'pipeline_funnel'],
+      dashboardWidgets: ['campaign_health', 'freya_insights', 'agent_activity', 'pipeline_funnel'],
       dashboardLayout: '2-col',
     },
     agents: {
@@ -110,7 +110,7 @@ export const workspaceTemplates = [
       disabled: ['meta_ads', 'meta_monitor', 'social_media', 'seo'],
       primaryAgent: 'bd_lead',
     },
-    aria: {
+    freya: {
       persona: 'bd_lead',
       language: 'en',
       defaultRules: [
@@ -139,13 +139,13 @@ export const workspaceTemplates = [
     id: 'ngo-fundraising',
     name: 'NGO / Fundraising',
     description: 'Donor impact, content, social, email. No outreach or meta monitoring.',
-    icon: '🌍',
+    iconKey: 'globe',
     color: '#FF6E7A',
     layout: {
       visibleModules: ['dashboard', 'campaigns', 'content', 'analytics', 'social', 'inbox'],
       hiddenModules: ['outreach', 'pipeline', 'research/icp', 'research/intent', 'research/competitive', 'abm', 'playbooks', 'forecast', 'customer-success', 'meta-monitoring', 'escalations', 'knowledge', 'querymanager'],
       sidebarOrder: ['dashboard', 'campaigns', 'content', 'analytics', 'social', 'inbox'],
-      dashboardWidgets: ['campaign_health', 'aria_insights', 'agent_activity', 'donor_pipeline', 'social_reach'],
+      dashboardWidgets: ['campaign_health', 'freya_insights', 'agent_activity', 'donor_pipeline', 'social_reach'],
       dashboardLayout: '2-col',
     },
     agents: {
@@ -153,7 +153,7 @@ export const workspaceTemplates = [
       disabled: ['gtm_strategist', 'icp_researcher', 'competitor_intel', 'sdr', 'meta_ads', 'meta_monitor'],
       primaryAgent: 'campaign_coordinator',
     },
-    aria: {
+    freya: {
       persona: 'campaign_coordinator',
       language: 'en',
       defaultRules: [
@@ -182,13 +182,13 @@ export const workspaceTemplates = [
     id: 'local-business-bd',
     name: 'Local Business Bangladesh',
     description: 'Facebook-first, Bengali–English, simplified modules.',
-    icon: '🇧🇩',
+    iconKey: 'building',
     color: '#3DDC84',
     layout: {
       visibleModules: ['dashboard', 'campaigns', 'content', 'social', 'inbox', 'analytics'],
       hiddenModules: ['outreach', 'pipeline', 'research/icp', 'research/intent', 'research/competitive', 'abm', 'playbooks', 'forecast', 'customer-success', 'meta-monitoring', 'escalations', 'knowledge', 'querymanager'],
       sidebarOrder: ['dashboard', 'campaigns', 'content', 'social', 'inbox', 'analytics'],
-      dashboardWidgets: ['campaign_health', 'meta_spend', 'aria_insights', 'agent_activity', 'social_reach'],
+      dashboardWidgets: ['campaign_health', 'meta_spend', 'freya_insights', 'agent_activity', 'social_reach'],
       dashboardLayout: '2-col',
     },
     agents: {
@@ -196,7 +196,7 @@ export const workspaceTemplates = [
       disabled: ['gtm_strategist', 'icp_researcher', 'competitor_intel', 'sdr', 'seo', 'analytics'],
       primaryAgent: 'growth_marketer',
     },
-    aria: {
+    freya: {
       persona: 'growth_marketer',
       language: 'bn-en',
       defaultRules: [
@@ -225,13 +225,13 @@ export const workspaceTemplates = [
     id: 'custom',
     name: 'Custom',
     description: 'Everything enabled; KPIs and workflow configured by CSM.',
-    icon: '⚙️',
+    iconKey: 'settings',
     color: '#6B9478',
     layout: {
       visibleModules: ['dashboard', 'campaigns', 'outreach', 'content', 'analytics', 'inbox', 'pipeline', 'social', 'research/icp', 'research/intent', 'research/competitive', 'abm', 'playbooks', 'forecast', 'customer-success', 'meta-monitoring', 'escalations', 'knowledge', 'querymanager'],
       hiddenModules: [],
       sidebarOrder: ['dashboard', 'campaigns', 'outreach', 'content', 'analytics', 'inbox', 'pipeline', 'social', 'research/icp', 'research/intent', 'research/competitive', 'abm', 'playbooks', 'forecast', 'customer-success', 'meta-monitoring', 'escalations', 'knowledge', 'querymanager'],
-      dashboardWidgets: ['campaign_health', 'meta_spend', 'aria_insights', 'agent_activity', 'escalation_queue', 'pipeline_funnel', 'social_reach', 'donor_pipeline', 'roas_tracker'],
+      dashboardWidgets: ['campaign_health', 'meta_spend', 'freya_insights', 'agent_activity', 'escalation_queue', 'pipeline_funnel', 'social_reach', 'donor_pipeline', 'roas_tracker'],
       dashboardLayout: '3-col',
     },
     agents: {
@@ -239,7 +239,7 @@ export const workspaceTemplates = [
       disabled: [],
       primaryAgent: 'gtm_strategist',
     },
-    aria: {
+    freya: {
       persona: 'cro',
       language: 'en',
       defaultRules: [],

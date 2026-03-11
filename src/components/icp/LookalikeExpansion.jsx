@@ -74,7 +74,7 @@ export default function LookalikeExpansion() {
   const handleFind = () => {
     if (total !== 100) { toast.error(`Weights must sum to 100 (currently ${total})`); return; }
     setSearching(true);
-    toast.info('ARIA is searching Apollo + LinkedIn for lookalike companies…');
+    toast.info('Freya is searching Apollo + LinkedIn for lookalike companies…');
     setTimeout(() => {
       setSearching(false);
       toast.success(`Found ${lookalikes.length} lookalike companies matching your ICP`);
@@ -119,7 +119,7 @@ export default function LookalikeExpansion() {
           Lookalike Expansion
         </span>
         <span style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary }}>
-          Find companies that resemble your top 10 closed-won customers. ARIA searches Apollo, LinkedIn, and BuiltWith.
+          Find companies that resemble your top 10 closed-won customers. Freya searches Apollo, LinkedIn, and BuiltWith.
         </span>
       </div>
 

@@ -1,12 +1,12 @@
 import { create } from 'zustand';
 import { clientWorkspaceProfiles as initialWorkspaceProfiles } from '../data/clientWorkspaceProfiles';
 import { CONNECTED_ACCOUNTS as initialConnectedAccounts, SOCIAL_CAMPAIGNS_INITIAL } from '../data/social';
-import { getInitialAriaMemory } from '../data/memoryMock';
+import { getInitialFreyaMemory } from '../data/memoryMock';
 import { approvalsMock } from '../data/approvalsMock';
 import { mqlQueueMock } from '../data/handoffMock';
 
 const AUTH_STORAGE_KEY = 'nexara_auth';
-const ARIA_CHATS_STORAGE_KEY = 'nexara_aria_chats';
+const FREYA_CHATS_STORAGE_KEY = 'nexara_freya_chats';
 
 function readAuthFromStorage() {
   try {
@@ -28,24 +28,24 @@ function writeAuthToStorage(isAuthenticated, isOnboarded) {
   } catch (_) {}
 }
 
-function readAriaChatsFromStorage() {
+function readFreyaChatsFromStorage() {
   try {
-    const raw = localStorage.getItem(ARIA_CHATS_STORAGE_KEY);
-    if (!raw) return { ariaFolders: [], ariaChats: [], ariaCurrentChatId: null };
+    const raw = localStorage.getItem(FREYA_CHATS_STORAGE_KEY);
+    if (!raw) return { freyaFolders: [], freyaChats: [], freyaCurrentChatId: null };
     const data = JSON.parse(raw);
     return {
-      ariaFolders: Array.isArray(data.folders) ? data.folders : [],
-      ariaChats: Array.isArray(data.chats) ? data.chats : [],
-      ariaCurrentChatId: data.currentChatId ?? null,
+      freyaFolders: Array.isArray(data.folders) ? data.folders : [],
+      freyaChats: Array.isArray(data.chats) ? data.chats : [],
+      freyaCurrentChatId: data.currentChatId ?? null,
     };
   } catch {
-    return { ariaFolders: [], ariaChats: [], ariaCurrentChatId: null };
+    return { freyaFolders: [], freyaChats: [], freyaCurrentChatId: null };
   }
 }
 
-function writeAriaChatsToStorage(folders, chats, currentChatId) {
+function writeFreyaChatsToStorage(folders, chats, currentChatId) {
   try {
-    localStorage.setItem(ARIA_CHATS_STORAGE_KEY, JSON.stringify({
+    localStorage.setItem(FREYA_CHATS_STORAGE_KEY, JSON.stringify({
       folders: folders || [],
       chats: chats || [],
       currentChatId: currentChatId ?? null,
@@ -83,7 +83,7 @@ const useStore = create((set, get) => ({
   isAuthenticated: initialAuth.isAuthenticated,
 
   // ── UI State ────────────────────────────────
-  ariaOpen: false,
+  freyaOpen: false,
   sidebarCollapsed: false,
   onboardingComplete: false,
   onboardingSkipped: false,
@@ -91,7 +91,7 @@ const useStore = create((set, get) => ({
   onboardingSelectedPlanId: '',
   onboardingConnections: { website: '', crm: '', ads: false },
   isOnboarded: initialAuth.isOnboarded,
-  ariaMomentCompleted: false,
+    freyaMomentCompleted: false,
   onboardingExtraction: null,
   isDarkMode: true,
 
@@ -117,10 +117,10 @@ const useStore = create((set, get) => ({
     google: false,
   },
 
-  // ── Previous ads: permission to fetch previous ads and add to ARIA to learn ──
+  // ── Previous ads: permission to fetch previous ads and add to Freya to learn ──
   paidAdsPermissions: {
     allowFetch: false,
-    allowAriaLearn: false,
+    allowFreyaLearn: false,
   },
 
   // ── Notifications ────────────────────────────
@@ -150,13 +150,13 @@ const useStore = create((set, get) => ({
   rolloverBalance: 4200,
   creditBurnRatePerDay: 612,
 
-  // ── ARIA: escalations & scheduled actions (for tool executor) ──
-  ariaEscalations: [],
-  ariaScheduledActions: [],
+  // ── Freya: escalations & scheduled actions (for tool executor) ──
+  freyaEscalations: [],
+  freyaScheduledActions: [],
 
-  // ── ARIA Weekly Brief & Priority ─────────────────────────────
-  ariaWeeklyPriority: '',
-  ariaBriefModalOpen: false,
+  // ── Freya Weekly Brief & Priority ─────────────────────────────
+  freyaWeeklyPriority: '',
+  freyaBriefModalOpen: false,
 
   // ── Social: connected accounts + campaigns (posts editable/reorderable) ──
   connectedAccounts: initialConnectedAccounts,
@@ -173,14 +173,14 @@ const useStore = create((set, get) => ({
     Email:    { assignedTo: 'u4', freyaHandles: true },   // u4 = Priya (Content)
   },
 
-  // ── ARIA Persona Configuration ──────────────────────────────
-  ariaPersonaId: 'cro',
-  ariaOperatingRole: 'Chief Revenue Officer',
-  ariaCustomRoleDescription: '',
-  ariaCompanyBrand: 'Medglobal',
-  ariaIndustry: 'B2B SaaS / GTM Agency',
-  ariaPrimaryMarket: 'Bangladesh, South Asia',
-  ariaCustomRules: [
+  // ── Freya Persona Configuration ──────────────────────────────
+  freyaPersonaId: 'cro',
+  freyaOperatingRole: 'Chief Revenue Officer',
+  freyaCustomRoleDescription: '',
+  freyaCompanyBrand: 'Medglobal',
+  freyaIndustry: 'B2B SaaS / GTM Agency',
+  freyaPrimaryMarket: 'Bangladesh, South Asia',
+  freyaCustomRules: [
     { id: 'r1', text: 'Always be concise — executives don\'t read long paragraphs', enabled: true, category: 'TONE' },
     { id: 'r2', text: 'Lead with data — every recommendation must cite a number', enabled: true, category: 'STRATEGY' },
     { id: 'r3', text: 'Never use buzzwords like \'synergy\', \'leverage\', \'deep dive\'', enabled: true, category: 'TONE' },
@@ -188,11 +188,11 @@ const useStore = create((set, get) => ({
     { id: 'r5', text: 'Always include a competitor angle in campaign strategies', enabled: true, category: 'STRATEGY' },
   ],
 
-  // ── ARIA Co-pilot: chat history & project folders ──
-  ...readAriaChatsFromStorage(),
+  // ── Freya Co-pilot: chat history & project folders ──
+  ...readFreyaChatsFromStorage(),
 
-  // ── ARIA Persistent Memory (Session 1 — brand, audience, campaigns, performance) ──
-  ariaMemory: getInitialAriaMemory(),
+  // ── Freya Persistent Memory (Session 1 — brand, audience, campaigns, performance) ──
+  freyaMemory: getInitialFreyaMemory(),
 
   // ── Actions: Identity ────────────────────────
   setRole: (role) => set({ currentRole: role }),
@@ -326,7 +326,7 @@ const useStore = create((set, get) => ({
       isAuthenticated: true,
       isOnboarded: false,
       onboardingComplete: false,
-      ariaMomentCompleted: false,
+      freyaMomentCompleted: false,
     });
     writeAuthToStorage(true, false);
     if (import.meta.env.DEV) {
@@ -356,7 +356,7 @@ const useStore = create((set, get) => ({
     set({
       onboardingComplete: true,
       isOnboarded: true,
-      ariaMomentCompleted: true,
+      freyaMomentCompleted: true,
     });
     writeAuthToStorage(get().isAuthenticated, true);
   },
@@ -385,9 +385,9 @@ const useStore = create((set, get) => ({
 
   toggleTheme: () => set((s) => ({ isDarkMode: !s.isDarkMode })),
 
-  toggleAria: () => set((state) => ({ ariaOpen: !state.ariaOpen })),
+  toggleFreya: () => set((state) => ({ freyaOpen: !state.freyaOpen })),
 
-  setAriaOpen: (open) => set({ ariaOpen: Boolean(open) }),
+  setFreyaOpen: (open) => set({ freyaOpen: Boolean(open) }),
 
   setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
 
@@ -475,78 +475,78 @@ const useStore = create((set, get) => ({
   consumeCredits: (amount) =>
     set((state) => ({ creditsUsed: state.creditsUsed + amount })),
 
-  addAriaEscalation: (escalation) =>
-    set((state) => ({ ariaEscalations: [...state.ariaEscalations, escalation] })),
+  addFreyaEscalation: (escalation) =>
+    set((state) => ({ freyaEscalations: [...state.freyaEscalations, escalation] })),
 
-  addAriaScheduledAction: (action) =>
-    set((state) => ({ ariaScheduledActions: [...state.ariaScheduledActions, action] })),
+  addFreyaScheduledAction: (action) =>
+    set((state) => ({ freyaScheduledActions: [...state.freyaScheduledActions, action] })),
 
-  setAriaWeeklyPriority: (text) => set({ ariaWeeklyPriority: text ?? '' }),
+  setFreyaWeeklyPriority: (text) => set({ freyaWeeklyPriority: text ?? '' }),
 
-  setAriaBriefModalOpen: (open) => set({ ariaBriefModalOpen: Boolean(open) }),
+  setFreyaBriefModalOpen: (open) => set({ freyaBriefModalOpen: Boolean(open) }),
 
-  setARIAPersona: (personaId, roleName) =>
-    set({ ariaPersonaId: personaId, ariaOperatingRole: roleName || '' }),
+  setFreyaPersona: (personaId, roleName) =>
+    set({ freyaPersonaId: personaId, freyaOperatingRole: roleName || '' }),
 
-  setARIACustomRoleDescription: (text) => set({ ariaCustomRoleDescription: text || '' }),
+  setFreyaCustomRoleDescription: (text) => set({ freyaCustomRoleDescription: text || '' }),
 
-  setARIAContext: (payload) =>
+  setFreyaContext: (payload) =>
     set((s) => ({
-      ariaCompanyBrand: payload.companyBrand !== undefined ? payload.companyBrand : s.ariaCompanyBrand,
-      ariaIndustry: payload.industry !== undefined ? payload.industry : s.ariaIndustry,
-      ariaPrimaryMarket: payload.primaryMarket !== undefined ? payload.primaryMarket : s.ariaPrimaryMarket,
+      freyaCompanyBrand: payload.companyBrand !== undefined ? payload.companyBrand : s.freyaCompanyBrand,
+      freyaIndustry: payload.industry !== undefined ? payload.industry : s.freyaIndustry,
+      freyaPrimaryMarket: payload.primaryMarket !== undefined ? payload.primaryMarket : s.freyaPrimaryMarket,
     })),
 
-  addARIARule: (rule) =>
+  addFreyaRule: (rule) =>
     set((state) => ({
-      ariaCustomRules: [...state.ariaCustomRules, { ...rule, id: rule.id || `r-${Date.now()}` }],
+      freyaCustomRules: [...state.freyaCustomRules, { ...rule, id: rule.id || `r-${Date.now()}` }],
     })),
 
-  updateARIARule: (ruleId, updates) =>
+  updateFreyaRule: (ruleId, updates) =>
     set((state) => ({
-      ariaCustomRules: state.ariaCustomRules.map((r) =>
+      freyaCustomRules: state.freyaCustomRules.map((r) =>
         r.id === ruleId ? { ...r, ...updates } : r
       ),
     })),
 
-  toggleARIARule: (ruleId) =>
+  toggleFreyaRule: (ruleId) =>
     set((state) => ({
-      ariaCustomRules: state.ariaCustomRules.map((r) =>
+      freyaCustomRules: state.freyaCustomRules.map((r) =>
         r.id === ruleId ? { ...r, enabled: !r.enabled } : r
       ),
     })),
 
-  removeARIARule: (ruleId) =>
+  removeFreyaRule: (ruleId) =>
     set((state) => ({
-      ariaCustomRules: state.ariaCustomRules.filter((r) => r.id !== ruleId),
+      freyaCustomRules: state.freyaCustomRules.filter((r) => r.id !== ruleId),
     })),
 
-  // ── ARIA Co-pilot: chats & folders (persisted) ──
-  addAriaFolder: (name) => {
+  // ── Freya Co-pilot: chats & folders (persisted) ──
+  addFreyaFolder: (name) => {
     const id = `folder-${Date.now()}`;
     set((state) => {
-      const next = [...(state.ariaFolders || []), { id, name: name || 'New folder' }];
-      writeAriaChatsToStorage(next, state.ariaChats, state.ariaCurrentChatId);
-      return { ariaFolders: next };
+      const next = [...(state.freyaFolders || []), { id, name: name || 'New folder' }];
+      writeFreyaChatsToStorage(next, state.freyaChats, state.freyaCurrentChatId);
+      return { freyaFolders: next };
     });
     return id;
   },
-  updateAriaFolder: (folderId, name) =>
+  updateFreyaFolder: (folderId, name) =>
     set((state) => {
-      const next = (state.ariaFolders || []).map((f) => (f.id === folderId ? { ...f, name } : f));
-      writeAriaChatsToStorage(next, state.ariaChats, state.ariaCurrentChatId);
-      return { ariaFolders: next };
+      const next = (state.freyaFolders || []).map((f) => (f.id === folderId ? { ...f, name } : f));
+      writeFreyaChatsToStorage(next, state.freyaChats, state.freyaCurrentChatId);
+      return { freyaFolders: next };
     }),
-  removeAriaFolder: (folderId) =>
+  removeFreyaFolder: (folderId) =>
     set((state) => {
-      const nextFolders = (state.ariaFolders || []).filter((f) => f.id !== folderId);
-      const nextChats = (state.ariaChats || []).map((c) =>
+      const nextFolders = (state.freyaFolders || []).filter((f) => f.id !== folderId);
+      const nextChats = (state.freyaChats || []).map((c) =>
         c.folderId === folderId ? { ...c, folderId: null } : c
       );
-      writeAriaChatsToStorage(nextFolders, nextChats, state.ariaCurrentChatId);
-      return { ariaFolders: nextFolders, ariaChats: nextChats };
+      writeFreyaChatsToStorage(nextFolders, nextChats, state.freyaCurrentChatId);
+      return { freyaFolders: nextFolders, freyaChats: nextChats };
     }),
-  addAriaChat: (opts = {}) => {
+  addFreyaChat: (opts = {}) => {
     const id = `chat-${Date.now()}`;
     const now = new Date().toISOString();
     const chat = {
@@ -558,84 +558,84 @@ const useStore = create((set, get) => ({
       messages: opts.messages ?? [],
     };
     set((state) => {
-      const next = [chat, ...(state.ariaChats || [])];
-      writeAriaChatsToStorage(state.ariaFolders, next, id);
-      return { ariaChats: next, ariaCurrentChatId: id };
+      const next = [chat, ...(state.freyaChats || [])];
+      writeFreyaChatsToStorage(state.freyaFolders, next, id);
+      return { freyaChats: next, freyaCurrentChatId: id };
     });
     return id;
   },
-  updateAriaChat: (chatId, updates) =>
+  updateFreyaChat: (chatId, updates) =>
     set((state) => {
-      const next = (state.ariaChats || []).map((c) =>
+      const next = (state.freyaChats || []).map((c) =>
         c.id === chatId ? { ...c, ...updates, updatedAt: new Date().toISOString() } : c
       );
-      writeAriaChatsToStorage(state.ariaFolders, next, state.ariaCurrentChatId);
-      return { ariaChats: next };
+      writeFreyaChatsToStorage(state.freyaFolders, next, state.freyaCurrentChatId);
+      return { freyaChats: next };
     }),
-  updateAriaChatMessages: (chatId, messages) =>
+  updateFreyaChatMessages: (chatId, messages) =>
     set((state) => {
       const firstUser = messages?.find((m) => m.role === 'user');
       const title = firstUser?.text ? firstUser.text.slice(0, 40) + (firstUser.text.length > 40 ? '…' : '') : 'New chat';
-      const next = (state.ariaChats || []).map((c) =>
+      const next = (state.freyaChats || []).map((c) =>
         c.id === chatId ? { ...c, messages: messages || [], title, updatedAt: new Date().toISOString() } : c
       );
-      writeAriaChatsToStorage(state.ariaFolders, next, state.ariaCurrentChatId);
-      return { ariaChats: next };
+      writeFreyaChatsToStorage(state.freyaFolders, next, state.freyaCurrentChatId);
+      return { freyaChats: next };
     }),
-  removeAriaChat: (chatId) =>
+  removeFreyaChat: (chatId) =>
     set((state) => {
-      const next = (state.ariaChats || []).filter((c) => c.id !== chatId);
-      const nextCurrent = state.ariaCurrentChatId === chatId ? (next[0]?.id ?? null) : state.ariaCurrentChatId;
-      writeAriaChatsToStorage(state.ariaFolders, next, nextCurrent);
-      return { ariaChats: next, ariaCurrentChatId: nextCurrent };
+      const next = (state.freyaChats || []).filter((c) => c.id !== chatId);
+      const nextCurrent = state.freyaCurrentChatId === chatId ? (next[0]?.id ?? null) : state.freyaCurrentChatId;
+      writeFreyaChatsToStorage(state.freyaFolders, next, nextCurrent);
+      return { freyaChats: next, freyaCurrentChatId: nextCurrent };
     }),
-  setAriaCurrentChatId: (chatId) =>
+  setFreyaCurrentChatId: (chatId) =>
     set((state) => {
-      writeAriaChatsToStorage(state.ariaFolders, state.ariaChats, chatId);
-      return { ariaCurrentChatId: chatId };
+      writeFreyaChatsToStorage(state.freyaFolders, state.freyaChats, chatId);
+      return { freyaCurrentChatId: chatId };
     }),
-  moveAriaChatToFolder: (chatId, folderId) =>
+  moveFreyaChatToFolder: (chatId, folderId) =>
     set((state) => {
-      const next = (state.ariaChats || []).map((c) =>
+      const next = (state.freyaChats || []).map((c) =>
         c.id === chatId ? { ...c, folderId } : c
       );
-      writeAriaChatsToStorage(state.ariaFolders, next, state.ariaCurrentChatId);
-      return { ariaChats: next };
+      writeFreyaChatsToStorage(state.freyaFolders, next, state.freyaCurrentChatId);
+      return { freyaChats: next };
     }),
 
-  // ── ARIA Persistent Memory actions ───────────────────────────
+  // ── Freya Persistent Memory actions ───────────────────────────
   addMemoryEntry: (namespace, entry) =>
     set((state) => {
       const key = namespace;
-      if (!state.ariaMemory || !state.ariaMemory[key]) return state;
+      if (!state.freyaMemory || !state.freyaMemory[key]) return state;
       const id = entry.id || `mem-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
       const withTimestamp = { ...entry, id, updatedAt: entry.updatedAt || new Date().toISOString(), source: entry.source || 'Manual' };
       return {
-        ariaMemory: {
-          ...state.ariaMemory,
-          [key]: [...state.ariaMemory[key], withTimestamp],
+        freyaMemory: {
+          ...state.freyaMemory,
+          [key]: [...state.freyaMemory[key], withTimestamp],
         },
       };
     }),
   deleteMemoryEntry: (namespace, id) =>
     set((state) => {
       const key = namespace;
-      if (!state.ariaMemory || !state.ariaMemory[key]) return state;
+      if (!state.freyaMemory || !state.freyaMemory[key]) return state;
       return {
-        ariaMemory: {
-          ...state.ariaMemory,
-          [key]: state.ariaMemory[key].filter((e) => e.id !== id),
+        freyaMemory: {
+          ...state.freyaMemory,
+          [key]: state.freyaMemory[key].filter((e) => e.id !== id),
         },
       };
     }),
   updateMemoryEntry: (namespace, id, content) =>
     set((state) => {
       const key = namespace;
-      if (!state.ariaMemory || !state.ariaMemory[key]) return state;
+      if (!state.freyaMemory || !state.freyaMemory[key]) return state;
       return {
-        ariaMemory: {
-          ...state.ariaMemory,
-          [key]: state.ariaMemory[key].map((e) =>
+        freyaMemory: {
+          ...state.freyaMemory,
+          [key]: state.freyaMemory[key].map((e) =>
             e.id === id ? { ...e, content, updatedAt: new Date().toISOString() } : e
           ),
         },

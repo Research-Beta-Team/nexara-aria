@@ -5,15 +5,15 @@ import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 import AppFooter from './AppFooter';
 import Toast from '../ui/Toast';
-import AriaPanel from '../aria/AriaPanel';
+import FreyaPanel from '../freya/AriaPanel';
 import CheckoutFlow from '../billing/CheckoutFlow';
 import usePlanAlerts from '../../hooks/usePlanAlerts';
 import PlanChangeToast from '../plan/PlanChangeToast';
 import { C, F, R, S, scrollbarStyle } from '../../tokens';
 
 export default function AppLayout({ children }) {
-  const ariaOpen = useStore((s) => s.ariaOpen);
-  const setAriaOpen = useStore((s) => s.setAriaOpen);
+  const freyaOpen = useStore((s) => s.freyaOpen);
+  const setFreyaOpen = useStore((s) => s.setFreyaOpen);
   const location = useLocation();
   const navigate = useNavigate();
   const previousClientIdBeforePreview = useStore((s) => s.previousClientIdBeforePreview);
@@ -61,7 +61,7 @@ export default function AppLayout({ children }) {
 
   return (
     <div style={shellStyle}>
-      <Sidebar onOpenAria={() => setAriaOpen(true)} />
+      <Sidebar onOpenFreya={() => setFreyaOpen(true)} />
       <div style={mainColStyle}>
         {isPreviewMode && (
           <div
@@ -104,7 +104,7 @@ export default function AppLayout({ children }) {
             </button>
           </div>
         )}
-        <TopBar onAriaOpen={() => setAriaOpen(true)} />
+        <TopBar onFreyaOpen={() => setFreyaOpen(true)} />
         <main style={contentStyle}>
           {children}
         </main>
@@ -121,10 +121,10 @@ export default function AppLayout({ children }) {
           onUpgradePlan={() => { dismissToast(); navigate('/billing'); } }
         />
       )}
-      <AriaPanel
-        open={ariaOpen}
-        onOpen={() => setAriaOpen(true)}
-        onClose={() => setAriaOpen(false)}
+      <FreyaPanel
+        open={freyaOpen}
+        onOpen={() => setFreyaOpen(true)}
+        onClose={() => setFreyaOpen(false)}
         page={location.pathname}
       />
       <CheckoutFlow />

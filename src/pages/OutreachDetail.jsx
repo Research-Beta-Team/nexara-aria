@@ -357,7 +357,7 @@ function AriaSidebar() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
           <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: C.primary, boxShadow: `0 0 6px ${C.primary}`, animation: 'ariaPulse2 2s ease-in-out infinite' }}/>
-          <span style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.textPrimary }}>ARIA Recommendations</span>
+          <span style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.textPrimary }}>Freya Recommendations</span>
         </div>
       </div>
       <style>{`@keyframes ariaPulse2 { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
@@ -399,8 +399,8 @@ export default function OutreachDetail() {
   const { id, pid } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
-  const toggleAria = useStore((s) => s.toggleAria);
-  const addAriaChat = useStore((s) => s.addAriaChat);
+  const toggleFreya = useStore((s) => s.toggleFreya);
+  const addFreyaChat = useStore((s) => s.addFreyaChat);
   const [logActivityOpen, setLogActivityOpen] = useState(false);
   const [updateStageOpen, setUpdateStageOpen] = useState(false);
   const [bookDemoOpen, setBookDemoOpen] = useState(false);
@@ -442,17 +442,17 @@ export default function OutreachDetail() {
   };
 
   const handleSendFollowUp = () => {
-    const welcomeMessage = { role: 'aria', id: 'welcome', text: "Hi, I'm Freya — your AI co-pilot. What would you like to do?", type: 'text' };
+    const welcomeMessage = { role: 'freya', id: 'welcome', text: "Hi, I'm Freya — your AI co-pilot. What would you like to do?", type: 'text' };
     const userPrompt = `Draft a follow-up for ${prospect.name} at ${prospect.company}. They are ${prospect.title}.`;
     const userMsg = { role: 'user', id: Date.now(), text: userPrompt };
-    const ariaReply = {
-      role: 'aria',
+    const freyaReply = {
+      role: 'freya',
       id: Date.now() + 1,
       text: `Here’s a concise follow-up you can send to **${prospect.name}**:\n\n**Subject:** Re: Quick follow-up – ${prospect.company}\n\nHi ${prospect.name},\n\nI wanted to circle back on my previous note. I’d love to show you how we’re helping finance leaders like you streamline planning and reporting.\n\nWould a 15-minute call this week work to share a short demo?\n\nBest,\n[Your name]`,
       type: 'text',
     };
-    addAriaChat({ title: `Follow-up: ${prospect.name}`, messages: [welcomeMessage, userMsg, ariaReply] });
-    toggleAria();
+    addFreyaChat({ title: `Follow-up: ${prospect.name}`, messages: [welcomeMessage, userMsg, freyaReply] });
+    toggleFreya();
     toast.success('Freya opened with a draft follow-up. Review and edit in the panel.');
   };
 

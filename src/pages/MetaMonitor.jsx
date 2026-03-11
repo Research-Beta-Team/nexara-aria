@@ -237,7 +237,7 @@ function PaidAdsAriaCard() {
   const handleFetchAndAddToAria = () => {
     setFetching(true);
     setTimeout(() => {
-      setPaidAdsPermissions({ allowFetch: true, allowAriaLearn: true });
+      setPaidAdsPermissions({ allowFetch: true, allowFreyaLearn: true });
       setFetching(false);
       toast.success('Previous ads fetched and added to Freya. Freya will use this data to learn and generate detailed reports.');
     }, 2000);
@@ -264,8 +264,8 @@ function PaidAdsAriaCard() {
         <label style={{ display: 'flex', alignItems: 'center', gap: S[2], fontFamily: F.body, fontSize: '13px', color: UI.text, cursor: 'pointer' }}>
           <input
             type="checkbox"
-            checked={paidAds?.allowAriaLearn ?? false}
-            onChange={(e) => setPaidAdsPermissions({ allowAriaLearn: e.target.checked })}
+            checked={paidAds?.allowFreyaLearn ?? false}
+            onChange={(e) => setPaidAdsPermissions({ allowFreyaLearn: e.target.checked })}
             style={{ width: 16, height: 16, accentColor: UI.electric }}
           />
           Add ads data to Freya so it can learn and generate detailed reports

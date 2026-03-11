@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { C, F, R, S, btn } from '../../../tokens';
-import { PHASE_TEMPLATES, applyTemplate, getDefaultPhases, getAriaSuggestedPhases, makePhase } from '../../../data/campaignPhases';
+import { PHASE_TEMPLATES, applyTemplate, getDefaultPhases, getFreyaSuggestedPhases, makePhase } from '../../../data/campaignPhases';
 import PhaseCard from './PhaseCard';
 import PhaseTimeline from './PhaseTimeline';
 
@@ -16,7 +16,7 @@ export default function CampaignPhasePlanner({
   activePhaseIndex = null,
   onAdvancePhase,
 }) {
-  const [ariaGenerating, setAriaGenerating] = useState(false);
+  const [freyaGenerating, setFreyaGenerating] = useState(false);
 
   const handlePhaseChange = (index, nextPhase) => {
     const next = phases.map((p, i) => (i === index ? nextPhase : p));
@@ -59,14 +59,14 @@ export default function CampaignPhasePlanner({
     if (next && next.length) onChange(next);
   };
 
-  const handleAriaCreatePhases = () => {
-    setAriaGenerating(true);
+  const handleFreyaCreatePhases = () => {
+    setFreyaGenerating(true);
     setTimeout(() => {
       const start = campaignStart || phases[0]?.startDate || new Date().toISOString().slice(0, 10);
       const end = campaignEnd || phases[phases.length - 1]?.endDate || new Date(Date.now() + 45 * 86400000).toISOString().slice(0, 10);
-      const next = getAriaSuggestedPhases(start, end);
+      const next = getFreyaSuggestedPhases(start, end);
       onChange(next);
-      setAriaGenerating(false);
+      setFreyaGenerating(false);
     }, 1400);
   };
 
@@ -77,7 +77,7 @@ export default function CampaignPhasePlanner({
           Campaign Phases
         </h2>
         <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: 0 }}>
-          Create phases manually below, or let ARIA create them for you—especially if you’ve mainly generated content using ARIA Intelligence. ARIA will automatically activate and pause channels on phase transition dates.
+          Create phases manually below, or let Freya create them for you—especially if you’ve mainly generated content using Freya Intelligence. Freya will automatically activate and pause channels on phase transition dates.
         </p>
       </div>
 
@@ -86,8 +86,8 @@ export default function CampaignPhasePlanner({
         <div style={{ display: 'flex', alignItems: 'center', gap: S[3], flexWrap: 'wrap' }}>
           <button
             type="button"
-            onClick={handleAriaCreatePhases}
-            disabled={ariaGenerating}
+            onClick={handleFreyaCreatePhases}
+            disabled={freyaGenerating}
             style={{
               ...btn.primary,
               fontSize: '13px',
@@ -95,23 +95,23 @@ export default function CampaignPhasePlanner({
               display: 'flex',
               alignItems: 'center',
               gap: S[2],
-              opacity: ariaGenerating ? 0.8 : 1,
+              opacity: freyaGenerating ? 0.8 : 1,
             }}
           >
-            {ariaGenerating ? (
-              'ARIA is creating phases…'
+            {freyaGenerating ? (
+              'Freya is creating phases…'
             ) : (
               <>
                 <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
                   <path d="M9 2a4 4 0 0 1 4 4v2a4 4 0 0 1-4 4 4 4 0 0 1-4-4V6a4 4 0 0 1 4-4Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   <path d="M9 12v4M6 14l3 2 3-2M9 12a4 4 0 0 0 4-4h1.5a5.5 5.5 0 0 1-5.5 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                Let ARIA create phases
+                Let Freya create phases
               </>
             )}
           </button>
           <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted }}>
-            Best when you’ve generated content with ARIA Intelligence
+            Best when you’ve generated content with Freya Intelligence
           </span>
         </div>
       )}

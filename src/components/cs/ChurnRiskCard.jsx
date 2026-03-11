@@ -64,7 +64,7 @@ export default function ChurnRiskCard({ customer, toast }) {
         }}
       >
         <div style={{ fontFamily: F.mono, fontSize: '10px', color: C.primary, textTransform: 'uppercase', marginBottom: S[2] }}>
-          ARIA save playbook
+          Freya save playbook
         </div>
         <ol style={{ margin: 0, paddingLeft: S[5], fontFamily: F.body, fontSize: '13px', color: C.textPrimary, lineHeight: 1.7 }}>
           {SAVE_PLAYBOOK.map((step, i) => (

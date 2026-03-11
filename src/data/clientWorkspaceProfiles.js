@@ -12,7 +12,7 @@ function mergeProfile(templateId, overrides = {}) {
     ...base,
     layout: { ...base.layout, ...(overrides.layout || {}) },
     agents: { ...base.agents, ...(overrides.agents || {}) },
-    aria: { ...base.aria, ...(overrides.aria || {}) },
+    freya: { ...base.freya, ...(overrides.freya || {}) },
     workflows: { ...base.workflows, ...(overrides.workflows || {}) },
     kpis: { ...base.kpis, ...(overrides.kpis || {}) },
   };
@@ -36,15 +36,15 @@ export const clientWorkspaceProfiles = {
       },
     }),
     clientPreferences: {
-      dashboardWidgetOrder: ['campaign_health', 'pipeline_funnel', 'aria_insights', 'agent_activity', 'meta_spend', 'escalation_queue'],
+      dashboardWidgetOrder: ['campaign_health', 'pipeline_funnel', 'freya_insights', 'agent_activity', 'meta_spend', 'escalation_queue'],
       notificationFrequency: 'daily',
       reportFormat: 'pdf',
       preferredReportDay: 'Monday',
-      ariaVerbosity: 'standard',
+      freyaVerbosity: 'standard',
       autoApproveContent: false,
       language: 'en',
     },
-    clientEditableFields: ['dashboardWidgetOrder', 'notificationFrequency', 'reportFormat', 'preferredReportDay', 'ariaVerbosity', 'autoApproveContent', 'language'],
+    clientEditableFields: ['dashboardWidgetOrder', 'notificationFrequency', 'reportFormat', 'preferredReportDay', 'freyaVerbosity', 'autoApproveContent', 'language'],
   },
 
   'glowup-cosmetics': {
@@ -54,24 +54,24 @@ export const clientWorkspaceProfiles = {
     configuredBy: 'Sarah Chen',
     status: 'active',
     ...mergeProfile('ecommerce-d2c', {
-      aria: {
+      freya: {
         persona: 'growth_marketer',
         greeting: 'ROAS and Instagram Reels performance are top of mind. I\'ll surface top creatives and audience insights.',
       },
       layout: {
-        dashboardWidgets: ['campaign_health', 'meta_spend', 'aria_insights', 'agent_activity', 'roas_tracker', 'social_reach'],
+        dashboardWidgets: ['campaign_health', 'meta_spend', 'freya_insights', 'agent_activity', 'roas_tracker', 'social_reach'],
       },
     }),
     clientPreferences: {
-      dashboardWidgetOrder: ['campaign_health', 'roas_tracker', 'meta_spend', 'social_reach', 'aria_insights', 'agent_activity'],
+      dashboardWidgetOrder: ['campaign_health', 'roas_tracker', 'meta_spend', 'social_reach', 'freya_insights', 'agent_activity'],
       notificationFrequency: 'daily',
       reportFormat: 'pdf',
       preferredReportDay: 'Friday',
-      ariaVerbosity: 'concise',
+      freyaVerbosity: 'concise',
       autoApproveContent: true,
       language: 'en',
     },
-    clientEditableFields: ['dashboardWidgetOrder', 'notificationFrequency', 'reportFormat', 'preferredReportDay', 'ariaVerbosity', 'autoApproveContent', 'language'],
+    clientEditableFields: ['dashboardWidgetOrder', 'notificationFrequency', 'reportFormat', 'preferredReportDay', 'freyaVerbosity', 'autoApproveContent', 'language'],
   },
 
   'techbridge-consulting': {
@@ -92,15 +92,15 @@ export const clientWorkspaceProfiles = {
       },
     }),
     clientPreferences: {
-      dashboardWidgetOrder: ['campaign_health', 'aria_insights', 'agent_activity', 'pipeline_funnel'],
+      dashboardWidgetOrder: ['campaign_health', 'freya_insights', 'agent_activity', 'pipeline_funnel'],
       notificationFrequency: 'weekly',
       reportFormat: 'pdf',
       preferredReportDay: 'Wednesday',
-      ariaVerbosity: 'detailed',
+      freyaVerbosity: 'detailed',
       autoApproveContent: false,
       language: 'en',
     },
-    clientEditableFields: ['dashboardWidgetOrder', 'notificationFrequency', 'reportFormat', 'preferredReportDay', 'ariaVerbosity', 'autoApproveContent', 'language'],
+    clientEditableFields: ['dashboardWidgetOrder', 'notificationFrequency', 'reportFormat', 'preferredReportDay', 'freyaVerbosity', 'autoApproveContent', 'language'],
   },
 
   'grameen-impact-fund': {
@@ -115,21 +115,21 @@ export const clientWorkspaceProfiles = {
         disabled: ['gtm_strategist', 'icp_researcher', 'competitor_intel', 'sdr', 'meta_monitor'],
         primaryAgent: 'campaign_coordinator',
       },
-      aria: {
+      freya: {
         language: 'bn-en',
         greeting: 'Donor impact and campaign reach. Meta and email performance at a glance. I\'ll surface top content.',
       },
     }),
     clientPreferences: {
-      dashboardWidgetOrder: ['campaign_health', 'donor_pipeline', 'aria_insights', 'agent_activity', 'social_reach'],
+      dashboardWidgetOrder: ['campaign_health', 'donor_pipeline', 'freya_insights', 'agent_activity', 'social_reach'],
       notificationFrequency: 'weekly',
       reportFormat: 'pdf',
       preferredReportDay: 'Monday',
-      ariaVerbosity: 'standard',
+      freyaVerbosity: 'standard',
       autoApproveContent: false,
       language: 'bn-en',
     },
-    clientEditableFields: ['dashboardWidgetOrder', 'notificationFrequency', 'reportFormat', 'preferredReportDay', 'ariaVerbosity', 'autoApproveContent', 'language'],
+    clientEditableFields: ['dashboardWidgetOrder', 'notificationFrequency', 'reportFormat', 'preferredReportDay', 'freyaVerbosity', 'autoApproveContent', 'language'],
   },
 };
 

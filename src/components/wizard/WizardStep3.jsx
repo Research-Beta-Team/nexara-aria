@@ -115,7 +115,7 @@ export default function WizardStep3({ data, onChange, errors, hasFeature, openCh
           Channel Selection
         </h2>
         <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: 0 }}>
-          ARIA scores each channel based on your ICP and campaign goal. Select all you want to activate.
+          Freya scores each channel based on your ICP and campaign goal. Select all you want to activate.
         </p>
       </div>
 
@@ -205,7 +205,7 @@ export default function WizardStep3({ data, onChange, errors, hasFeature, openCh
                 {/* ARIA score */}
                 <div>
                   <div style={{ fontFamily: F.body, fontSize: '10px', color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '3px' }}>
-                    ARIA Match Score
+                    Freya Match Score
                   </div>
                   <ScoreBar score={ch.ariaScore} color={ch.color} />
                 </div>

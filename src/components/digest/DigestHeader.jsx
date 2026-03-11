@@ -2,6 +2,7 @@
  * Week label, prev/next, title, delivery status, actions (Forward, Download, Configure).
  */
 import { C, F, R, S, btn } from '../../tokens';
+import { IconArrowLeft, IconArrowRight, IconSettings } from '../ui/Icons';
 
 export default function DigestHeader({
   weekLabel,
@@ -30,13 +31,13 @@ export default function DigestHeader({
       <div style={{ display: 'flex', alignItems: 'center', gap: S[4] }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
           <button type="button" onClick={onPrevWeek} style={btn.icon} aria-label="Previous week">
-            ‹
+            <IconArrowLeft w={18} color={C.textSecondary} />
           </button>
           <span style={{ fontFamily: F.body, fontSize: '14px', fontWeight: 600, color: C.textPrimary, minWidth: 180 }}>
             {weekLabel}
           </span>
           <button type="button" onClick={onNextWeek} style={btn.icon} aria-label="Next week">
-            ›
+            <IconArrowRight w={18} color={C.textSecondary} />
           </button>
         </div>
         <span
@@ -65,7 +66,7 @@ export default function DigestHeader({
           Download
         </button>
         <button type="button" onClick={onConfigure} style={btn.icon} aria-label="Configure digest">
-          ⚙
+          <IconSettings color={C.textSecondary} w={18} />
         </button>
       </div>
     </div>

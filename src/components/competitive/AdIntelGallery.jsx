@@ -10,7 +10,7 @@ export default function AdIntelGallery({ competitors, selectedCompetitorId, onFi
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: S[5] }}>
-      {/* ARIA insight strip */}
+      {/* Freya insight strip */}
       <div
         style={{
           display: 'flex',

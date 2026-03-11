@@ -3,6 +3,7 @@
  */
 import { C, F, R, S, btn } from '../../tokens';
 import { Z } from '../../tokens';
+import { IconClose } from '../ui/Icons';
 
 const SECTION_STYLES = {
   company: { label: 'Company data', borderLeft: C.secondary, bg: C.secondaryDim },
@@ -52,7 +53,7 @@ export default function EnrichmentDetailModal({ leadDetail, onClose }) {
           <h2 style={{ fontFamily: F.display, fontSize: '18px', fontWeight: 700, color: C.textPrimary, margin: 0 }}>
             {leadDetail.leadName} — {leadDetail.company}
           </h2>
-          <button type="button" onClick={onClose} style={btn.icon} aria-label="Close">×</button>
+          <button type="button" onClick={onClose} style={btn.icon} aria-label="Close"><IconClose color={C.textSecondary} width={18} height={18} /></button>
         </div>
         <Section label={SECTION_STYLES.company.label} borderLeft={SECTION_STYLES.company.borderLeft} bg={SECTION_STYLES.company.bg}>
           Industry: {cd.industry || '—'}<br />

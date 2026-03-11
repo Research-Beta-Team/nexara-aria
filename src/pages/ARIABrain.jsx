@@ -1,17 +1,17 @@
 import { C, F, R, S, sectionHeading } from '../tokens';
 import {
-  ARIA_STATS,
+  FREYA_STATS,
   LEARNING_ENTRIES,
   CONTENT_PERFORMANCE,
   BENCHMARK_DATA,
   ACCURACY_TREND_DATA,
-} from '../data/ariaBrain';
-import LearningFeed from '../components/aria/LearningFeed';
-import PerformanceTrendChart from '../components/aria/PerformanceTrendChart';
-import CrossCampaignInsights from '../components/aria/CrossCampaignInsights';
+} from '../data/freyaBrain';
+import LearningFeed from '../components/freya/LearningFeed';
+import PerformanceTrendChart from '../components/freya/PerformanceTrendChart';
+import CrossCampaignInsights from '../components/freya/CrossCampaignInsights';
 
 export default function ARIABrain() {
-  const { campaignsAnalysed, datasetsLearned, accuracyImprovement, confidenceLevel } = ARIA_STATS;
+  const { campaignsAnalysed, datasetsLearned, accuracyImprovement, confidenceLevel } = FREYA_STATS;
 
   return (
     <div
@@ -48,10 +48,10 @@ export default function ARIABrain() {
           </div>
           <div>
             <h1 style={{ ...sectionHeading, fontSize: '22px', letterSpacing: '-0.02em', margin: 0 }}>
-              ARIA Intelligence
+              Freya Intelligence
             </h1>
             <span style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary }}>
-              ARIA has analysed {campaignsAnalysed} campaigns and is continuously improving your results
+              Freya has analysed {campaignsAnalysed} campaigns and is continuously improving your results
             </span>
           </div>
         </div>

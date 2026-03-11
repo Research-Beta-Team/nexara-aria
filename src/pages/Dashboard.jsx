@@ -27,7 +27,7 @@ const PERSONA_LABELS = {
 const WIDGET_MAP = {
   campaign_health: CampaignHealthCards,
   meta_spend: MetaPerformanceWidget,
-  aria_insights: AriaInsightStrip,
+  freya_insights: AriaInsightStrip,
   agent_activity: AgentActivityFeed,
   escalation_queue: EscalationMini,
   pipeline_funnel: PipelineFunnelWidget,
@@ -47,14 +47,14 @@ const sectionTitleStyle = {
 };
 
 function WorkspaceDashboardContent() {
-  const { profile, getKPIs, getAriaConfig, isModuleVisible } = useWorkspace();
+  const { profile, getKPIs, getFreyaConfig, isModuleVisible } = useWorkspace();
   const activeClientId = useStore((s) => s.activeClientId);
   const data = getDashboardForClient(activeClientId ?? 'medglobal');
   const layout = profile?.layout ?? {};
-  const widgetIds = layout.dashboardWidgets ?? ['campaign_health', 'aria_insights', 'agent_activity'];
+  const widgetIds = layout.dashboardWidgets ?? ['campaign_health', 'freya_insights', 'agent_activity'];
   const colLayout = layout.dashboardLayout === '3-col' ? '1fr 1fr 1fr' : '1fr 1fr';
-  const ariaConfig = getAriaConfig();
-  const personaLabel = ariaConfig.persona ? PERSONA_LABELS[ariaConfig.persona] ?? ariaConfig.persona : null;
+  const freyaConfig = getFreyaConfig();
+  const personaLabel = freyaConfig.persona ? PERSONA_LABELS[freyaConfig.persona] ?? freyaConfig.persona : null;
   const campaignCount = data.campaigns?.length ?? 0;
   const showMeta = widgetIds.includes('meta_spend') && isModuleVisible('meta-monitoring');
   const showPipeline = widgetIds.includes('pipeline_funnel') && isModuleVisible('pipeline');
@@ -147,14 +147,14 @@ function WorkspaceDashboardContent() {
               </section>
             );
           }
-          if (widgetId === 'aria_insights') {
+          if (widgetId === 'freya_insights') {
             return (
               <section key={widgetId} style={{ gridColumn: '1 / -1' }}>
                 <h2 style={{ ...sectionTitleStyle, marginBottom: S[3] }}>Freya insights</h2>
                 <AriaInsightStrip
-                  insights={(data.ariaInsights ?? []).slice(0, 3)}
+                  insights={(data.freyaInsights ?? []).slice(0, 3)}
                   personaLabel={personaLabel}
-                  greeting={ariaConfig.greeting}
+                  greeting={freyaConfig.greeting}
                 />
               </section>
             );

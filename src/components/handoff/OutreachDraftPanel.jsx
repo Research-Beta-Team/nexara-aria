@@ -1,5 +1,5 @@
 /**
- * ARIA draft first-touch email: Copy / Load into Outreach.
+ * Freya draft first-touch email: Copy / Load into Outreach.
  */
 import { C, F, R, S, btn } from '../../tokens';
 import useToast from '../../hooks/useToast';

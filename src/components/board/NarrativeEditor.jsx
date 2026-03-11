@@ -1,5 +1,5 @@
 /**
- * ARIA narrative per slide; editable; "Regenerate", "Accepted". Teal underline for ARIA-generated.
+ * Freya narrative per slide; editable; "Regenerate", "Accepted". Teal underline for Freya-generated.
  */
 import { useState, useEffect } from 'react';
 import { C, F, R, S, btn } from '../../tokens';

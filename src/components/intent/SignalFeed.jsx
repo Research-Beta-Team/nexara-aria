@@ -41,7 +41,7 @@ function matchesNews(type) {
   return type === 'funding_news' || type === 'leadership_change';
 }
 
-export default function SignalFeed({ signals = [], onAddToSequence, onViewAccount, onDismiss, onAskAria, toast }) {
+export default function SignalFeed({ signals = [], onAddToSequence, onViewAccount, onDismiss, onAskFreya, toast }) {
   const [filterType, setFilterType] = useState('all');
   const [sortBy, setSortBy] = useState('recent');
   const [minScore, setMinScore] = useState(50);
@@ -233,7 +233,7 @@ export default function SignalFeed({ signals = [], onAddToSequence, onViewAccoun
                   <button
                     style={{ ...btn.ghost, fontSize: '12px', color: C.primary }}
                     onClick={() => {
-                      onAskAria?.(signal);
+                      onAskFreya?.(signal);
                       toast?.info('Ask Freya');
                     }}
                   >

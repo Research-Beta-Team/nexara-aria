@@ -413,7 +413,7 @@ export default function ContentLibrary() {
           <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: `${S[1]} 0 0` }}>
             {layout === 'client'
               ? `${itemsForRole.length} item${itemsForRole.length !== 1 ? 's' : ''} waiting for your review — approve or request changes.`
-              : `${itemsForRole.length} assets across ${campaigns.length} campaigns — review, approve, and export ARIA-generated content.`}
+              : `${itemsForRole.length} assets across ${campaigns.length} campaigns — review, approve, and export Freya-generated content.`}
           </p>
         </div>
 

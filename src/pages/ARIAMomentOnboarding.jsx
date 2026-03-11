@@ -122,7 +122,7 @@ export default function ARIAMomentOnboarding() {
             maxWidth: 720,
           }}
         >
-          Drop your brief. ARIA builds your campaign.
+          Drop your brief. Freya builds your campaign.
         </h1>
         <p
           style={{
@@ -136,7 +136,7 @@ export default function ARIAMomentOnboarding() {
           }}
         >
           Upload any document — strategy brief, prospect list, competitor research, or
-          even a screenshot. ARIA reads it, extracts what matters, and builds your
+          even a screenshot. Freya reads it, extracts what matters, and builds your
           first GTM campaign automatically.
         </p>
         <div style={{ marginTop: S[8] }}>
@@ -151,7 +151,7 @@ export default function ARIAMomentOnboarding() {
     );
   }
 
-  // Step 2 — ARIA reading
+  // Step 2 — Freya reading
   if (step === STEPS.READING) {
     return (
       <ARIAReadingAnimation

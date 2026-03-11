@@ -4,6 +4,7 @@ import useStore from '../../store/useStore';
 import { workspaceTemplates } from '../../data/workspaceTemplates';
 import { getAllClientIds, getProfileByClientId } from '../../data/clientWorkspaceProfiles';
 import { C, F, R, S, Z, cardStyle, btn } from '../../tokens';
+import { TemplateIcon } from '../../components/ui/Icons';
 
 const PERSONA_LABELS = {
   cro: 'CRO',
@@ -16,7 +17,7 @@ function TemplateCard({ template, onPreview, onAssign }) {
   const modules = template.layout?.visibleModules ?? [];
   const agents = template.agents?.active ?? [];
   const kpis = template.kpis;
-  const persona = template.aria?.persona;
+  const persona = template.freya?.persona;
   const personaLabel = persona ? PERSONA_LABELS[persona] ?? persona : '—';
 
   return (
@@ -30,7 +31,9 @@ function TemplateCard({ template, onPreview, onAssign }) {
       }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: S[3] }}>
-        <span style={{ fontSize: '28px', lineHeight: 1 }}>{template.icon}</span>
+        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, color: template.color }}>
+          <TemplateIcon iconKey={template.iconKey} color={template.color} width={28} height={28} />
+        </span>
         <div style={{ flex: 1, minWidth: 0 }}>
           <h3 style={{ fontFamily: F.display, fontSize: '16px', fontWeight: 700, color: C.textPrimary, margin: '0 0 4px' }}>
             {template.name}
@@ -103,7 +106,7 @@ function PreviewModal({ template, onClose }) {
   const modules = layout.visibleModules ?? [];
   const agents = template.agents ?? {};
   const kpis = template.kpis ?? {};
-  const aria = template.aria ?? {};
+  const freya = template.freya ?? {};
   const workflows = template.workflows ?? {};
 
   return (
@@ -134,8 +137,11 @@ function PreviewModal({ template, onClose }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: S[5] }}>
-          <h2 style={{ fontFamily: F.display, fontSize: '18px', fontWeight: 700, color: C.textPrimary, margin: 0 }}>
-            {template.icon} {template.name}
+          <h2 style={{ fontFamily: F.display, fontSize: '18px', fontWeight: 700, color: C.textPrimary, margin: 0, display: 'flex', alignItems: 'center', gap: S[2] }}>
+            <span style={{ display: 'flex', color: template.color }}>
+              <TemplateIcon iconKey={template.iconKey} color={template.color} width={24} height={24} />
+            </span>
+            {template.name}
           </h2>
           <button style={{ ...btn.icon, padding: S[2] }} onClick={onClose} aria-label="Close">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
@@ -162,9 +168,9 @@ function PreviewModal({ template, onClose }) {
             </div>
           </section>
           <section>
-            <h4 style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', marginBottom: S[2] }}>ARIA</h4>
-            <div style={{ fontFamily: F.body, fontSize: '13px', color: C.textPrimary }}>Persona: {aria.persona ?? '—'}. Language: {aria.language ?? 'en'}</div>
-            <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, marginTop: S[1] }}>{aria.greeting}</div>
+            <h4 style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', marginBottom: S[2] }}>Freya</h4>
+            <div style={{ fontFamily: F.body, fontSize: '13px', color: C.textPrimary }}>Persona: {freya.persona ?? '—'}. Language: {freya.language ?? 'en'}</div>
+            <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, marginTop: S[1] }}>{freya.greeting}</div>
           </section>
           <section>
             <h4 style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', marginBottom: S[2] }}>Workflow</h4>
@@ -257,7 +263,7 @@ export default function WorkspaceTemplates() {
       templateBase: template.id,
       layout: template.layout,
       agents: template.agents,
-      aria: template.aria,
+      freya: template.freya,
       workflows: template.workflows,
       kpis: template.kpis,
     });

@@ -1,18 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { C, F, R, S, btn, shadows } from '../../tokens';
-import useStore from '../../store/useStore';
 
 /**
- * New campaign button that opens a choice: Create manually (wizard), Create with ARIA, or Start from file.
+ * New campaign button that opens a choice: Create manually (wizard), Create with Freya, or Start from file.
  * Use on Dashboard and Campaign list. When atLimit + onUpgrade, shows upgrade CTA instead.
  */
 export default function NewCampaignChoice({ atLimit, onUpgrade }) {
   const navigate = useNavigate();
-  const setDashboardCampaignFiles = useStore((s) => s.setDashboardCampaignFiles);
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
-  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (!open) return;
@@ -34,20 +31,6 @@ export default function NewCampaignChoice({ atLimit, onUpgrade }) {
   const go = (path) => {
     setOpen(false);
     navigate(path);
-  };
-
-  const handleStartFromFile = () => {
-    setOpen(false);
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (e) => {
-    const list = e.target?.files ? Array.from(e.target.files) : [];
-    e.target.value = '';
-    if (list.length) {
-      setDashboardCampaignFiles(list);
-      navigate('/campaigns/new/aria');
-    }
   };
 
   return (
@@ -130,7 +113,7 @@ export default function NewCampaignChoice({ atLimit, onUpgrade }) {
               textAlign: 'left',
               transition: 'background 0.15s',
             }}
-            onClick={() => go('/campaigns/new/aria')}
+            onClick={() => go('/campaigns/new/freya')}
             onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = C.primaryGlow; }}
             onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
           >
@@ -138,8 +121,8 @@ export default function NewCampaignChoice({ atLimit, onUpgrade }) {
               <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L13.2 12.8H0.8L7 1.5z" stroke={C.primary} strokeWidth="1.2" strokeLinejoin="round"/><path d="M3.6 9.2h6.8" stroke={C.primary} strokeWidth="1.2" strokeLinecap="round"/></svg>
             </span>
             <div>
-              <div style={{ fontWeight: 600, color: C.primary }}>Create with ARIA</div>
-              <div style={{ fontSize: '11px', color: C.textMuted }}>ARIA guides you step by step</div>
+              <div style={{ fontWeight: 600, color: C.primary }}>Create with Freya</div>
+              <div style={{ fontSize: '11px', color: C.textMuted }}>Freya guides you step by step</div>
             </div>
           </button>
           <button
@@ -160,24 +143,16 @@ export default function NewCampaignChoice({ atLimit, onUpgrade }) {
               textAlign: 'left',
               transition: 'background 0.15s',
             }}
-            onClick={handleStartFromFile}
+            onClick={() => go('/campaigns/new/freya?from=file')}
             onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = C.surface3; }}
             onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
           >
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept=".pdf,.xlsx,.xls,.doc,.docx,.csv,.png,.jpg,.jpeg,.txt"
-              style={{ display: 'none' }}
-              onChange={handleFileChange}
-            />
             <span style={{ width: 28, height: 28, borderRadius: R.md, backgroundColor: C.surface3, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8m0 0l3-3m-3 3L5 9" stroke={C.textSecondary} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 12h12" stroke={C.textSecondary} strokeWidth="1.5" strokeLinecap="round"/></svg>
             </span>
             <div>
               <div style={{ fontWeight: 600 }}>Start from file</div>
-              <div style={{ fontSize: '11px', color: C.textMuted }}>Upload brief or doc → ARIA builds campaign</div>
+              <div style={{ fontSize: '11px', color: C.textMuted }}>Upload brief or doc → Freya builds campaign</div>
             </div>
           </button>
         </div>

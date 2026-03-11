@@ -68,8 +68,8 @@ export const MOCK_WEEKLY_BRIEF = {
   ],
 };
 
-export const ARIA_PRIORITY_SUGGESTIONS = [
-  { id: 'p1', label: 'Close more demos', emoji: '🎯' },
-  { id: 'p2', label: 'Grow LinkedIn reach', emoji: '📣' },
-  { id: 'p3', label: 'Fix Meta performance', emoji: '🔧' },
+export const FREYA_PRIORITY_SUGGESTIONS = [
+  { id: 'p1', label: 'Close more demos', iconKey: 'target' },
+  { id: 'p2', label: 'Grow LinkedIn reach', iconKey: 'megaphone' },
+  { id: 'p3', label: 'Fix Meta performance', iconKey: 'settings' },
 ];

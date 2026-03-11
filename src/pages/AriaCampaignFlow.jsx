@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { C, F, R, S, T, btn, shadows } from '../tokens';
 import useToast from '../hooks/useToast';
 import useStore from '../store/useStore';
@@ -78,7 +78,7 @@ export default function AriaCampaignFlow() {
   const [campaignName, setCampaignName] = useState('');
   const [objective, setObjective] = useState('');
   const [previousCampaignId, setPreviousCampaignId] = useState('');
-  const [icpChoice, setIcpChoice] = useState('existing'); // existing | builder | aria
+  const [icpChoice, setIcpChoice] = useState('existing'); // existing | builder | freya
   const [channels, setChannels] = useState([]);
   const [fetching, setFetching] = useState(false);
   const [showConnectModal, setShowConnectModal] = useState(false);
@@ -86,9 +86,25 @@ export default function AriaCampaignFlow() {
 
   const connectedAccounts = useStore((s) => s.connectedAccounts);
   const dashboardCampaignFiles = useStore((s) => s.dashboardCampaignFiles) || [];
+  const setDashboardCampaignFiles = useStore((s) => s.setDashboardCampaignFiles);
   const clearDashboardCampaignFiles = useStore((s) => s.clearDashboardCampaignFiles);
 
+  const [searchParams] = useSearchParams();
+  const fromFile = searchParams.get('from') === 'file';
+  const fileInputRef = useRef(null);
+  const [isDragOver, setIsDragOver] = useState(false);
+
   const stepId = STEPS[step]?.id ?? 'goal';
+
+  const handleFileDrop = useCallback((files) => {
+    if (files?.length) setDashboardCampaignFiles(Array.from(files));
+  }, [setDashboardCampaignFiles]);
+
+  const handleFileInputChange = useCallback((e) => {
+    const list = e.target?.files ? Array.from(e.target.files) : [];
+    e.target.value = '';
+    if (list.length) setDashboardCampaignFiles(list);
+  }, [setDashboardCampaignFiles]);
 
   useEffect(() => {
     return () => { clearDashboardCampaignFiles(); };
@@ -130,7 +146,7 @@ export default function AriaCampaignFlow() {
 
   const handleContinueToStrategy = () => {
     const campaignId = campaigns[0]?.id ?? 'c1';
-    navigate(`/campaigns/${campaignId}?tab=strategy&from_aria=1`);
+    navigate(`/campaigns/${campaignId}?tab=strategy&from_freya=1`);
     toast.success('Add or confirm strategy — then Freya will generate your plan.');
   };
 
@@ -141,7 +157,7 @@ export default function AriaCampaignFlow() {
     toast.info('Skipped. You can connect accounts later from Social Media.');
   };
 
-  const ariaTip = {
+  const freyaTip = {
     goal: 'A clear goal helps Freya suggest the right channels and messaging.',
     learn: 'Freya uses past campaign performance to improve targeting and copy.',
     icp: 'Define who you’re targeting so Freya can personalize outreach and ads.',
@@ -234,11 +250,89 @@ export default function AriaCampaignFlow() {
               borderLeft: `3px solid ${C.primary}`,
             }}>
               <span style={{ fontFamily: F.mono, fontSize: 10, fontWeight: 700, color: C.primary, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Freya</span>
-              <p style={{ fontFamily: F.body, fontSize: 12, color: C.textSecondary, margin: 0, lineHeight: 1.45 }}>{ariaTip[stepId]}</p>
+              <p style={{ fontFamily: F.body, fontSize: 12, color: C.textSecondary, margin: 0, lineHeight: 1.45 }}>{freyaTip[stepId]}</p>
             </div>
 
-            {/* Dashboard files banner (when user started from Dashboard file upload) */}
-            {stepId === 'goal' && dashboardCampaignFiles.length > 0 && (
+            {/* Start from file: upload area when entered via ?from=file */}
+            {stepId === 'goal' && fromFile && (
+              <div style={{ marginBottom: S[4] }}>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept=".pdf,.xlsx,.xls,.doc,.docx,.csv,.png,.jpg,.jpeg,.txt"
+                  style={{ display: 'none' }}
+                  onChange={handleFileInputChange}
+                />
+                {dashboardCampaignFiles.length === 0 ? (
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    style={{
+                      padding: S[6],
+                      borderRadius: R.card,
+                      border: `2px dashed ${isDragOver ? C.primary : C.border}`,
+                      backgroundColor: isDragOver ? C.primaryGlow : C.surface2,
+                      cursor: 'pointer',
+                      transition: 'border-color 0.2s, background-color 0.2s',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: S[2],
+                    }}
+                    onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragOver(true); }}
+                    onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragOver(false); }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setIsDragOver(false);
+                      const files = e.dataTransfer?.files;
+                      if (files?.length) handleFileDrop(files);
+                    }}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" style={{ color: C.primary }}>
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <span style={{ fontFamily: F.body, fontSize: 14, fontWeight: 600, color: C.textPrimary }}>
+                      {isDragOver ? 'Release to add files' : 'Drop your brief or doc here'}
+                    </span>
+                    <span style={{ fontFamily: F.body, fontSize: 12, color: C.textMuted }}>or click to browse · PDF, Word, Excel, CSV, images</span>
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      padding: S[3],
+                      backgroundColor: C.primaryGlow,
+                      border: `1px solid ${C.primary}`,
+                      borderRadius: R.md,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: S[2],
+                    }}
+                  >
+                    <div>
+                      <span style={{ fontFamily: F.mono, fontSize: 11, fontWeight: 700, color: C.primary }}>{dashboardCampaignFiles.length} file(s) added</span>
+                      <div style={{ fontFamily: F.body, fontSize: 12, color: C.textSecondary, marginTop: S[1] }}>
+                        {dashboardCampaignFiles.map((f, i) => (typeof f === 'string' ? f : f?.name)).filter(Boolean).join(', ')}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      style={{ ...btn.ghost, fontSize: '12px' }}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      Add more
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Dashboard files banner (when user started from Dashboard file upload; from=file uses the block above) */}
+            {stepId === 'goal' && dashboardCampaignFiles.length > 0 && !fromFile && (
               <div
                 style={{
                   padding: S[3],
@@ -337,7 +431,7 @@ export default function AriaCampaignFlow() {
                 {[
                   { value: 'existing', label: 'Use existing ICP', desc: 'Pick from your saved ICPs in ICP Builder' },
                   { value: 'builder', label: 'Build in ICP Builder', desc: 'Define job titles, industries, and filters' },
-                  { value: 'aria', label: 'Generate with Freya', desc: 'Freya suggests an ICP from your closed-won deals or CRM' },
+                  { value: 'freya', label: 'Generate with Freya', desc: 'Freya suggests an ICP from your closed-won deals or CRM' },
                 ].map((opt) => (
                   <button
                     key={opt.value}
@@ -380,7 +474,7 @@ export default function AriaCampaignFlow() {
                     </div>
                   </button>
                 ))}
-                {(icpChoice === 'builder' || icpChoice === 'aria') && (
+                {(icpChoice === 'builder' || icpChoice === 'freya') && (
                   <button
                     type="button"
                     style={{ ...btn.ghost, fontSize: 12, color: C.primary, marginTop: S[2] }}

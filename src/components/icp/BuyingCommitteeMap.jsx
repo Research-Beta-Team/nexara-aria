@@ -210,7 +210,7 @@ export default function BuyingCommitteeMap() {
         </div>
         <button
           style={{ ...btn.secondary, fontSize: '12px' }}
-          onClick={() => toast.info('ARIA is updating committee map from latest CRM data…')}
+          onClick={() => toast.info('Freya is updating committee map from latest CRM data…')}
         >
           Refresh from CRM
         </button>

@@ -11,8 +11,8 @@ import PlanWelcomeBanner from '../../components/plan/PlanWelcomeBanner';
 import MetaPerformanceWidget from '../../components/dashboard/MetaPerformanceWidget';
 import AgentFeed from '../../components/dashboard/AgentFeed';
 import EscalationMini from '../../components/dashboard/EscalationMini';
-import ARIAWeeklyBrief from '../../components/aria/ARIAWeeklyBrief';
-import ARIAProactiveCard from '../../components/aria/ARIAProactiveCard';
+import ARIAWeeklyBrief from '../../components/freya/ARIAWeeklyBrief';
+import ARIAProactiveCard from '../../components/freya/ARIAProactiveCard';
 import DualApprovalCard from '../../components/approvals/DualApprovalCard';
 import {
   campaigns,
@@ -22,7 +22,7 @@ import {
   ctrChartData,
 } from '../../data/dashboard';
 import { MOCK_WEEKLY_BRIEF } from '../../data/weeklyBrief';
-import { shouldShowWeeklyBrief } from '../../components/aria/ARIAWeeklyBrief';
+import { shouldShowWeeklyBrief } from '../../components/freya/ARIAWeeklyBrief';
 
 const DECISIONS_MOCK = [
   { id: 'd1', title: 'Budget approval $800 Meta reallocation', campaign: 'APAC Brand', actions: ['Approve', 'Review'] },
@@ -36,8 +36,8 @@ export default function DashboardOwner() {
   const openCheckout = useStore((s) => s.openCheckout);
   const activeCampaignsCount = useStore((s) => s.activeCampaignsCount);
   const currentPlanId = useStore((s) => s.currentPlanId);
-  const ariaBriefModalOpen = useStore((s) => s.ariaBriefModalOpen);
-  const setAriaBriefModalOpen = useStore((s) => s.setAriaBriefModalOpen);
+  const freyaBriefModalOpen = useStore((s) => s.freyaBriefModalOpen);
+  const setFreyaBriefModalOpen = useStore((s) => s.setFreyaBriefModalOpen);
   const [briefRefreshKey, setBriefRefreshKey] = useState(0);
   const [executingRec, setExecutingRec] = useState(null);
   const [syntheticEscalation, setSyntheticEscalation] = useState(null);
@@ -50,7 +50,7 @@ export default function DashboardOwner() {
 
   const handleActionRequired = (item) => {
     if (item.actionPath) navigate(item.actionPath);
-    else useStore.getState().toggleAria();
+    else useStore.getState().toggleFreya();
   };
   const handleExecuteRecommendation = (rec) => {
     if (rec.executionType === 'dual_approval') {
@@ -76,8 +76,8 @@ export default function DashboardOwner() {
         ariaRecommendation: rec.text,
       });
     } else {
-      toast.success('ARIA generating…');
-      useStore.getState().toggleAria();
+      toast.success('Freya generating…');
+      useStore.getState().toggleFreya();
     }
   };
   const handleDualStrategyApprove = () => setSyntheticEscalation((e) => e ? { ...e, strategyApprovalStatus: 'approved', strategyApprovedBy: { name: 'You', timestamp: 'Just now' } } : null);
@@ -150,10 +150,10 @@ export default function DashboardOwner() {
         <EscalationMini escalations={escalationsSummary} />
         <AgentFeed feed={agentFeed} />
       </div>
-      {ariaBriefModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(7,13,9,0.7)', zIndex: Z.modal, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: S[4] }} onClick={() => setAriaBriefModalOpen(false)}>
+      {freyaBriefModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(7,13,9,0.7)', zIndex: Z.modal, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: S[4] }} onClick={() => setFreyaBriefModalOpen(false)}>
           <div style={{ maxWidth: '900px', width: '100%' }} onClick={(e) => e.stopPropagation()}>
-            <ARIAWeeklyBrief brief={MOCK_WEEKLY_BRIEF} onDismiss={() => setAriaBriefModalOpen(false)} onActionRequired={handleActionRequired} onExecuteRecommendation={handleExecuteRecommendation} variant="modal" />
+            <ARIAWeeklyBrief brief={MOCK_WEEKLY_BRIEF} onDismiss={() => setFreyaBriefModalOpen(false)} onActionRequired={handleActionRequired} onExecuteRecommendation={handleExecuteRecommendation} variant="modal" />
           </div>
         </div>
       )}

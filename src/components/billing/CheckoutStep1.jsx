@@ -10,7 +10,7 @@ const FEAT_NAMES = {
   competitiveIntel:      'Competitive Intelligence',
   intentSignals:         'Intent Signals',
   abmEngine:             'ABM Engine',
-  ariaVoice:             'ARIA Voice AI',
+  ariaVoice:             'Freya Voice AI',
   predictiveForecasting: 'Predictive Forecasting',
   whiteLabel:            'White-Labeling',
   apiAccess:             'API Access',

@@ -98,7 +98,7 @@ export default function DropZoneHero({
             color: isDragOver ? C.primary : C.textPrimary,
           }}
         >
-          {isDragOver ? 'Release to let ARIA read this' : 'Drop file here'}
+          {isDragOver ? 'Release to let Freya read this' : 'Drop file here'}
         </span>
         <span style={{ fontFamily: F.body, fontSize: 14, color: C.textSecondary }}>
           or click to browse

@@ -67,7 +67,7 @@ function DropZone({ onFiles }) {
   );
 }
 
-/* ─── Phase: ARIA reading ─────────────────────────────────── */
+/* ─── Phase: Freya reading ─────────────────────────────────── */
 function ReadingPhase({ filename }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: S[4], padding: `${S[8]} ${S[4]}` }}>
@@ -207,7 +207,7 @@ export default function UploadModal({ onClose, onAdded }) {
   const [phase, setPhase] = useState('drop');   // drop | reading | tagging | done
   const [file, setFile]   = useState(null);
 
-  // Mock ARIA suggestions
+  // Mock Freya suggestions
   const MOCK_SUGGESTIONS = {
     type: 'Brand Guidelines',
     scope: 'workspace',

@@ -91,7 +91,7 @@ function DisplayRow({ label, value }) {
   );
 }
 
-export default function StrategyTab({ setTab, fromAria }) {
+export default function StrategyTab({ setTab, fromFreya }) {
   const toast = useToast();
   const [strategy, setStrategy] = useState(() => deepClone(strategyData));
   const [editingSection, setEditingSection] = useState(null);
@@ -134,7 +134,7 @@ export default function StrategyTab({ setTab, fromAria }) {
   return (
     <div style={{ padding: S[5], display: 'flex', flexDirection: 'column', gap: S[5] }}>
 
-      {fromAria && (
+      {fromFreya && (
         <div style={{
           padding: S[4],
           backgroundColor: C.primaryGlow,
@@ -147,11 +147,11 @@ export default function StrategyTab({ setTab, fromAria }) {
           gap: S[3],
         }}>
           <div>
-            <div style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 700, color: C.textPrimary, marginBottom: '2px' }}>Create campaign with ARIA</div>
-            <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>Add or confirm your strategy inputs below. When ready, ARIA will generate your campaign plan and take you to the Plan tab.</div>
+            <div style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 700, color: C.textPrimary, marginBottom: '2px' }}>Create campaign with Freya</div>
+            <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>Add or confirm your strategy inputs below. When ready, Freya will generate your campaign plan and take you to the Plan tab.</div>
           </div>
           {typeof setTab === 'function' && (
-            <button type="button" style={{ ...btn.primary, fontSize: '13px', padding: `${S[2]} ${S[4]}` }} onClick={() => setTab('plan')}>ARIA, generate plan →</button>
+            <button type="button" style={{ ...btn.primary, fontSize: '13px', padding: `${S[2]} ${S[4]}` }} onClick={() => setTab('plan')}>Freya, generate plan →</button>
           )}
         </div>
       )}

@@ -204,6 +204,58 @@ export function IconTrendUp({ color = 'currentColor', w = size }) {
   );
 }
 
+export function IconTrendDown({ color = 'currentColor', w = size }) {
+  return (
+    <svg width={w} height={w} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M2 4l4 5 3-2 5 7 2-2" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+export function IconArrowRight({ color = 'currentColor', w = size }) {
+  return (
+    <svg width={w} height={w} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M4 9h10M10 5l4 4-4 4" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+export function IconArrowLeft({ color = 'currentColor', w = size }) {
+  return (
+    <svg width={w} height={w} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M14 9H4M8 5L4 9l4 4" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+export function IconImage({ color = 'currentColor', w = size }) {
+  return (
+    <svg width={w} height={w} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <rect x="2" y="2" width="14" height="14" rx="1.5" stroke={color} strokeWidth={stroke}/>
+      <circle cx="6" cy="6" r="2" stroke={color} strokeWidth={stroke}/>
+      <path d="M2 14l4-4 3 2 5-6 2 2" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+export function IconSettings({ color = 'currentColor', w = size }) {
+  return (
+    <svg width={w} height={w} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <circle cx="9" cy="9" r="2.5" stroke={color} strokeWidth={stroke}/>
+      <path d="M9 1v2M9 15v2M2 9h2M14 9h2M3.5 3.5l1.4 1.4M13.1 13.1l1.4 1.4M3.5 14.5l1.4-1.4M13.1 4.9l1.4-1.4" stroke={color} strokeWidth={stroke} strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+/** Filled circle for status indicators (e.g. red / amber / green dots) */
+export function IconCircleFilled({ color = 'currentColor', width = 10, height = 10 }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <circle cx="9" cy="9" r="5" fill={color}/>
+    </svg>
+  );
+}
+
 export function IconLabel({ color = 'currentColor', w = size }) {
   return (
     <svg width={w} height={w} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
@@ -500,7 +552,24 @@ export const NOTIF_TYPE_ICON_MAP = {
   agent_complete:  IconCheck,
   reply_received:  IconMessage,
   approval_due:    IconClock,
-  demo_booked:     IconCalendar,
-  report_ready:    IconDocument,
-  budget_alert:    IconCard,
+  demo_booked:    IconCalendar,
+  report_ready:   IconDocument,
+  budget_alert:   IconCard,
 };
+
+/** Workspace template icon key → Icon component (replaces emoji in workspaceTemplates) */
+export const TEMPLATE_ICON_MAP = {
+  rocket:    IconRocket,
+  cart:      IconCart,
+  briefcase: IconBriefcase,
+  globe:     IconGlobe,
+  building:  IconBuilding,
+  settings:  IconSettings,
+};
+
+/** Render a template icon by key with optional color/size */
+export function TemplateIcon({ iconKey, color, width = 28, height = 28 }) {
+  const Icon = TEMPLATE_ICON_MAP[iconKey];
+  if (!Icon) return null;
+  return <Icon color={color || 'currentColor'} w={width} width={width} height={height} />;
+}

@@ -13,7 +13,7 @@ const DISPLAY_NAME_OVERRIDES = {
   icpBuilder:           'ICP Builder',
   icpScoring:           'ICP Scoring',
   apiAccess:            'API Access',
-  ariaVoice:            'ARIA Voice',
+  ariaVoice:            'Freya Voice',
   dataWarehouseSync:    'Data Warehouse Sync',
   crossClientAnalytics: 'Cross-Client Analytics',
   roleBasedAccess:      'Role-Based Access',

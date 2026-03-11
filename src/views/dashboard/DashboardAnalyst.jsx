@@ -39,7 +39,7 @@ export default function DashboardAnalyst() {
           <button style={{ ...btn.ghost, fontSize: '12px', marginTop: S[3] }} onClick={() => navigate('/analytics')}>View Analytics →</button>
         </div>
         <div style={{ ...cardStyle, padding: S[4], border: `1px solid ${C.border}` }}>
-          <h2 style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', margin: `0 0 ${S[3]}` }}>ARIA Insight</h2>
+          <h2 style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', margin: `0 0 ${S[3]}` }}>Freya Insight</h2>
           <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>"LinkedIn reply rate dipped this week despite consistent volume. Likely cause: subject line fatigue on Step 2. Recommend A/B test."</div>
           <button style={{ ...btn.secondary, fontSize: '12px', marginTop: S[3] }} onClick={() => toast.info('Generate hypothesis')}>Generate A/B hypothesis →</button>
         </div>

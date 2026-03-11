@@ -1,5 +1,5 @@
 /**
- * 3 ARIA insight cards with actions (mint border).
+ * 3 Freya insight cards with actions (mint border).
  */
 import { C, F, R, S, btn } from '../../tokens';
 

@@ -181,7 +181,7 @@ export default function Escalations() {
                 Escalation Queue
               </h1>
               <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: `${S[1]} 0 0` }}>
-                ARIA is requesting human decisions on {activeFiltered.length} item{activeFiltered.length !== 1 ? 's' : ''}.
+                Freya is requesting human decisions on {activeFiltered.length} item{activeFiltered.length !== 1 ? 's' : ''}.
                 {highCount > 0 && <span style={{ color: '#EF4444' }}> {highCount} high severity.</span>}
                 {medCount > 0 && <span style={{ color: C.amber }}> {medCount} medium.</span>}
               </p>
@@ -266,7 +266,7 @@ export default function Escalations() {
               <path d="M22 14v8M22 25v2" stroke={C.textMuted} strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
             <div style={{ fontFamily: F.body, fontSize: '14px', color: C.textMuted }}>
-              {tab === 'active' ? 'No pending escalations — ARIA is running autonomously' : 'No resolved escalations yet'}
+              {tab === 'active' ? 'No pending escalations — Freya is running autonomously' : 'No resolved escalations yet'}
             </div>
           </div>
         ) : (

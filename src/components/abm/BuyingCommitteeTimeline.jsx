@@ -1,5 +1,5 @@
 import { C, F, R, S, btn } from '../../tokens';
-import { IconSend, IconPhone, IconCalendar, IconLink } from '../ui/Icons';
+import { IconSend, IconPhone, IconCalendar, IconLink, IconArrowLeft, IconArrowRight } from '../ui/Icons';
 
 const TYPE_ICON = {
   email:    { Icon: IconSend,   color: C.textSecondary },
@@ -8,7 +8,7 @@ const TYPE_ICON = {
   linkedin: { text: 'in',      color: C.textSecondary },
 };
 
-const DIRECTION_ARROW = { inbound: '←', outbound: '→' };
+const DIRECTION_ICON = { inbound: IconArrowLeft, outbound: IconArrowRight };
 
 // Distinct colors per stakeholder for timeline
 const STAKEHOLDER_COLORS = [
@@ -96,8 +96,8 @@ export default function BuyingCommitteeTimeline({ account, toast }) {
                     return <span style={{ color: ticon.color }}>{ticon.text}</span>;
                   })()}
                 </span>
-                <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted }}>
-                  {DIRECTION_ARROW[t.direction]} {t.direction}
+                <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  {(() => { const D = DIRECTION_ICON[t.direction]; return D ? <><D color={C.textMuted} w={14} /> {t.direction}</> : t.direction; })()}
                 </span>
                 <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textPrimary }}>{t.outcome}</span>
               </div>

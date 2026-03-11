@@ -1,12 +1,13 @@
 import { WIN_LOSS_INSIGHTS } from '../../data/icp';
 import useToast from '../../hooks/useToast';
 import { C, F, R, S, T, btn, badge } from '../../tokens';
+import { IconTrendUp, IconTrendDown, IconArrowRight } from '../ui/Icons';
 
 // ── Type metadata ──────────────────────────────
 const TYPE_META = {
-  win_pattern:    { label: 'Win Pattern',    color: '#3DDC84', bg: 'rgba(61,220,132,0.08)',  border: 'rgba(61,220,132,0.25)',  icon: '↑' },
-  loss_pattern:   { label: 'Loss Pattern',   color: '#FF6E7A', bg: 'rgba(255,110,122,0.08)', border: 'rgba(255,110,122,0.25)', icon: '↓' },
-  recommendation: { label: 'Recommendation', color: '#F5C842', bg: 'rgba(245,200,66,0.08)',  border: 'rgba(245,200,66,0.25)',  icon: '→' },
+  win_pattern:    { label: 'Win Pattern',    color: '#3DDC84', bg: 'rgba(61,220,132,0.08)',  border: 'rgba(61,220,132,0.25)',  Icon: IconTrendUp },
+  loss_pattern:   { label: 'Loss Pattern',   color: '#FF6E7A', bg: 'rgba(255,110,122,0.08)', border: 'rgba(255,110,122,0.25)', Icon: IconTrendDown },
+  recommendation: { label: 'Recommendation', color: '#F5C842', bg: 'rgba(245,200,66,0.08)',  border: 'rgba(245,200,66,0.25)',  Icon: IconArrowRight },
 };
 
 // ── Confidence mini-ring (SVG) ─────────────────
@@ -47,6 +48,7 @@ function ConfidenceRing({ pct, color }) {
 function InsightCard({ item }) {
   const toast = useToast();
   const meta  = TYPE_META[item.type] ?? TYPE_META.recommendation;
+  const Icon  = meta.Icon;
 
   const actionLabel = item.type === 'win_pattern'
     ? 'Apply to ICP'
@@ -93,7 +95,7 @@ function InsightCard({ item }) {
           border:          `1px solid ${meta.border}`,
           gap:             '5px',
         }}>
-          <span style={{ fontSize: '11px' }}>{meta.icon}</span>
+          {Icon && <Icon color={meta.color} w={12} />}
           {meta.label}
         </span>
         <ConfidenceRing pct={item.confidence} color={meta.color} />
@@ -116,7 +118,7 @@ function InsightCard({ item }) {
         <span style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted }}>
           {item.basedOn > 0
             ? `Based on ${item.basedOn} closed deals`
-            : 'ARIA recommendation'}
+            : 'Freya recommendation'}
         </span>
         <button
           style={{
@@ -156,12 +158,12 @@ export default function WinLossInsights() {
             Win/Loss Pattern Analysis
           </span>
           <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>
-            ARIA extracted these insights from 12 closed-won and 8 recently lost deals.
+            Freya extracted these insights from 12 closed-won and 8 recently lost deals.
           </span>
         </div>
         <button
           style={{ ...btn.secondary, fontSize: '12px' }}
-          onClick={() => toast.info('ARIA is analyzing the last 30 days of deal activity…')}
+          onClick={() => toast.info('Freya is analyzing the last 30 days of deal activity…')}
         >
           Refresh insights
         </button>

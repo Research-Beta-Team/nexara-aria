@@ -1,4 +1,4 @@
-// Mock extraction result for ARIA Moment onboarding (no API calls in prototype)
+// Mock extraction result for Freya Moment onboarding (no API calls in prototype)
 
 export const ARIA_READING_STATES = [
   { text: 'Reading your document...', endMs: 1000 },

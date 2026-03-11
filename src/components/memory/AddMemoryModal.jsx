@@ -1,5 +1,5 @@
 /**
- * Modal to add or edit a memory entry: namespace dropdown, textarea (200 chars), source Manual, "Add to ARIA Memory" / "Save changes".
+ * Modal to add or edit a memory entry: namespace dropdown, textarea (200 chars), source Manual, "Add to Freya Memory" / "Save changes".
  */
 import { useState, useEffect } from 'react';
 import { C, F, R, S, btn } from '../../tokens';
@@ -74,7 +74,7 @@ export default function AddMemoryModal({ open, initialNamespace, editEntry, onCl
         }}
       >
         <h2 id="add-memory-title" style={{ fontFamily: F.display, fontSize: '18px', fontWeight: 700, color: C.textPrimary, margin: `0 0 ${S[4]} 0` }}>
-          {isEdit ? 'Edit memory' : 'Add to ARIA Memory'}
+          {isEdit ? 'Edit memory' : 'Add to Freya Memory'}
         </h2>
         <div style={{ marginBottom: S[4] }}>
           <label style={{ display: 'block', fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.textSecondary, marginBottom: S[1] }}>
@@ -109,7 +109,7 @@ export default function AddMemoryModal({ open, initialNamespace, editEntry, onCl
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value.slice(0, MAX_CHARS))}
-            placeholder="What should ARIA remember?"
+            placeholder="What should Freya remember?"
             rows={4}
             style={{
               width: '100%',
@@ -143,7 +143,7 @@ export default function AddMemoryModal({ open, initialNamespace, editEntry, onCl
               cursor: content.trim() ? 'pointer' : 'default',
             }}
           >
-            {isEdit ? 'Save changes' : 'Add to ARIA Memory'}
+            {isEdit ? 'Save changes' : 'Add to Freya Memory'}
           </button>
         </div>
       </div>

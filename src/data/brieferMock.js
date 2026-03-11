@@ -1,5 +1,5 @@
 /**
- * Mock data for ARIA Campaign Briefer (Session 6).
+ * Mock data for Freya Campaign Briefer (Session 6).
  * One full brief template: goal, channels, budget, KPIs, messaging, checklist.
  */
 
@@ -34,7 +34,7 @@ export const BRIEF_TEMPLATE = {
     headline: 'From 30+ hours to under 5 — pipeline ops that scale.',
     valueProps: [
       'Single source of truth for pipeline and attribution',
-      'ARIA-powered briefs and content so you ship faster',
+      'Freya-powered briefs and content so you ship faster',
       'Board-ready reports without the manual lift',
     ],
     proofPoints: ['Used by 50+ B2B teams', '94% response rate within 24h', 'Average 2.1x pipeline in 6 months'],

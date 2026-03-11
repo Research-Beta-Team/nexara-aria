@@ -1,9 +1,10 @@
 /**
- * Overlay with ARIA orb, streaming lines, progress bar. Runs ~2–3s then onComplete().
+ * Overlay with Freya orb, streaming lines, progress bar. Runs ~2–3s then onComplete().
  */
 import { useEffect, useState } from 'react';
 import { C, F, R, S } from '../../tokens';
 import { Z } from '../../tokens';
+import { IconCheck, IconArrowRight } from '../ui/Icons';
 
 const DURATION_MS = 2500;
 const LINES = [
@@ -81,7 +82,10 @@ export default function ARIABuildAnimation({ onComplete }) {
               marginBottom: S[1],
             }}
           >
-            {i === activeLine ? '▸ ' : '✓ '}{line}
+            <span style={{ display: 'inline-flex', alignItems: 'center', marginRight: 4 }}>
+              {i === activeLine ? <IconArrowRight color={C.primary} w={14} /> : <IconCheck color={C.textSecondary} w={14} />}
+            </span>
+            {line}
           </div>
         ))}
       </div>

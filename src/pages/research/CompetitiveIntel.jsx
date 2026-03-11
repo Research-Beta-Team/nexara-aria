@@ -143,7 +143,7 @@ function ReviewAnalysisTab({ competitors, selectedId, onSelect, toast }) {
             color: C.textPrimary,
           }}
         >
-          <strong>ARIA extraction:</strong> Customers consistently complain about {negative[0]?.theme?.toLowerCase() || 'support and complexity'}. Our unified platform and dedicated success team directly address this.
+          <strong>Freya extraction:</strong> Customers consistently complain about {negative[0]?.theme?.toLowerCase() || 'support and complexity'}. Our unified platform and dedicated success team directly address this.
         </div>
         <div>
           <h3 style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[2] }}>

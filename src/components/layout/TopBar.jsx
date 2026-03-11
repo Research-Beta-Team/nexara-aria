@@ -12,6 +12,7 @@ import PlanExpiryWarning from '../plan/PlanExpiryWarning';
 import { getRoleDisplayName, ROLE_IDS } from '../../config/roleConfig';
 import { IconWarning } from '../ui/Icons';
 import AntariousLogo from '../ui/AntariousLogo';
+import FreyaLogo from '../ui/FreyaLogo';
 import { C, F, R, S, T, shadows } from '../../tokens';
 
 // ── Campaign options (mock) ───────────────────
@@ -53,6 +54,8 @@ function Breadcrumb() {
     'customer-success': 'Customer Success',
     settings: 'Settings',
     aria: 'Freya',
+    freya: 'Freya',
+    'freya-brain': 'Freya Intelligence',
     billing: 'Billing',
     team: 'Team',
     whitelabel: 'White-Label',
@@ -652,7 +655,7 @@ function LowCreditBanner() {
 }
 
 // ── TopBar ────────────────────────────────────
-export default function TopBar({ onAriaOpen }) {
+export default function TopBar({ onFreyaOpen }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const navigate = useNavigate();
   const notifications = useStore((s) => s.notifications);
@@ -786,16 +789,9 @@ export default function TopBar({ onAriaOpen }) {
               transition: T.base,
             }}
             title="Ask Freya"
-            onClick={() => onAriaOpen?.()}
+            onClick={() => onFreyaOpen?.()}
           >
-            {/* Freya mark */}
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M7 1.5L13.2 12.8H0.8L7 1.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
-              <path d="M3.6 9.2h6.8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
-              <circle cx="7"    cy="1.5"  r="1.1" fill="currentColor"/>
-              <circle cx="0.8"  cy="12.8" r="1.1" fill="currentColor"/>
-              <circle cx="13.2" cy="12.8" r="1.1" fill="currentColor"/>
-            </svg>
+            <FreyaLogo size={14} />
             <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em' }}>Freya</span>
           </button>
 

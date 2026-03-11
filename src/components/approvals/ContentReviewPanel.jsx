@@ -1,5 +1,5 @@
 /**
- * Right column: selected item header, content preview, ARIA compliance score, review actions, comments, history.
+ * Right column: selected item header, content preview, Freya compliance score, review actions, comments, history.
  */
 import { useState } from 'react';
 import useStore from '../../store/useStore';

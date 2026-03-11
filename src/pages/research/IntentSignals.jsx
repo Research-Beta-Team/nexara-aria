@@ -92,7 +92,7 @@ export default function IntentSignals() {
               </span>
             </div>
             <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: 0, maxWidth: 520 }}>
-              See which accounts are researching solutions like yours. Monitor → filter by type and score → add to sequence or start outreach. ARIA suggests next-best actions.
+              See which accounts are researching solutions like yours. Monitor → filter by type and score → add to sequence or start outreach. Freya suggests next-best actions.
             </p>
           </div>
           <div style={{ display: 'flex', gap: S[2], flexShrink: 0 }}>
@@ -153,7 +153,7 @@ export default function IntentSignals() {
               Signal feed — filter, sort, act
             </h2>
             <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted }}>
-              Add to sequence · Outreach · View account · Dismiss · Ask ARIA
+              Add to sequence · Outreach · View account · Dismiss · Ask Freya
             </span>
           </div>
           <div style={{ display: 'flex', gap: S[5], flex: 1, minHeight: 0 }}>
@@ -165,7 +165,7 @@ export default function IntentSignals() {
                   onAddToSequence={() => toast.info('Add to sequence')}
                   onViewAccount={() => toast.info('View account')}
                   onDismiss={() => toast.info('Signal dismissed')}
-                  onAskAria={() => toast.info('Ask ARIA')}
+                  onAskFreya={() => toast.info('Ask Freya')}
                   toast={toast}
                 />
               </div>
@@ -226,7 +226,7 @@ export default function IntentSignals() {
           </div>
         </div>
 
-        {/* ── ARIA: Act on recommendation ──────────────────── */}
+        {/* ── Freya: Act on recommendation ──────────────────── */}
         <div
           style={{
             display: 'flex',
@@ -243,7 +243,7 @@ export default function IntentSignals() {
         >
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: C.primary, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
-              ARIA recommends
+              Freya recommends
             </div>
             <p style={{ fontFamily: F.body, fontSize: '14px', color: C.textPrimary, margin: 0 }}>
               {ARIA_RECOMMENDATION.summary}

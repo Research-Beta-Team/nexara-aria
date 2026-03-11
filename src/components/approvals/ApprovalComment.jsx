@@ -4,12 +4,13 @@ const ACTION_TAG_STYLE = {
   approved: { bg: C.primaryGlow, color: C.primary },
   changes_requested: { bg: C.redDim, color: C.red },
   replied_to_aria: { bg: 'rgba(94,234,212,0.15)', color: C.secondary },
+  replied_to_freya: { bg: 'rgba(94,234,212,0.15)', color: C.secondary },
 };
 
 export default function ApprovalComment({ comment, reviewer, onReply }) {
-  const isAria = comment.authorId === 'aria';
-  const displayName = isAria ? 'Freya' : (comment.authorId === 'current' ? 'You' : (reviewer?.name ?? 'Unknown'));
-  const initials = isAria ? 'F' : (comment.authorId === 'current' ? 'YU' : (reviewer?.initials ?? '?'));
+  const isFreya = comment.authorId === 'freya';
+  const displayName = isFreya ? 'Freya' : (comment.authorId === 'current' ? 'You' : (reviewer?.name ?? 'Unknown'));
+  const initials = isFreya ? 'F' : (comment.authorId === 'current' ? 'YU' : (reviewer?.initials ?? '?'));
   const tagStyle = comment.actionTag ? ACTION_TAG_STYLE[comment.actionTag] : null;
 
   return (
@@ -19,7 +20,7 @@ export default function ApprovalComment({ comment, reviewer, onReply }) {
         gap: S[3],
         padding: S[3],
         borderRadius: R.md,
-        backgroundColor: isAria ? C.surface2 : C.surface,
+        backgroundColor: isFreya ? C.surface2 : C.surface,
         border: `1px solid ${C.border}`,
         marginBottom: S[2],
       }}
@@ -29,15 +30,15 @@ export default function ApprovalComment({ comment, reviewer, onReply }) {
           width: 32,
           height: 32,
           borderRadius: '50%',
-          backgroundColor: isAria ? C.primaryGlow : C.surface3,
-          border: `1px solid ${isAria ? C.primary : C.border}`,
+          backgroundColor: isFreya ? C.primaryGlow : C.surface3,
+          border: `1px solid ${isFreya ? C.primary : C.border}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           fontFamily: F.mono,
           fontSize: '11px',
           fontWeight: 700,
-          color: isAria ? C.primary : C.textSecondary,
+          color: isFreya ? C.primary : C.textSecondary,
           flexShrink: 0,
         }}
       >
@@ -72,9 +73,10 @@ export default function ApprovalComment({ comment, reviewer, onReply }) {
             {comment.actionTag === 'approved' && 'Approved'}
             {comment.actionTag === 'changes_requested' && 'Changes requested'}
             {comment.actionTag === 'replied_to_aria' && 'Replied to Freya'}
+            {comment.actionTag === 'replied_to_freya' && 'Replied to Freya'}
           </span>
         )}
-        {comment.ariaReply && (
+        {(comment.freyaReply || comment.ariaReply) && (
           <div
             style={{
               marginTop: S[2],
@@ -90,7 +92,7 @@ export default function ApprovalComment({ comment, reviewer, onReply }) {
             Freya revised and suggests: {comment.body}
           </div>
         )}
-        {!isAria && onReply && (
+        {!isFreya && onReply && (
           <button
             type="button"
             onClick={() => onReply?.(comment)}

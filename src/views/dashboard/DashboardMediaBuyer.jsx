@@ -4,6 +4,7 @@ import usePlan from '../../hooks/usePlan';
 import { C, F, R, S, btn, cardStyle } from '../../tokens';
 import MetaPerformanceWidget from '../../components/dashboard/MetaPerformanceWidget';
 import { metaStats, ctrChartData } from '../../data/dashboard';
+import { IconCheck, IconWarning, IconArrowRight } from '../../components/ui/Icons';
 
 const AD_ACCOUNTS_MOCK = [
   { name: 'META — ACME CORP (CFO VN)', budget: '840/2,000', pct: 42, cpl: 14.24, ctr: '3.1%', alert: 'Budget nearly exhausted' },
@@ -41,11 +42,13 @@ export default function DashboardMediaBuyer() {
           {AD_ACCOUNTS_MOCK.map((acc, i) => (
             <div key={i} style={{ ...cardStyle, padding: S[5] }}>
               <div style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: C.textPrimary }}>{acc.name}</div>
-              <div style={{ marginTop: S[2], fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>
-                Budget: ${acc.budget} · CPL: ${acc.cpl} ✓  CTR: {acc.ctr} ✓
+              <div style={{ marginTop: S[2], fontFamily: F.body, fontSize: '12px', color: C.textSecondary, display: 'flex', alignItems: 'center', gap: S[1] }}>
+                Budget: ${acc.budget} · CPL: ${acc.cpl} <IconCheck color={C.green} width={14} height={14} /> CTR: {acc.ctr} <IconCheck color={C.green} width={14} height={14} />
               </div>
               {acc.alert && (
-                <div style={{ marginTop: S[2], fontFamily: F.body, fontSize: '12px', color: C.amber }}>⚠ ALERT: {acc.alert}. <button style={{ ...btn.ghost, fontSize: '12px', padding: 0 }} onClick={() => toast.info('Action')}>Top up / Refresh</button></div>
+                <div style={{ marginTop: S[2], fontFamily: F.body, fontSize: '12px', color: C.amber, display: 'flex', alignItems: 'center', gap: S[1] }}>
+                  <IconWarning width={14} height={14} /> ALERT: {acc.alert}. <button style={{ ...btn.ghost, fontSize: '12px', padding: 0 }} onClick={() => toast.info('Action')}>Top up / Refresh</button>
+                </div>
               )}
             </div>
           ))}
@@ -55,10 +58,10 @@ export default function DashboardMediaBuyer() {
         <MetaPerformanceWidget stats={metaStats} chartData={ctrChartData} />
       )}
       <div style={{ ...cardStyle, padding: S[4], border: `1px solid ${C.border}` }}>
-        <div style={{ fontFamily: F.body, fontSize: '13px', color: C.textPrimary }}>ARIA Optimization Queue — "Reallocate $800 from Meta Set 3 → LinkedIn [87% confidence]"</div>
+        <div style={{ fontFamily: F.body, fontSize: '13px', color: C.textPrimary }}>Freya Optimization Queue — "Reallocate $800 from Meta Set 3 → LinkedIn [87% confidence]"</div>
         <div style={{ display: 'flex', gap: S[2], marginTop: S[3] }}>
           <button style={{ ...btn.primary, fontSize: '12px' }} onClick={() => toast.info('Execute')}>Execute top recommendation</button>
-          <button style={{ ...btn.secondary, fontSize: '12px' }} onClick={() => toast.info('Review all')}>Review all →</button>
+          <button style={{ ...btn.secondary, fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: S[1] }} onClick={() => toast.info('Review all')}>Review all <IconArrowRight width={14} height={14} /></button>
         </div>
       </div>
     </div>

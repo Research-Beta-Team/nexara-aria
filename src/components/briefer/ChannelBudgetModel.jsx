@@ -1,5 +1,5 @@
 /**
- * Table: Channel, Budget, %, Target CPL, Projected MQLs, Rationale; "ARIA Recalculate".
+ * Table: Channel, Budget, %, Target CPL, Projected MQLs, Rationale; "Freya Recalculate".
  */
 import { C, F, R, S, btn } from '../../tokens';
 

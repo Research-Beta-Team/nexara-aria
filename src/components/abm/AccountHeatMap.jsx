@@ -156,7 +156,7 @@ export default function AccountHeatMap({ account, onSelectStakeholder, toast }) 
             </div>
           </div>
           <div>
-            <span style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted, textTransform: 'uppercase' }}>ARIA notes</span>
+            <span style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted, textTransform: 'uppercase' }}>Freya notes</span>
             <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, margin: '4px 0 0' }}>
               High engagement. Best reached via {selectedStakeholder.channel}. Send ROI content next.
             </p>

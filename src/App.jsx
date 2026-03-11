@@ -193,7 +193,7 @@ function OnboardingGuard() {
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   // Tier-based flow (company type, plan, connections)
   if (location.pathname === '/onboarding/setup') return <OnboardingLayout />;
-  // ARIA Moment (file upload, create first campaign) at /onboarding, /onboarding/aria, /first-onboarding/aria
+  // Freya Moment (file upload, create first campaign) at /onboarding, /onboarding/aria, /first-onboarding/aria
   return <OnboardingAriaLayout />;
 }
 
@@ -231,18 +231,20 @@ export default function App() {
       <Route path="/login"  element={<Login />} />
       <Route path="/signup" element={<Signup />} />
 
-      {/* Onboarding — requires auth; tier flow at /onboarding/setup, ARIA (file upload) at /onboarding, /first-onboarding/aria */}
+      {/* Onboarding — requires auth; tier flow at /onboarding/setup, Freya (file upload) at /onboarding, /first-onboarding/freya */}
       <Route path="/onboarding" element={<OnboardingGuard />} />
-      <Route path="/onboarding/aria" element={<Navigate to="/first-onboarding/aria" replace />} />
+      <Route path="/onboarding/aria" element={<Navigate to="/first-onboarding/freya" replace />} />
       <Route path="/onboarding/setup" element={<OnboardingGuard />} />
-      <Route path="/first-onboarding/aria" element={<OnboardingGuard />} />
+      <Route path="/first-onboarding/aria" element={<Navigate to="/first-onboarding/freya" replace />} />
+      <Route path="/first-onboarding/freya" element={<OnboardingGuard />} />
 
       {/* Main app — guarded by auth + onboarding; explicit path so /campaigns/new etc. match */}
       <Route path="/" element={<ProtectedLayout />}>
         <Route index               element={<Dashboard />} />
         <Route path="dashboard"    element={<Navigate to="/" replace />} />
         <Route path="campaigns"     element={<CampaignList />} />
-        <Route path="campaigns/new/aria" element={<AriaCampaignFlow />} />
+        <Route path="campaigns/new/freya" element={<AriaCampaignFlow />} />
+        <Route path="campaigns/new/aria" element={<Navigate to="/campaigns/new/freya" replace />} />
         <Route path="campaigns/new" element={<CampaignNew />} />
         <Route path="campaigns/approvals" element={<ContentApprovalWorkflow />} />
         <Route path="campaigns/briefer"   element={<ARIACampaignBriefer />} />
@@ -287,11 +289,16 @@ export default function App() {
         <Route path="billing/upgrade" element={<UpgradePage />} />
         <Route path="settings"            element={<Settings />} />
         <Route path="settings/workspace-preferences" element={<ComingSoon page="Organization Preferences" />} />
-        <Route path="settings/aria"        element={<ARIAPersonaConfig />} />
-        <Route path="aria-brain"       element={<ARIABrain />} />
-        <Route path="aria/knowledge"   element={<ARIAKnowledge />} />
-        <Route path="aria/workflows"   element={<WorkflowCenter />} />
-        <Route path="aria/memory"      element={<ARIAMemoryEngine />} />
+        <Route path="settings/freya"        element={<ARIAPersonaConfig />} />
+        <Route path="settings/aria"        element={<Navigate to="/settings/freya" replace />} />
+        <Route path="freya-brain"       element={<ARIABrain />} />
+        <Route path="aria-brain"        element={<Navigate to="/freya-brain" replace />} />
+        <Route path="freya/knowledge"   element={<ARIAKnowledge />} />
+        <Route path="aria/knowledge"    element={<Navigate to="/freya/knowledge" replace />} />
+        <Route path="freya/workflows"   element={<WorkflowCenter />} />
+        <Route path="aria/workflows"    element={<Navigate to="/freya/workflows" replace />} />
+        <Route path="freya/memory"      element={<ARIAMemoryEngine />} />
+        <Route path="aria/memory"       element={<Navigate to="/freya/memory" replace />} />
         <Route path="crm/handoff"      element={<MQLHandoffCenter />} />
         <Route path="crm/enrichment"   element={<LeadEnrichmentCenter />} />
         <Route path="analytics/attribution" element={<MultiTouchAttribution />} />

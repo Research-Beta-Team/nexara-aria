@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { C, F, R, S, T, inputStyle } from '../../../tokens';
 import { daysBetween } from '../../../data/campaignPhases';
 import PhaseChannelConfig from './PhaseChannelConfig';
+import { IconArrowRight } from '../../../components/ui/Icons';
 
 const GOAL_CHIPS = ['Build awareness', 'Generate leads', 'Convert demos', 'Nurture'];
 const CONTENT_SET_OPTIONS = [
@@ -104,7 +105,7 @@ export default function PhaseCard({ phase, index, onChange, onDelete, readOnly, 
           disabled={readOnly}
           style={{ ...inputStyle, width: 130, padding: `${S[1]} ${S[2]}`, fontSize: '12px' }}
         />
-        <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted }}>→</span>
+        <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted, display: 'inline-flex', alignItems: 'center' }}><IconArrowRight color={C.textMuted} w={14} /></span>
         <input
           type="date"
           value={phase.endDate || ''}

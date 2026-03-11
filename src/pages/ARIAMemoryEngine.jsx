@@ -14,7 +14,7 @@ import ARIAMemoryChat from '../components/memory/ARIAMemoryChat';
 
 export default function ARIAMemoryEngine() {
   const toast = useToast();
-  const ariaMemory = useStore((s) => s.ariaMemory);
+  const freyaMemory = useStore((s) => s.freyaMemory);
   const addMemoryEntry = useStore((s) => s.addMemoryEntry);
   const deleteMemoryEntry = useStore((s) => s.deleteMemoryEntry);
   const updateMemoryEntry = useStore((s) => s.updateMemoryEntry);
@@ -31,7 +31,7 @@ export default function ARIAMemoryEngine() {
 
   const handleSave = (namespaceKey, entry) => {
     addMemoryEntry(namespaceKey, entry);
-    toast.success('ARIA will use this in all future responses');
+    toast.success('Freya will use this in all future responses');
     setModalOpen(false);
   };
 
@@ -68,13 +68,13 @@ export default function ARIAMemoryEngine() {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: S[4] }}>
         <div>
           <h1 style={{ fontFamily: F.display, fontSize: '28px', fontWeight: 700, color: C.textPrimary, margin: 0 }}>
-            ARIA Memory
+            Freya Memory
           </h1>
           <p style={{ fontFamily: F.body, fontSize: '14px', color: C.textSecondary, margin: `${S[2]} 0 0` }}>
-            Everything ARIA knows about your brand, audience, and campaigns
+            Everything Freya knows about your brand, audience, and campaigns
           </p>
         </div>
-        <MemoryHealthScore ariaMemory={ariaMemory} />
+        <MemoryHealthScore freyaMemory={freyaMemory} />
       </div>
 
       {/* 2×2 grid of namespace cards */}
@@ -89,7 +89,7 @@ export default function ARIAMemoryEngine() {
           <MemoryNamespaceCard
             key={ns.id}
             namespaceKey={ns.id}
-            entries={ariaMemory?.[ns.id]}
+            entries={freyaMemory?.[ns.id]}
             onAdd={handleAdd}
             onEdit={(entry) => handleEdit(ns.id, entry)}
             onDelete={(id) => handleDelete(ns.id, id)}
@@ -97,8 +97,8 @@ export default function ARIAMemoryEngine() {
         ))}
       </div>
 
-      {/* Test ARIA's Memory — collapsible */}
-      <ARIAMemoryChat ariaMemory={ariaMemory} />
+      {/* Test Freya's Memory — collapsible */}
+      <ARIAMemoryChat freyaMemory={freyaMemory} />
 
       {/* Add Memory Modal */}
       <AddMemoryModal

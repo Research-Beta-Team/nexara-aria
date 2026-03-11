@@ -4,8 +4,8 @@ import { C, F, R, S, T } from '../../tokens';
 import useStore from '../../store/useStore';
 
 /**
- * Compact card on Dashboard: upload file(s) to start a campaign with ARIA.
- * Sets dashboardCampaignFiles in store and navigates to /campaigns/new/aria.
+ * Compact card on Dashboard: upload file(s) to start a campaign with Freya.
+ * Sets dashboardCampaignFiles in store and navigates to /campaigns/new/freya.
  */
 export default function StartCampaignFromFile() {
   const navigate = useNavigate();
@@ -47,7 +47,7 @@ export default function StartCampaignFromFile() {
   const handleStartCampaign = () => {
     if (files.length === 0) return;
     setDashboardCampaignFiles(files);
-    navigate('/campaigns/new/aria');
+    navigate('/campaigns/new/freya');
   };
 
   return (
@@ -66,7 +66,7 @@ export default function StartCampaignFromFile() {
         Start campaign from file
       </div>
       <p style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, margin: 0 }}>
-        Upload a brief, prospect list, or doc — ARIA will use it when creating your campaign.
+        Upload a brief, prospect list, or doc — Freya will use it when creating your campaign.
       </p>
       <div
         onDragOver={handleDragOver}
@@ -142,7 +142,7 @@ export default function StartCampaignFromFile() {
               alignSelf: 'flex-start',
             }}
           >
-            Start campaign with ARIA →
+            Start campaign with Freya →
           </button>
         </>
       )}

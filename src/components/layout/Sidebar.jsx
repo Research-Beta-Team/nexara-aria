@@ -634,7 +634,7 @@ function Logo({ collapsed }) {
       flexDirection: collapsed ? 'row' : 'column',
       alignItems: collapsed ? 'center' : 'flex-start',
     }}>
-      <AntariousLogo variant="dark" height={collapsed ? 28 : 26} showWordmark={!collapsed} />
+      <AntariousLogo variant="dark" height={collapsed ? 28 : 26} showWordmark={!collapsed} showAiSuffix={!collapsed} />
       {!collapsed && (
         <div style={{
           fontFamily: F.body,

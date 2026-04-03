@@ -1,601 +1,582 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState } from 'react';
 import { C, F, R, S, T, btn, badge, shadows, scrollbarStyle } from '../tokens';
 import useToast from '../hooks/useToast';
-import useStore from '../store/useStore';
-import { useRoleView } from '../hooks/useRoleView';
-import { filterContentItems } from '../utils/roleViews';
-import ContentPreviewModal from '../components/campaign/ContentPreviewModal';
-import ApprovalStatusBadge from '../components/approvals/ApprovalStatusBadge';
-import ContentIDChip from '../components/ui/ContentIDChip';
-import { contentItems, CONTENT_TYPE_COLORS } from '../data/content';
-import { TYPE_COLORS as CHANNEL_TYPE_COLORS } from '../config/channelBrands';
-import { IconLinkedIn, IconFacebook } from '../components/ui/Icons';
+import { IconPen, IconClock } from '../components/ui/Icons';
 
-/* ─── constants ──────────────────────────────────────────── */
-const TYPES    = ['Email', 'LinkedIn Ad', 'Meta Ad', 'SEO Article', 'Blog', 'Landing Page'];
-const STATUSES = ['approved', 'pending', 'draft', 'archived'];
-const VIEWS    = ['List', 'Grid', 'By Type', 'By Campaign'];
+/* ─── Mock data ──────────────────────────────────────────── */
+const DRAFT_ITEMS = [
+  { id: 'CAMP-001-EMAIL-04', title: 'The Last Operating Table', channel: 'Email', agent: 'Copywriter', date: 'Apr 2' },
+  { id: 'CAMP-002-LI-02', title: 'Field Report: Rafah Hospital', channel: 'LinkedIn', agent: 'Copywriter', date: 'Apr 2' },
+  { id: 'CAMP-003-META-01', title: 'Emergency Response Banner', channel: 'Meta Ad', agent: 'Copywriter', date: 'Apr 1' },
+  { id: 'CAMP-001-LP-01', title: 'Donor Landing Page v2', channel: 'Landing Page', agent: 'Copywriter', date: 'Mar 31' },
+];
 
-const TYPE_COLORS = CONTENT_TYPE_COLORS ?? {
-  'Email':        C.primary,
-  'LinkedIn Ad':  CHANNEL_TYPE_COLORS['LinkedIn Ad'],
-  'Meta Ad':      CHANNEL_TYPE_COLORS['Meta Ad'],
-  'SEO Article':  C.amber,
-  'Blog':         '#A78BFA',
-  'Landing Page': '#F472B6',
+const REVIEW_ITEMS = [
+  {
+    id: 'CAMP-001-EMAIL-03', title: 'The Operating Table in Rafah', channel: 'Email',
+    guardianStatus: 'reviewing', guardianNote: 'Emotional but compliant — suggest softening paragraph 3',
+  },
+  {
+    id: 'CAMP-002-LI-01', title: 'Yemen Field Update', channel: 'LinkedIn',
+    guardianStatus: 'approved', guardianNote: 'Cleared — strong narrative, ICP-aligned',
+  },
+  {
+    id: 'CAMP-004-META-02', title: 'Humanitarian Aid Impact', channel: 'Meta Ad',
+    guardianStatus: 'legal', guardianNote: 'Needs legal review before approval',
+  },
+];
+
+const APPROVED_ITEMS = [
+  { id: 'CAMP-001-EMAIL-02', title: 'Emergency Relief Impact Story', channel: 'Email', approvedBy: 'CMO', date: 'Apr 1' },
+  { id: 'CAMP-003-LI-01', title: 'Board Member Engagement Post', channel: 'LinkedIn', approvedBy: 'Owner', date: 'Mar 31' },
+  { id: 'CAMP-002-META-01', title: 'Yemen Crisis Awareness Ad', channel: 'Meta Ad', approvedBy: 'CMO', date: 'Mar 30' },
+  { id: 'CAMP-005-EMAIL-01', title: 'MENA Donor Stewardship', channel: 'Email', approvedBy: 'Legal', date: 'Mar 29' },
+];
+
+const PUBLISHED_ITEMS = [
+  { id: 'CAMP-001-EMAIL-01', title: 'Q1 Impact Report Email', channel: 'Email', stat1: '48% open', stat2: '6.2% CTR', date: 'Mar 28' },
+  { id: 'CAMP-002-LI-03', title: 'Healthcare Heroes Series', channel: 'LinkedIn', stat1: '4.1% engage', stat2: '312 shares', date: 'Mar 27' },
+  { id: 'CAMP-003-META-02', title: 'Urgent: Gaza Medical Aid', channel: 'Meta Ad', stat1: '$1.24 CPC', stat2: '3.8% CTR', date: 'Mar 26' },
+  { id: 'CAMP-001-EMAIL-00', title: 'Spring Fundraising Launch', channel: 'Email', stat1: '51% open', stat2: '7.8% CTR', date: 'Mar 25' },
+  { id: 'CAMP-004-LI-01', title: 'Partnership Announcement', channel: 'LinkedIn', stat1: '5.3% engage', stat2: '188 shares', date: 'Mar 24' },
+  { id: 'CAMP-005-META-01', title: 'MENA Emergency Response', channel: 'Meta Ad', stat1: '$0.98 CPC', stat2: '4.1% CTR', date: 'Mar 23' },
+  { id: 'CAMP-002-EMAIL-01', title: 'Donor Thank You Series', channel: 'Email', stat1: '62% open', stat2: '4.9% CTR', date: 'Mar 22' },
+  { id: 'CAMP-006-LI-01', title: 'Impact Story: Dr. Amara', channel: 'LinkedIn', stat1: '6.2% engage', stat2: '421 shares', date: 'Mar 21' },
+];
+
+const CHANNEL_COLORS = {
+  'Email': '#4A7C6F',
+  'LinkedIn': '#0077B5',
+  'Meta Ad': '#1877F2',
+  'Landing Page': '#8B5CF6',
+  'Twitter': '#1DA1F2',
+  'YouTube': '#FF0000',
 };
 
-const STATUS_COLORS = {
-  approved: C.primary,
-  pending:  C.amber,
-  draft:    C.textMuted,
-  archived: '#6B7280',
-};
+const CONTENT_TYPES = ['Email', 'LinkedIn', 'Meta Ad', 'Landing Page', 'Twitter', 'YouTube Script'];
+const TONES = ['Urgent', 'Inspiring', 'Educational', 'Conversational'];
+const CAMPAIGNS = ['CAMP-001 — MENA Healthcare Donor', 'CAMP-002 — Yemen Emergency', 'CAMP-003 — APAC Board Members', 'CAMP-004 — LATAM NGO Network'];
 
-/** Map content library status to approval workflow status for ApprovalStatusBadge */
-const APPROVAL_STATUS_MAP = {
-  approved: 'approved',
-  pending:  'in_review',
-  draft:    'draft',
-  archived: 'draft',
-};
-
-/* ─── TypeIcon ──────────────────────────────────────────── */
-function TypeIcon({ type, size = 16 }) {
-  const color = TYPE_COLORS[type] ?? C.textSecondary;
-  if (type === 'Email') return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect x="1" y="3" width="14" height="10" rx="2" stroke={color} strokeWidth="1.3"/>
-      <path d="M1 5.5l7 4 7-4" stroke={color} strokeWidth="1.3" strokeLinecap="round"/>
-    </svg>
-  );
-  if (type === 'LinkedIn Ad') return <IconLinkedIn color={color} width={size} height={size} />;
-  if (type === 'Meta Ad') return <IconFacebook color={color} width={size} height={size} />;
-  if (type === 'Blog' || type === 'SEO Article') return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <path d="M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke={color} strokeWidth="1.3"/>
-      <path d="M4 5.5h8M4 8h6M4 10.5h4" stroke={color} strokeWidth="1.3" strokeLinecap="round"/>
-    </svg>
-  );
-  return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect x="1" y="2" width="14" height="12" rx="2" stroke={color} strokeWidth="1.3"/>
-      <path d="M1 5h14" stroke={color} strokeWidth="1.3"/>
-      <path d="M4 8h8M5 11h6" stroke={color} strokeWidth="1.3" strokeLinecap="round"/>
-    </svg>
-  );
-}
-
-/* ─── ScoreBar ───────────────────────────────────────────── */
-function ScoreBar({ score }) {
-  if (score == null) return null;
-  const color = score >= 85 ? C.primary : score >= 70 ? C.amber : '#EF4444';
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-      <div style={{ flex: 1, height: '3px', borderRadius: '2px', backgroundColor: C.border }}>
-        <div style={{ width: `${score}%`, height: '100%', borderRadius: '2px', backgroundColor: color, transition: T.base }} />
-      </div>
-      <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, color, minWidth: '24px', textAlign: 'right' }}>{score}</span>
-    </div>
-  );
-}
-
-/* ─── StatusBadge ────────────────────────────────────────── */
-function StatusBadge({ status }) {
-  const approvalStatus = APPROVAL_STATUS_MAP[status] ?? 'draft';
-  return <ApprovalStatusBadge status={approvalStatus} compact />;
-}
-
-/* ─── TypeBadge ──────────────────────────────────────────── */
-function TypeBadge({ type }) {
-  const color = TYPE_COLORS[type] ?? C.textSecondary;
+/* ─── Sub-components ─────────────────────────────────────── */
+function ChannelChip({ channel }) {
+  const color = CHANNEL_COLORS[channel] ?? C.textSecondary;
   return (
     <span style={{
-      ...badge.base,
-      color,
-      backgroundColor: `${color}18`,
-      border: `1px solid ${color}33`,
-      fontSize: '10px',
+      fontFamily: F.mono, fontSize: '10px', fontWeight: 700,
+      color, backgroundColor: `${color}18`, border: `1px solid ${color}44`,
+      borderRadius: R.pill, padding: `2px 8px`, letterSpacing: '0.04em', whiteSpace: 'nowrap',
     }}>
-      {type}
+      {channel}
     </span>
   );
 }
 
-/* ─── ContentListRow ─────────────────────────────────────── */
-function ContentListRow({ item, onOpen }) {
-  const [hov, setHov] = useState(false);
+function ContentIDChip({ id }) {
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: '28px 1fr 160px 140px 90px 80px 80px',
-        alignItems: 'center',
-        gap: S[3],
+    <span style={{
+      fontFamily: F.mono, fontSize: '10px', fontWeight: 600,
+      color: C.textMuted, backgroundColor: C.surface3,
+      border: `1px solid ${C.border}`, borderRadius: R.sm,
+      padding: `2px 6px`, letterSpacing: '0.02em', whiteSpace: 'nowrap',
+    }}>
+      {id}
+    </span>
+  );
+}
+
+function GuardianBadge({ status }) {
+  if (status === 'reviewing') return (
+    <span style={{ fontFamily: F.body, fontSize: '11px', color: C.amber, display: 'flex', alignItems: 'center', gap: 4 }}>
+      🛡️ Guardian reviewing
+    </span>
+  );
+  if (status === 'approved') return (
+    <span style={{ fontFamily: F.body, fontSize: '11px', color: C.primary, display: 'flex', alignItems: 'center', gap: 4 }}>
+      🛡️ Guardian approved ✓
+    </span>
+  );
+  return (
+    <span style={{ fontFamily: F.body, fontSize: '11px', color: '#EF4444', display: 'flex', alignItems: 'center', gap: 4 }}>
+      🛡️ Needs legal review
+    </span>
+  );
+}
+
+/* ─── Kanban Column ──────────────────────────────────────── */
+function KanbanColumn({ title, count, headerColor, children, badge: badgeText }) {
+  return (
+    <div style={{
+      flex: 1, minWidth: 0,
+      backgroundColor: C.surface,
+      border: `1px solid ${C.border}`,
+      borderRadius: R.card,
+      display: 'flex', flexDirection: 'column',
+      overflow: 'hidden',
+    }}>
+      {/* Column header */}
+      <div style={{
         padding: `${S[3]} ${S[4]}`,
-        borderBottom: `1px solid ${C.border}`,
-        cursor: 'pointer',
-        backgroundColor: hov ? C.surface2 : 'transparent',
-        transition: T.color,
-      }}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-      onClick={() => onOpen(item)}
-    >
-      <TypeIcon type={item.type} size={16} />
-      <div style={{ minWidth: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: S[2], flexWrap: 'wrap' }}>
-          <div style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {item.name}
-          </div>
-          {item.contentId && <ContentIDChip contentId={item.contentId} size="sm" onClick={() => onOpen(item)} />}
+        borderBottom: `2px solid ${headerColor}`,
+        backgroundColor: `${headerColor}12`,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
+          <span style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: headerColor }}>
+            {title}
+          </span>
+          <span style={{
+            fontFamily: F.mono, fontSize: '11px', fontWeight: 700,
+            color: headerColor, backgroundColor: `${headerColor}22`,
+            border: `1px solid ${headerColor}44`, borderRadius: R.pill,
+            padding: `1px 7px`,
+          }}>
+            {count}
+          </span>
         </div>
-        {item.preview && (
-          <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '1px' }}>
-            {item.preview}
-          </div>
+        {badgeText && (
+          <span style={{
+            fontFamily: F.body, fontSize: '10px', fontWeight: 600,
+            color: C.amber, backgroundColor: C.amberDim,
+            border: `1px solid ${C.amber}44`, borderRadius: R.pill,
+            padding: `2px 7px`, whiteSpace: 'nowrap',
+          }}>
+            {badgeText}
+          </span>
         )}
       </div>
-      <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        {item.campaignName ?? '—'}
-      </div>
-      <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        {item.agent ?? '—'}
-      </div>
-      <StatusBadge status={item.status} />
-      <ScoreBar score={item.brandScore} />
-      <div style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted, textAlign: 'right' }}>
-        {item.updatedAt}
+      {/* Cards */}
+      <div style={{
+        flex: 1, overflowY: 'auto', padding: S[3],
+        display: 'flex', flexDirection: 'column', gap: S[3],
+        ...scrollbarStyle,
+      }}>
+        {children}
       </div>
     </div>
   );
 }
 
-/* ─── ContentGridCard ────────────────────────────────────── */
-function ContentGridCard({ item, onOpen }) {
-  const [hov, setHov] = useState(false);
-  const typeColor = TYPE_COLORS[item.type] ?? C.textSecondary;
-  const perfKeys = item.performance ? Object.entries(item.performance).slice(0, 2) : [];
-
+/* ─── Draft Card ─────────────────────────────────────────── */
+function DraftCard({ item }) {
+  const toast = useToast();
   return (
-    <div
-      style={{
-        backgroundColor: C.surface,
-        border: `1px solid ${hov ? C.borderHover : C.border}`,
-        borderRadius: R.card,
-        padding: S[4],
-        cursor: 'pointer',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: S[3],
-        transition: T.base,
-        boxShadow: hov ? shadows.cardHover : 'none',
-      }}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-      onClick={() => onOpen(item)}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: S[2] }}>
-          <TypeBadge type={item.type} />
-          {item.contentId && <ContentIDChip contentId={item.contentId} size="sm" onClick={() => onOpen(item)} />}
-        </div>
-        <StatusBadge status={item.status} />
+    <div style={{
+      backgroundColor: C.surface2, border: `1px solid ${C.border}`,
+      borderRadius: R.md, padding: S[3],
+      transition: T.base,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: S[2], marginBottom: S[2] }}>
+        <ContentIDChip id={item.id} />
+        <ChannelChip channel={item.channel} />
       </div>
-
-      <div>
-        <div style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 700, color: C.textPrimary, lineHeight: '1.3', marginBottom: '4px' }}>
-          {item.name}
-        </div>
-        {item.preview && (
-          <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted, lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-            {item.preview}
-          </div>
-        )}
+      <div style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary, marginBottom: S[1], lineHeight: 1.4 }}>
+        {item.title}
       </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        {item.campaignName && (
-          <div style={{ display: 'flex', gap: S[2], alignItems: 'center' }}>
-            <span style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted, width: '52px', flexShrink: 0 }}>Campaign</span>
-            <span style={{ fontFamily: F.body, fontSize: '11px', color: C.textSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.campaignName}</span>
-          </div>
-        )}
-        {item.agent && (
-          <div style={{ display: 'flex', gap: S[2], alignItems: 'center' }}>
-            <span style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted, width: '52px', flexShrink: 0 }}>Agent</span>
-            <span style={{ fontFamily: F.body, fontSize: '11px', color: C.textSecondary }}>{item.agent}</span>
-          </div>
-        )}
+      <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textSecondary, marginBottom: S[3] }}>
+        ✍️ {item.agent} · {item.date}
       </div>
-
-      {item.brandScore != null && (
-        <div>
-          <div style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted, marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Brand Score</div>
-          <ScoreBar score={item.brandScore} />
-        </div>
-      )}
-
-      {perfKeys.length > 0 && (
-        <div style={{ display: 'flex', gap: S[3] }}>
-          {perfKeys.map(([k, v]) => (
-            <div key={k} style={{ flex: 1 }}>
-              <div style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted, textTransform: 'capitalize', marginBottom: '2px' }}>{k}</div>
-              <div style={{ fontFamily: F.mono, fontSize: '13px', fontWeight: 700, color: C.textPrimary }}>{v}</div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {hov && (
-        <div style={{ fontFamily: F.body, fontSize: '11px', color: typeColor, display: 'flex', alignItems: 'center', gap: '4px', marginTop: 'auto' }}>
-          View content
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-            <path d="M2 5h6M5 2l3 3-3 3" stroke={typeColor} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ─── GroupSection ───────────────────────────────────────── */
-function GroupSection({ title, items, onOpen, viewMode }) {
-  const [collapsed, setCollapsed] = useState(false);
-  const isGrid = viewMode === 'By Type' || viewMode === 'By Campaign';
-
-  return (
-    <div>
       <button
-        onClick={() => setCollapsed((c) => !c)}
+        onClick={() => toast.success(`"${item.title}" sent for Guardian review.`)}
         style={{
-          display: 'flex', alignItems: 'center', gap: S[2],
-          background: 'none', border: 'none', cursor: 'pointer',
-          padding: `${S[2]} 0`, marginBottom: S[3], width: '100%', textAlign: 'left',
+          ...btn.primary, fontSize: '11px', padding: `${S[1]} ${S[3]}`,
+          width: '100%', justifyContent: 'center',
         }}
       >
-        <svg
-          width="12" height="12" viewBox="0 0 12 12" fill="none"
-          style={{ transition: T.base, transform: collapsed ? 'rotate(-90deg)' : 'none', flexShrink: 0 }}
-        >
-          <path d="M2 4l4 4 4-4" stroke={C.textMuted} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-        <span style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-          {title}
-        </span>
-        <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted }}>({items.length})</span>
+        Send for Review
       </button>
-
-      {!collapsed && (
-        isGrid ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: S[4], marginBottom: S[6] }}>
-            {items.map((item) => <ContentGridCard key={item.id} item={item} onOpen={onOpen} />)}
-          </div>
-        ) : (
-          <div style={{ backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card, overflow: 'hidden', marginBottom: S[6] }}>
-            {items.map((item) => <ContentListRow key={item.id} item={item} onOpen={onOpen} />)}
-          </div>
-        )
-      )}
     </div>
   );
 }
 
-/* ─── FilterPill ─────────────────────────────────────────── */
-function FilterPill({ label, active, onClick, count }) {
+/* ─── Review Card ────────────────────────────────────────── */
+function ReviewCard({ item }) {
+  const toast = useToast();
+  const isLegal = item.guardianStatus === 'legal';
+  const isApproved = item.guardianStatus === 'approved';
   return (
-    <button
-      onClick={onClick}
-      style={{
-        fontFamily: F.body, fontSize: '12px', fontWeight: active ? 600 : 400,
-        color: active ? C.textPrimary : C.textMuted,
-        backgroundColor: active ? C.surface3 : 'transparent',
-        border: `1px solid ${active ? C.borderHover : C.border}`,
-        borderRadius: R.pill,
-        padding: `3px ${S[3]}`,
-        cursor: 'pointer',
-        transition: T.color,
-        display: 'inline-flex', alignItems: 'center', gap: '5px',
-      }}
-    >
-      {label}
-      {count != null && (
-        <span style={{ fontFamily: F.mono, fontSize: '10px', color: active ? C.textSecondary : C.textMuted }}>{count}</span>
+    <div style={{
+      backgroundColor: C.surface2, border: `1px solid ${C.border}`,
+      borderRadius: R.md, padding: S[3],
+    }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: S[2], marginBottom: S[2] }}>
+        <ContentIDChip id={item.id} />
+        <ChannelChip channel={item.channel} />
+      </div>
+      <div style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary, marginBottom: S[1], lineHeight: 1.4 }}>
+        {item.title}
+      </div>
+      <GuardianBadge status={item.guardianStatus} />
+      {item.guardianNote && (
+        <div style={{
+          fontFamily: F.body, fontSize: '11px', color: C.textSecondary,
+          backgroundColor: C.surface3, borderRadius: R.sm,
+          padding: `${S[1]} ${S[2]}`, marginTop: S[2], marginBottom: S[3],
+          borderLeft: `2px solid ${item.guardianStatus === 'approved' ? C.primary : C.amber}`,
+          lineHeight: 1.45,
+        }}>
+          {item.guardianNote}
+        </div>
       )}
-    </button>
+      <button
+        onClick={() => toast.info(isLegal ? `"${item.title}" flagged for legal team.` : isApproved ? `Opening owner approval for "${item.title}".` : `Opening review panel for "${item.title}".`)}
+        style={{
+          ...(isLegal ? btn.danger : btn.secondary),
+          fontSize: '11px', padding: `${S[1]} ${S[3]}`,
+          width: '100%', justifyContent: 'center',
+        }}
+      >
+        {isLegal ? 'Flag for Legal' : isApproved ? 'Owner Approve' : 'My Review'}
+      </button>
+    </div>
+  );
+}
+
+/* ─── Approved Card ──────────────────────────────────────── */
+function ApprovedCard({ item }) {
+  const toast = useToast();
+  return (
+    <div style={{
+      backgroundColor: C.surface2,
+      border: `1px solid ${C.primary}33`,
+      borderRadius: R.md, padding: S[3],
+    }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: S[2], marginBottom: S[2] }}>
+        <ContentIDChip id={item.id} />
+        <ChannelChip channel={item.channel} />
+      </div>
+      <div style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary, marginBottom: S[1], lineHeight: 1.4 }}>
+        {item.title}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: S[1], marginBottom: S[3] }}>
+        <span style={{ fontSize: '12px' }}>✅</span>
+        <span style={{ fontFamily: F.body, fontSize: '11px', color: C.primary }}>
+          Approved by {item.approvedBy} · {item.date}
+        </span>
+      </div>
+      <button
+        onClick={() => toast.success(`"${item.title}" published successfully!`)}
+        style={{
+          ...btn.primary, fontSize: '11px', padding: `${S[1]} ${S[3]}`,
+          width: '100%', justifyContent: 'center',
+        }}
+      >
+        Publish
+      </button>
+    </div>
+  );
+}
+
+/* ─── Published Card ─────────────────────────────────────── */
+function PublishedCard({ item }) {
+  const toast = useToast();
+  return (
+    <div style={{
+      backgroundColor: C.surface2,
+      border: `1px solid #3B82F633`,
+      borderRadius: R.md, padding: S[3],
+    }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: S[2], marginBottom: S[2] }}>
+        <ContentIDChip id={item.id} />
+        <ChannelChip channel={item.channel} />
+      </div>
+      <div style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary, marginBottom: S[1], lineHeight: 1.4 }}>
+        {item.title}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: S[3], marginBottom: S[2] }}>
+        <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.primary, fontWeight: 600 }}>{item.stat1}</span>
+        <span style={{ fontFamily: F.mono, fontSize: '11px', color: '#3B82F6', fontWeight: 600 }}>{item.stat2}</span>
+      </div>
+      <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted }}>Published {item.date}</div>
+      <button
+        onClick={() => toast.info(`Opening analytics for "${item.title}".`)}
+        style={{
+          ...btn.ghost, fontSize: '11px', padding: `${S[1]} 0`,
+          color: '#3B82F6', marginTop: S[2],
+        }}
+      >
+        View Analytics →
+      </button>
+    </div>
+  );
+}
+
+/* ─── Content Generator Panel ────────────────────────────── */
+function ContentGenerator() {
+  const toast = useToast();
+  const [selectedType, setSelectedType] = useState('Email');
+  const [selectedCampaign, setSelectedCampaign] = useState(CAMPAIGNS[0]);
+  const [goal, setGoal] = useState('');
+  const [tone, setTone] = useState('Inspiring');
+  const [autoGuardian, setAutoGuardian] = useState(true);
+  const [generating, setGenerating] = useState(false);
+
+  const handleGenerate = () => {
+    if (!goal.trim()) { toast.warning('Please describe the goal for this content.'); return; }
+    setGenerating(true);
+    setTimeout(() => {
+      setGenerating(false);
+      toast.success('Copywriter agent is drafting your content — check Draft column in ~30s.');
+    }, 1800);
+  };
+
+  return (
+    <div style={{
+      backgroundColor: C.surface,
+      border: `1px solid ${C.border}`,
+      borderRadius: R.card,
+      padding: S[5],
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: S[3], marginBottom: S[4] }}>
+        <div style={{
+          width: 28, height: 28, borderRadius: R.md,
+          backgroundColor: `${C.primary}22`, border: `1px solid ${C.primary}55`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: '14px',
+        }}>✍️</div>
+        <div>
+          <div style={{ fontFamily: F.display, fontSize: '15px', fontWeight: 700, color: C.textPrimary }}>Content Generator</div>
+          <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>Copywriter agent · 12cr per piece</div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: S[4] }}>
+        {/* Content type */}
+        <div>
+          <div style={{ fontFamily: F.body, fontSize: '11px', fontWeight: 600, color: C.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[2] }}>
+            Content Type
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: S[1] }}>
+            {CONTENT_TYPES.map((t) => (
+              <button
+                key={t}
+                onClick={() => setSelectedType(t)}
+                style={{
+                  padding: `${S[1]} ${S[2]}`,
+                  fontSize: '12px', fontFamily: F.body, fontWeight: 500,
+                  borderRadius: R.sm, border: `1px solid ${selectedType === t ? C.primary : C.border}`,
+                  backgroundColor: selectedType === t ? `${C.primary}22` : 'transparent',
+                  color: selectedType === t ? C.primary : C.textSecondary,
+                  cursor: 'pointer', transition: T.color, whiteSpace: 'nowrap',
+                }}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Campaign + Goal */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: S[3] }}>
+          <div>
+            <div style={{ fontFamily: F.body, fontSize: '11px', fontWeight: 600, color: C.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[1] }}>
+              Campaign
+            </div>
+            <select
+              value={selectedCampaign}
+              onChange={(e) => setSelectedCampaign(e.target.value)}
+              style={{
+                width: '100%', backgroundColor: C.surface2, color: C.textPrimary,
+                border: `1px solid ${C.border}`, borderRadius: R.input,
+                padding: `${S[2]} ${S[3]}`, fontFamily: F.body, fontSize: '13px',
+                outline: 'none', cursor: 'pointer',
+              }}
+            >
+              {CAMPAIGNS.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          <div>
+            <div style={{ fontFamily: F.body, fontSize: '11px', fontWeight: 600, color: C.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[1] }}>
+              Goal
+            </div>
+            <input
+              type="text"
+              value={goal}
+              onChange={(e) => setGoal(e.target.value)}
+              placeholder="What should this content achieve?"
+              style={{
+                width: '100%', boxSizing: 'border-box',
+                backgroundColor: C.surface2, color: C.textPrimary,
+                border: `1px solid ${C.border}`, borderRadius: R.input,
+                padding: `${S[2]} ${S[3]}`, fontFamily: F.body, fontSize: '13px', outline: 'none',
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Tone + Actions */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: S[3] }}>
+          <div>
+            <div style={{ fontFamily: F.body, fontSize: '11px', fontWeight: 600, color: C.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[2] }}>
+              Tone
+            </div>
+            <div style={{ display: 'flex', gap: S[1], flexWrap: 'wrap' }}>
+              {TONES.map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setTone(t)}
+                  style={{
+                    padding: `${S[1]} ${S[2]}`, fontSize: '12px', fontFamily: F.body, fontWeight: 500,
+                    borderRadius: R.sm, border: `1px solid ${tone === t ? C.secondary : C.border}`,
+                    backgroundColor: tone === t ? `${C.secondary}22` : 'transparent',
+                    color: tone === t ? C.secondary : C.textSecondary,
+                    cursor: 'pointer', transition: T.color,
+                  }}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Auto-guardian toggle */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: S[2] }}>
+            <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>
+              Auto-send to Guardian review
+            </span>
+            <div
+              onClick={() => setAutoGuardian(!autoGuardian)}
+              style={{
+                width: '36px', height: '20px', borderRadius: '999px',
+                backgroundColor: autoGuardian ? C.primary : C.surface3,
+                border: `1px solid ${autoGuardian ? C.primary : C.border}`,
+                position: 'relative', cursor: 'pointer', transition: 'background-color 0.2s',
+                flexShrink: 0,
+              }}
+            >
+              <div style={{
+                position: 'absolute', top: '2px',
+                left: autoGuardian ? '17px' : '2px',
+                width: '14px', height: '14px', borderRadius: '50%',
+                backgroundColor: autoGuardian ? C.textInverse : C.textMuted,
+                transition: 'left 0.2s',
+              }} />
+            </div>
+          </div>
+
+          <button
+            onClick={handleGenerate}
+            disabled={generating}
+            style={{
+              ...btn.primary,
+              justifyContent: 'center', width: '100%',
+              fontSize: '13px', fontWeight: 700,
+              padding: `${S[3]} ${S[4]}`,
+              opacity: generating ? 0.7 : 1,
+            }}
+          >
+            {generating ? <><IconClock width={13} height={13} color="currentColor" style={{ marginRight: 5, verticalAlign: 'middle' }} /> Generating...</> : <><IconPen width={13} height={13} color="currentColor" style={{ marginRight: 5, verticalAlign: 'middle' }} /> Run Copywriter · 12cr</>}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
 /* ─── Main Page ──────────────────────────────────────────── */
 export default function ContentLibrary() {
   const toast = useToast();
-  const currentRole = useStore((s) => s.currentRole);
-  const roleConfig = useRoleView('content-library');
-  const {
-    layout,
-    defaultFilterStatus,
-    defaultView,
-    showAgentFilter,
-    showCampaignFilter,
-    showTypeFilter,
-    showStatusFilter,
-  } = roleConfig;
-
-  const [view, setView]                   = useState(defaultView || 'List');
-  const [search, setSearch]               = useState('');
-  const [filterType, setFilterType]       = useState('All');
-  const [filterStatus, setFilterStatus]   = useState(defaultFilterStatus || 'All');
-  const [filterCampaign, setFilterCampaign] = useState('All');
-  const [filterAgent, setFilterAgent]     = useState('All');
-  const [preview, setPreview]             = useState(null);
-
-  useEffect(() => {
-    setView(defaultView || 'List');
-    setFilterStatus(defaultFilterStatus || 'All');
-  }, [defaultView, defaultFilterStatus]);
-
-  const itemsForRole = useMemo(
-    () => filterContentItems(contentItems, currentRole, roleConfig),
-    [currentRole, roleConfig]
-  );
-
-  const campaigns = useMemo(() => {
-    const map = {};
-    itemsForRole.forEach((i) => { if (i.campaign) map[i.campaign] = i.campaignName; });
-    return Object.entries(map).map(([id, name]) => ({ id, name }));
-  }, [itemsForRole]);
-
-  const agents = useMemo(() => [...new Set(itemsForRole.map((i) => i.agent).filter(Boolean))], [itemsForRole]);
-
-  const filtered = useMemo(() => {
-    let items = itemsForRole;
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      items = items.filter((i) =>
-        i.name.toLowerCase().includes(q) ||
-        (i.preview ?? '').toLowerCase().includes(q) ||
-        (i.campaignName ?? '').toLowerCase().includes(q) ||
-        (i.agent ?? '').toLowerCase().includes(q)
-      );
-    }
-    if (filterType !== 'All')     items = items.filter((i) => i.type === filterType);
-    if (filterStatus !== 'All')   items = items.filter((i) => i.status === filterStatus);
-    if (filterCampaign !== 'All') items = items.filter((i) => i.campaign === filterCampaign);
-    if (filterAgent !== 'All')    items = items.filter((i) => i.agent === filterAgent);
-    return items;
-  }, [itemsForRole, search, filterType, filterStatus, filterCampaign, filterAgent]);
-
-  const byType = useMemo(() => {
-    const groups = {};
-    filtered.forEach((i) => { groups[i.type] = [...(groups[i.type] ?? []), i]; });
-    return Object.entries(groups);
-  }, [filtered]);
-
-  const byCampaign = useMemo(() => {
-    const groups = {};
-    filtered.forEach((i) => {
-      const key = i.campaignName ?? 'Unassigned';
-      groups[key] = [...(groups[key] ?? []), i];
-    });
-    return Object.entries(groups);
-  }, [filtered]);
-
-  const typeCounts = useMemo(() => {
-    const c = {};
-    itemsForRole.forEach((i) => { c[i.type] = (c[i.type] ?? 0) + 1; });
-    return c;
-  }, [itemsForRole]);
-
-  const statusCounts = useMemo(() => {
-    const c = {};
-    itemsForRole.forEach((i) => { c[i.status] = (c[i.status] ?? 0) + 1; });
-    return c;
-  }, [itemsForRole]);
-
-  const hasFilters = (filterType !== 'All') || (filterStatus !== 'All') || (showCampaignFilter && filterCampaign !== 'All') || (showAgentFilter && filterAgent !== 'All') || search.trim();
-
-  const clearFilters = () => { setSearch(''); setFilterType('All'); setFilterStatus('All'); setFilterCampaign('All'); setFilterAgent('All'); };
 
   return (
-    <>
-      <style>{`
-        @keyframes clFade { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: translateY(0) } }
-        select option { background: #0C1510; color: #DFF0E8; }
-      `}</style>
-
-      <div style={{ minHeight: '100vh', backgroundColor: C.bg, padding: `${S[6]} ${S[6]} ${S[8]}` }}>
-
-        {/* Page header */}
-        <div style={{ marginBottom: S[6] }}>
-          <h1 style={{ fontFamily: F.display, fontSize: '24px', fontWeight: 800, color: C.textPrimary, margin: 0, letterSpacing: '-0.03em' }}>
-            {layout === 'client' ? 'Your approvals' : 'Content Library'}
+    <div style={{
+      backgroundColor: C.bg, minHeight: '100vh',
+      padding: S[6], display: 'flex', flexDirection: 'column', gap: S[4],
+      ...scrollbarStyle,
+    }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: S[4] }}>
+        <div>
+          <h1 style={{ fontFamily: F.display, fontSize: '24px', fontWeight: 800, color: C.textPrimary, margin: 0, letterSpacing: '-0.02em' }}>
+            Content Library
           </h1>
-          <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: `${S[1]} 0 0` }}>
-            {layout === 'client'
-              ? `${itemsForRole.length} item${itemsForRole.length !== 1 ? 's' : ''} waiting for your review — approve or request changes.`
-              : `${itemsForRole.length} assets across ${campaigns.length} campaigns — review, approve, and export Freya-generated content.`}
-          </p>
-        </div>
-
-        {/* Filter bar */}
-        <div style={{
-          backgroundColor: C.surface,
-          border: `1px solid ${C.border}`,
-          borderRadius: R.card,
-          padding: `${S[3]} ${S[4]}`,
-          marginBottom: S[4],
-          display: 'flex', flexDirection: 'column', gap: S[3],
-        }}>
-
-          {/* Row 1: search + dropdowns + view toggle */}
-          <div style={{ display: 'flex', gap: S[3], alignItems: 'center', flexWrap: 'wrap' }}>
-
-            {/* Search */}
-            <div style={{ position: 'relative' }}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
-                <circle cx="6" cy="6" r="4.5" stroke={C.textMuted} strokeWidth="1.3"/>
-                <path d="M9.5 9.5l2.5 2.5" stroke={C.textMuted} strokeWidth="1.3" strokeLinecap="round"/>
-              </svg>
-              <input
-                type="text"
-                placeholder="Search content…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                style={{
-                  backgroundColor: C.surface2, color: C.textPrimary,
-                  border: `1px solid ${C.border}`, borderRadius: R.input,
-                  padding: `${S[2]} ${S[3]} ${S[2]} 30px`,
-                  fontFamily: F.body, fontSize: '13px',
-                  outline: 'none', width: '200px',
-                }}
-              />
-            </div>
-
-            {/* Campaign */}
-            {showCampaignFilter && (
-            <select
-              value={filterCampaign}
-              onChange={(e) => setFilterCampaign(e.target.value)}
-              style={{
-                backgroundColor: C.surface2,
-                color: filterCampaign !== 'All' ? C.textPrimary : C.textMuted,
-                border: `1px solid ${filterCampaign !== 'All' ? C.borderHover : C.border}`,
-                borderRadius: R.input, padding: `${S[2]} ${S[3]}`,
-                fontFamily: F.body, fontSize: '12px', outline: 'none', cursor: 'pointer',
-              }}
-            >
-              <option value="All">All Campaigns</option>
-              {campaigns.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
-            )}
-
-            {/* Agent */}
-            {showAgentFilter && (
-            <select
-              value={filterAgent}
-              onChange={(e) => setFilterAgent(e.target.value)}
-              style={{
-                backgroundColor: C.surface2,
-                color: filterAgent !== 'All' ? C.textPrimary : C.textMuted,
-                border: `1px solid ${filterAgent !== 'All' ? C.borderHover : C.border}`,
-                borderRadius: R.input, padding: `${S[2]} ${S[3]}`,
-                fontFamily: F.body, fontSize: '12px', outline: 'none', cursor: 'pointer',
-              }}
-            >
-              <option value="All">All Agents</option>
-              {agents.map((a) => <option key={a} value={a}>{a}</option>)}
-            </select>
-            )}
-
-            <div style={{ flex: 1 }} />
-
-            {/* View toggle */}
-            <div style={{ display: 'flex', gap: '2px', backgroundColor: C.surface2, borderRadius: R.button, padding: '2px' }}>
-              {VIEWS.map((v) => (
-                <button
-                  key={v}
-                  onClick={() => setView(v)}
-                  style={{
-                    fontFamily: F.body, fontSize: '12px', fontWeight: view === v ? 600 : 400,
-                    color: view === v ? C.textPrimary : C.textMuted,
-                    backgroundColor: view === v ? C.surface : 'transparent',
-                    border: `1px solid ${view === v ? C.border : 'transparent'}`,
-                    borderRadius: R.sm,
-                    padding: `3px ${S[3]}`, cursor: 'pointer', transition: T.color,
-                  }}
-                >
-                  {v}
-                </button>
-              ))}
-            </div>
+          <div style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, marginTop: 4 }}>
+            Copywriter · <span style={{ color: C.primary, fontWeight: 600 }}>31 pieces this week</span>
           </div>
-
-          {/* Row 2: type pills + status pills */}
-          {(showTypeFilter || showStatusFilter) && (
-          <div style={{ display: 'flex', gap: S[2], flexWrap: 'wrap', alignItems: 'center' }}>
-            {showTypeFilter && (
-              <>
-                <FilterPill label="All Types" active={filterType === 'All'} count={itemsForRole.length} onClick={() => setFilterType('All')} />
-                {TYPES.filter((t) => typeCounts[t]).map((t) => (
-                  <FilterPill key={t} label={t} active={filterType === t} count={typeCounts[t]} onClick={() => setFilterType(filterType === t ? 'All' : t)} />
-                ))}
-              </>
-            )}
-            {showTypeFilter && showStatusFilter && (
-              <div style={{ width: '1px', height: '16px', backgroundColor: C.border, flexShrink: 0 }} />
-            )}
-            {showStatusFilter && (
-              <>
-                <FilterPill label="All Status" active={filterStatus === 'All'} onClick={() => setFilterStatus('All')} />
-                {STATUSES.filter((s) => statusCounts[s]).map((s) => (
-                  <FilterPill key={s} label={s} active={filterStatus === s} count={statusCounts[s]} onClick={() => setFilterStatus(filterStatus === s ? 'All' : s)} />
-                ))}
-              </>
-            )}
-          </div>
-          )}
-
-          {/* Active filter summary */}
-          {hasFilters && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
-              <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted }}>
-                {filtered.length} result{filtered.length !== 1 ? 's' : ''}
-              </span>
-              <button
-                onClick={clearFilters}
-                style={{ ...btn.ghost, fontSize: '11px', padding: `1px ${S[2]}`, color: C.textMuted }}
-              >
-                Clear filters ×
-              </button>
-            </div>
-          )}
         </div>
+        <button
+          onClick={() => toast.success('Opening content generator panel...')}
+          style={{ ...btn.primary, fontSize: '13px', fontWeight: 700 }}
+        >
+          ✍️ Generate Content
+        </button>
+      </div>
 
-        {/* Content */}
-        <div style={{ animation: 'clFade 0.2s ease' }}>
-          {filtered.length === 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: `${S[16]} 0`, gap: S[3] }}>
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <rect x="4" y="6" width="32" height="28" rx="4" stroke={C.textMuted} strokeWidth="1.5"/>
-                <path d="M10 14h20M10 20h14M10 26h8" stroke={C.textMuted} strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-              <div style={{ fontFamily: F.body, fontSize: '14px', color: C.textMuted }}>No content matches your filters</div>
-              {hasFilters && <button onClick={clearFilters} style={{ ...btn.ghost, fontSize: '13px', color: C.primary }}>Clear filters</button>}
-            </div>
+      {/* Agent Action Bar */}
+      <div style={{
+        backgroundColor: C.surface, border: `1px solid ${C.border}`,
+        borderRadius: R.md, padding: `${S[3]} ${S[4]}`,
+        display: 'flex', alignItems: 'center', gap: S[3], flexWrap: 'wrap',
+      }}>
+        <button
+          onClick={() => toast.success('Copywriter agent triggered — check Draft column.')}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: S[2],
+            padding: `${S[2]} ${S[3]}`, fontSize: '12px', fontWeight: 600,
+            fontFamily: F.body, borderRadius: R.button, cursor: 'pointer', transition: T.color,
+            backgroundColor: `${C.primary}22`, color: C.primary,
+            border: `1px solid ${C.primary}55`,
+          }}
+        >
+          ✍️ Trigger Copywriter
+        </button>
+        <button
+          onClick={() => toast.info('Guardian reviewing all In Review content...')}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: S[2],
+            padding: `${S[2]} ${S[3]}`, fontSize: '12px', fontWeight: 600,
+            fontFamily: F.body, borderRadius: R.button, cursor: 'pointer', transition: T.color,
+            backgroundColor: `#6366F122`, color: '#6366F1',
+            border: `1px solid #6366F155`,
+          }}
+        >
+          🛡️ Trigger Guardian Review
+        </button>
 
-          ) : view === 'List' ? (
-            <div style={{ backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card, overflow: 'hidden' }}>
-              {/* Table header */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '28px 1fr 160px 140px 90px 80px 80px',
-                gap: S[3], padding: `${S[2]} ${S[4]}`,
-                borderBottom: `1px solid ${C.border}`,
-                backgroundColor: C.surface2,
-              }}>
-                {['', 'Name', 'Campaign', 'Agent', 'Status', 'Score', 'Updated'].map((h) => (
-                  <div key={h} style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</div>
-                ))}
-              </div>
-              {filtered.map((item) => <ContentListRow key={item.id} item={item} onOpen={setPreview} />)}
-            </div>
-
-          ) : view === 'Grid' ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: S[4] }}>
-              {filtered.map((item) => <ContentGridCard key={item.id} item={item} onOpen={setPreview} />)}
-            </div>
-
-          ) : view === 'By Type' ? (
-            <div>{byType.map(([type, items]) => <GroupSection key={type} title={type} items={items} onOpen={setPreview} viewMode={view} />)}</div>
-
-          ) : (
-            <div>{byCampaign.map(([campaign, items]) => <GroupSection key={campaign} title={campaign} items={items} onOpen={setPreview} viewMode={view} />)}</div>
-          )}
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: S[2] }}>
+          <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>
+            Pending approvals:
+          </span>
+          <span style={{
+            fontFamily: F.mono, fontSize: '12px', fontWeight: 700,
+            color: C.amber, backgroundColor: C.amberDim,
+            border: `1px solid ${C.amber}44`, borderRadius: R.pill,
+            padding: `2px 10px`,
+          }}>
+            3 items
+          </span>
+          <button
+            onClick={() => toast.info('Opening content approval workflow...')}
+            style={{ ...btn.secondary, fontSize: '12px', padding: `${S[1]} ${S[3]}` }}
+          >
+            View All
+          </button>
         </div>
       </div>
 
-      {/* Preview modal */}
-      {preview && <ContentPreviewModal item={preview} onClose={() => setPreview(null)} />}
-    </>
+      {/* Kanban Board */}
+      <div style={{ display: 'flex', gap: S[4], flex: 1, minHeight: 0 }}>
+        {/* Draft */}
+        <KanbanColumn title="Draft" count={DRAFT_ITEMS.length} headerColor={C.textMuted}>
+          {DRAFT_ITEMS.map((item) => <DraftCard key={item.id} item={item} />)}
+        </KanbanColumn>
+
+        {/* In Review */}
+        <KanbanColumn title="In Review" count={REVIEW_ITEMS.length} headerColor={C.amber} badge="Guardian reviewing">
+          {REVIEW_ITEMS.map((item) => <ReviewCard key={item.id} item={item} />)}
+        </KanbanColumn>
+
+        {/* Approved */}
+        <KanbanColumn title="Approved" count={APPROVED_ITEMS.length} headerColor={C.primary}>
+          {APPROVED_ITEMS.map((item) => <ApprovedCard key={item.id} item={item} />)}
+        </KanbanColumn>
+
+        {/* Published */}
+        <KanbanColumn title="Published" count={PUBLISHED_ITEMS.length} headerColor="#3B82F6">
+          {PUBLISHED_ITEMS.map((item) => <PublishedCard key={item.id} item={item} />)}
+        </KanbanColumn>
+      </div>
+
+      {/* Content Generator */}
+      <ContentGenerator />
+    </div>
   );
 }

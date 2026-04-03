@@ -5,10 +5,13 @@
 import { useState, useMemo } from 'react';
 import useStore from '../store/useStore';
 import useToast from '../hooks/useToast';
-import { C, F, R, S } from '../tokens';
+import { C, F, R, S, T, btn, badge } from '../tokens';
 import ApprovalQueueCard from '../components/approvals/ApprovalQueueCard';
 import BulkApproveBar from '../components/approvals/BulkApproveBar';
 import ContentReviewPanel from '../components/approvals/ContentReviewPanel';
+import { useAgent } from '../hooks/useAgent';
+import AgentThinking from '../components/agents/AgentThinking';
+import AgentAvatar from '../components/agents/AgentAvatar';
 
 const TABS = [
   { id: 'needs_review', label: 'Needs Review', filter: (item) => item.stage === 'legal' && !item.rejected },
@@ -32,6 +35,45 @@ export default function ContentApprovalWorkflow() {
   const [contentFilter, setContentFilter] = useState('all');
   const [selectedId, setSelectedId] = useState(null);
   const [selectedIds, setSelectedIds] = useState(new Set());
+
+  /* ─── Guardian agent integration ─────────────────────────── */
+  const guardian = useAgent('guardian');
+  const [guardianThinking, setGuardianThinking] = useState(false);
+  const [guardianReviewCount, setGuardianReviewCount] = useState(0);
+  const [guardianResults, setGuardianResults] = useState([]); // [{id, verdict, confidence}]
+
+  const needsReviewCount = approvalQueue.filter(TABS[0].filter).length;
+
+  const handleAutoReview = async () => {
+    setGuardianThinking(true);
+    setGuardianResults([]);
+    const itemsToReview = approvalQueue.filter(TABS[0].filter);
+    setGuardianReviewCount(itemsToReview.length);
+    try {
+      await guardian.activate('auto-review', { skill: 'content-review', items: itemsToReview.map(i => i.id) });
+      // Simulate results
+      const results = itemsToReview.map((item) => {
+        const confidence = 85 + Math.floor(Math.random() * 15);
+        return {
+          id: item.id,
+          title: item.title || item.name || item.id,
+          verdict: confidence > 95 ? 'auto-approved' : 'needs-human-review',
+          confidence,
+        };
+      });
+      setGuardianResults(results);
+      const autoApproved = results.filter(r => r.verdict === 'auto-approved').length;
+      const needsHuman = results.filter(r => r.verdict === 'needs-human-review').length;
+      if (autoApproved > 0) toast.success(`Guardian auto-approved ${autoApproved} item${autoApproved !== 1 ? 's' : ''} (confidence > 95%)`);
+      if (needsHuman > 0) toast.info(`${needsHuman} item${needsHuman !== 1 ? 's' : ''} flagged for human review`);
+    } catch {
+      toast.error('Guardian review failed');
+    } finally {
+      setGuardianThinking(false);
+    }
+  };
+
+  const getGuardianVerdict = (itemId) => guardianResults.find(r => r.id === itemId);
 
   const tab = TABS.find((t) => t.id === activeTab) || TABS[0];
   const filtered = useMemo(() => {
@@ -96,6 +138,75 @@ export default function ContentApprovalWorkflow() {
         }}
       >
         <div style={{ padding: S[4], borderBottom: `1px solid ${C.border}` }}>
+          {/* Guardian agent status bar */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: S[2],
+            backgroundColor: guardianThinking ? C.surface3 : C.surface2,
+            border: `1px solid ${guardianThinking ? C.primary + '40' : C.border}`,
+            borderRadius: R.sm, padding: `${S[2]} ${S[3]}`,
+            marginBottom: S[3], transition: T.base,
+          }}>
+            <AgentAvatar agentId="guardian" size={22} showStatus />
+            <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, flex: 1 }}>
+              {guardianThinking
+                ? `Guardian: Reviewing ${guardianReviewCount} item${guardianReviewCount !== 1 ? 's' : ''}...`
+                : guardianResults.length > 0
+                  ? `Guardian: ${guardianResults.filter(r => r.verdict === 'auto-approved').length} auto-approved, ${guardianResults.filter(r => r.verdict === 'needs-human-review').length} need review`
+                  : `Guardian: ${needsReviewCount} item${needsReviewCount !== 1 ? 's' : ''} pending`
+              }
+            </span>
+            <button
+              style={{
+                ...btn.primary,
+                fontSize: '11px',
+                padding: `${S[1]} ${S[3]}`,
+                opacity: guardianThinking ? 0.6 : 1,
+              }}
+              onClick={handleAutoReview}
+              disabled={guardianThinking || needsReviewCount === 0}
+            >
+              {guardianThinking ? 'Reviewing...' : 'Auto-review'}
+            </button>
+          </div>
+
+          {/* Guardian thinking indicator */}
+          {guardianThinking && (
+            <div style={{ marginBottom: S[3] }}>
+              <AgentThinking agentId="guardian" task="Analyzing content for compliance, brand alignment, and quality..." />
+            </div>
+          )}
+
+          {/* Guardian results summary */}
+          {guardianResults.length > 0 && !guardianThinking && (
+            <div style={{
+              display: 'flex', flexDirection: 'column', gap: S[1],
+              backgroundColor: C.surface2, border: `1px solid ${C.border}`,
+              borderRadius: R.sm, padding: S[3], marginBottom: S[3],
+              maxHeight: '120px', overflowY: 'auto',
+            }}>
+              {guardianResults.map((r) => (
+                <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: S[2], fontSize: '11px', fontFamily: F.body }}>
+                  <span style={{
+                    width: '6px', height: '6px', borderRadius: '50%', flexShrink: 0,
+                    backgroundColor: r.verdict === 'auto-approved' ? C.green : C.amber,
+                  }} />
+                  <span style={{ color: C.textSecondary, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {r.title}
+                  </span>
+                  <span style={{
+                    fontFamily: F.mono, fontSize: '10px', fontWeight: 600,
+                    color: r.verdict === 'auto-approved' ? C.green : C.amber,
+                  }}>
+                    {r.verdict === 'auto-approved'
+                      ? `Reviewed by Guardian (${r.confidence}% confidence)`
+                      : `Needs human review (${r.confidence}%)`
+                    }
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
           <h1 style={{ fontFamily: F.display, fontSize: '20px', fontWeight: 700, color: C.textPrimary, margin: `0 0 ${S[4]} 0` }}>
             Approvals
           </h1>

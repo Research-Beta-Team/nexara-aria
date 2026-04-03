@@ -1,5 +1,9 @@
 import { useState, useMemo, useCallback } from 'react';
 import useToast from '../../hooks/useToast';
+import { useAgent } from '../../hooks/useAgent';
+import AgentThinking from '../../components/agents/AgentThinking';
+import AgentResultPanel from '../../components/agents/AgentResultPanel';
+import AgentStatusBar from '../../components/agents/AgentStatusBar';
 import { C, F, R, S, btn, sectionHeading } from '../../tokens';
 import { PIPELINE_STAGES, DEALS, getPipelineStats } from '../../data/pipeline';
 import PipelineStats from '../../components/pipeline/PipelineStats';
@@ -32,7 +36,12 @@ export default function PipelineManager() {
   const [view, setView] = useState('kanban');
   const [selectedDeal, setSelectedDeal] = useState(null);
   const [deals, setDeals] = useState(() => [...DEALS]);
+  const [forecastResult, setForecastResult] = useState(null);
+  const [proposalResult, setProposalResult] = useState(null);
+  const [forecastDealId, setForecastDealId] = useState(null);
+  const [proposalDealId, setProposalDealId] = useState(null);
   const toast = useToast();
+  const revenueAgent = useAgent('revenue');
 
   const stats = useMemo(() => getPipelineStats(deals), [deals]);
   const atRiskDeals = useMemo(() => deals.filter((d) => d.health === 'at_risk'), [deals]);
@@ -58,6 +67,44 @@ export default function PipelineManager() {
     }
   }, [deals, toast]);
 
+  const handleForecastDeal = useCallback(async (deal) => {
+    setForecastDealId(deal.id);
+    setForecastResult(null);
+    try {
+      const result = await revenueAgent.activate(
+        { description: `Forecast deal: ${deal.company}`, skill: 'revops', input: { pipeline_data: deal, period: 'Q1 2026' } },
+        { dealId: deal.id, company: deal.company }
+      );
+      if (result) {
+        setForecastResult({ ...result, confidence: Math.round((result.confidence || 0.8) * 100) });
+        toast.success(`Deal forecast complete for ${deal.company}`);
+      }
+    } catch (err) {
+      toast.error('Forecast failed: ' + err.message);
+    } finally {
+      setForecastDealId(null);
+    }
+  }, [revenueAgent, toast]);
+
+  const handleGenerateProposal = useCallback(async (deal) => {
+    setProposalDealId(deal.id);
+    setProposalResult(null);
+    try {
+      const result = await revenueAgent.activate(
+        { description: `Generate proposal for ${deal.company}`, skill: 'sales-enablement', input: { product: 'Antarious GTM OS', icp: deal.company, competitors: [] } },
+        { dealId: deal.id, company: deal.company }
+      );
+      if (result) {
+        setProposalResult({ ...result, confidence: Math.round((result.confidence || 0.85) * 100) });
+        toast.success(`Proposal generated for ${deal.company}`);
+      }
+    } catch (err) {
+      toast.error('Proposal generation failed: ' + err.message);
+    } finally {
+      setProposalDealId(null);
+    }
+  }, [revenueAgent, toast]);
+
   return (
     <div style={{ padding: S[6], display: 'flex', flexDirection: 'column', gap: S[5], height: '100%', minHeight: 0 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: S[3] }}>
@@ -82,6 +129,39 @@ export default function PipelineManager() {
           ))}
         </div>
       </div>
+
+      {/* Revenue Agent Status */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: S[3], padding: `${S[2]} ${S[3]}`, backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card }}>
+        <div style={{
+          width: 8,
+          height: 8,
+          borderRadius: '50%',
+          backgroundColor: revenueAgent.isActive ? C.amber : C.green,
+          animation: revenueAgent.isActive ? 'agentStatusPulse 2s ease-in-out infinite' : 'none',
+        }} />
+        <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 600, color: revenueAgent.isActive ? C.amber : C.textSecondary }}>
+          Revenue Agent: {revenueAgent.isActive ? 'Working...' : 'Ready'}
+        </span>
+        {selectedDeal && (
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: S[2] }}>
+            <button
+              style={{ ...btn.primary, fontSize: '12px', opacity: revenueAgent.isActive ? 0.5 : 1 }}
+              disabled={revenueAgent.isActive}
+              onClick={() => handleForecastDeal(selectedDeal)}
+            >
+              Forecast this deal
+            </button>
+            <button
+              style={{ ...btn.secondary, fontSize: '12px', opacity: revenueAgent.isActive ? 0.5 : 1 }}
+              disabled={revenueAgent.isActive}
+              onClick={() => handleGenerateProposal(selectedDeal)}
+            >
+              Generate proposal
+            </button>
+          </div>
+        )}
+      </div>
+      <style>{`@keyframes agentStatusPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }`}</style>
 
       <PipelineStats stats={stats} />
 
@@ -236,6 +316,32 @@ export default function PipelineManager() {
           </div>
         )}
       </div>
+
+      {/* Agent Thinking Indicator */}
+      {forecastDealId && revenueAgent.isActive && (
+        <AgentThinking agentId="revenue" task={`Forecasting deal: ${deals.find(d => d.id === forecastDealId)?.company || 'deal'}`} />
+      )}
+      {proposalDealId && revenueAgent.isActive && (
+        <AgentThinking agentId="revenue" task={`Generating proposal for: ${deals.find(d => d.id === proposalDealId)?.company || 'deal'}`} />
+      )}
+
+      {/* Agent Results */}
+      {forecastResult && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: S[3] }}>
+          <h3 style={{ fontFamily: F.display, fontSize: '15px', fontWeight: 700, color: C.textPrimary, margin: 0 }}>
+            Deal Forecast Result
+          </h3>
+          <AgentResultPanel result={forecastResult} />
+        </div>
+      )}
+      {proposalResult && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: S[3] }}>
+          <h3 style={{ fontFamily: F.display, fontSize: '15px', fontWeight: 700, color: C.textPrimary, margin: 0 }}>
+            Generated Proposal
+          </h3>
+          <AgentResultPanel result={proposalResult} />
+        </div>
+      )}
     </div>
   );
 }

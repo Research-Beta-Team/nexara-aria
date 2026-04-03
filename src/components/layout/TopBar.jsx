@@ -13,6 +13,7 @@ import { getRoleDisplayName, ROLE_IDS } from '../../config/roleConfig';
 import { IconWarning } from '../ui/Icons';
 import AntariousLogo from '../ui/AntariousLogo';
 import FreyaLogo from '../ui/FreyaLogo';
+import CommandModeToggle from '../ui/CommandModeToggle';
 import { C, F, R, S, T, shadows } from '../../tokens';
 
 // ── Campaign options (mock) ───────────────────
@@ -661,6 +662,8 @@ export default function TopBar({ onFreyaOpen }) {
   const notifications = useStore((s) => s.notifications);
   const inboxUnreadCount = useStore((s) => s.inboxUnreadCount);
   const currentRole = useStore((s) => s.currentRole);
+  const approvalQueues = useStore((s) => s.approvalQueues);
+  const pendingApprovalCount = Object.values(approvalQueues || {}).flat().filter((i) => i.status === 'pending').length;
   const unread = notifications.filter((n) => !n.read).length;
   const toast = useToast();
   const { expiryWarning } = usePlanAlerts();
@@ -720,9 +723,10 @@ export default function TopBar({ onFreyaOpen }) {
           <CampaignSelector />
         </div>
 
-        {/* Center: breadcrumb */}
-        <div style={centerStyle}>
+        {/* Center: breadcrumb + command mode toggle */}
+        <div style={{ ...centerStyle, gap: S[4] }}>
           <Breadcrumb />
+          <CommandModeToggle size="sm" showLabels={true} />
         </div>
 
         {/* Right: search, Freya, theme, notif, credit chip, divider, avatar */}
@@ -824,6 +828,42 @@ export default function TopBar({ onFreyaOpen }) {
             </button>
             <NotificationDropdown open={notifOpen} onClose={() => setNotifOpen(false)} />
           </div>
+
+          {/* Pending approvals badge */}
+          {pendingApprovalCount > 0 && (
+            <button
+              style={{
+                ...iconButtonStyle,
+                position: 'relative',
+              }}
+              title={`${pendingApprovalCount} pending approval${pendingApprovalCount !== 1 ? 's' : ''}`}
+              onClick={() => toast.info(`${pendingApprovalCount} pending approval${pendingApprovalCount !== 1 ? 's' : ''} — check the Approval Queue panel on each page`)}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 1L9.8 5.2L14.5 5.6L11 8.7L12.1 13.4L8 10.9L3.9 13.4L5 8.7L1.5 5.6L6.2 5.2L8 1Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+              </svg>
+              <span style={{
+                position: 'absolute',
+                top: '2px',
+                right: '2px',
+                minWidth: '14px',
+                height: '14px',
+                padding: '0 3px',
+                borderRadius: '7px',
+                backgroundColor: C.red,
+                border: `1.5px solid ${C.surface}`,
+                fontFamily: F.mono,
+                fontSize: '9px',
+                fontWeight: 700,
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                {pendingApprovalCount > 99 ? '99+' : pendingApprovalCount}
+              </span>
+            </button>
+          )}
 
           {/* Credit chip */}
           <CreditChip />

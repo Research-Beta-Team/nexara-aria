@@ -11,6 +11,145 @@ import OutcomePricing from '../../components/billing/OutcomePricing';
 import PlanExpiryWarning from '../../components/plan/PlanExpiryWarning';
 import { C, F, R, S, T } from '../../tokens';
 import { IconCheck } from '../../components/ui/Icons';
+import { AGENTS } from '../../agents/AgentRegistry';
+
+// ── Agent access per tier ─────────────────────
+const TIER_AGENTS = {
+  starter: {
+    agentIds: ['freya', 'copywriter', 'analyst'],
+    skillCount: 10,
+    workflowCount: 0,
+    workflowNote: 'No workflows',
+    extras: [],
+  },
+  growth: {
+    agentIds: ['freya', 'copywriter', 'analyst', 'strategist', 'prospector', 'outreach'],
+    skillCount: 22,
+    workflowCount: 3,
+    workflowNote: '3 workflows',
+    extras: [],
+  },
+  scale: {
+    agentIds: ['freya', 'copywriter', 'analyst', 'strategist', 'prospector', 'outreach', 'optimizer', 'revenue'],
+    skillCount: 34,
+    workflowCount: 6,
+    workflowNote: 'All 6 workflows',
+    extras: ['Custom triggers'],
+  },
+  agency: {
+    agentIds: ['freya', 'copywriter', 'analyst', 'strategist', 'prospector', 'outreach', 'optimizer', 'revenue'],
+    skillCount: 34,
+    workflowCount: 6,
+    workflowNote: 'All 6 workflows',
+    extras: ['Custom agents', 'White-label'],
+  },
+};
+
+const PLAN_COLORS = {
+  starter: '#8B9E98',
+  growth:  '#4A7C6F',
+  scale:   '#3DDC84',
+  agency:  '#F59E0B',
+};
+
+function AgentAccessRow() {
+  const toast = useToast();
+  return (
+    <div>
+      <div style={{
+        fontFamily: F.display, fontSize: '20px', fontWeight: 700,
+        color: C.textPrimary, letterSpacing: '-0.01em', marginBottom: S[2],
+      }}>
+        Agents Included Per Plan
+      </div>
+      <p style={{ fontFamily: F.body, fontSize: '14px', color: C.textSecondary, marginBottom: S[5], margin: `0 0 ${S[5]} 0` }}>
+        Each plan unlocks more specialist agents, skills, and workflow automations.
+      </p>
+      <div style={{ display: 'flex', gap: S[4], flexWrap: 'wrap' }}>
+        {PLAN_ORDER.map((planId) => {
+          const tier = TIER_AGENTS[planId];
+          if (!tier) return null;
+          const planColor = PLAN_COLORS[planId] || C.primary;
+          const planDisplayName = PLANS[planId]?.displayName ?? planId;
+          return (
+            <div
+              key={planId}
+              style={{
+                flex: '1 1 200px',
+                backgroundColor: C.surface,
+                border: `1px solid ${C.border}`,
+                borderTop: `3px solid ${planColor}`,
+                borderRadius: R.card,
+                padding: S[4],
+                display: 'flex',
+                flexDirection: 'column',
+                gap: S[3],
+              }}
+            >
+              {/* Plan name */}
+              <div style={{ fontFamily: F.display, fontSize: '15px', fontWeight: 700, color: planColor }}>
+                {planDisplayName}
+              </div>
+
+              {/* Agent avatar chips */}
+              <div>
+                <div style={{ fontFamily: F.body, fontSize: '11px', fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[2] }}>
+                  Agents ({tier.agentIds.length})
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: S[1] }}>
+                  {tier.agentIds.map((agentId) => {
+                    const agent = AGENTS[agentId];
+                    if (!agent) return null;
+                    return (
+                      <div
+                        key={agentId}
+                        title={agent.displayName}
+                        onClick={() => toast.info(`${agent.displayName}: ${agent.description}`)}
+                        style={{
+                          width: '32px', height: '32px', borderRadius: R.sm,
+                          backgroundColor: `${agent.color}22`, border: `1px solid ${agent.color}44`,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: '15px', cursor: 'pointer', transition: T.color,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {agent.avatar}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Skills & workflows */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: planColor, flexShrink: 0, display: 'inline-block' }} />
+                  <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>
+                    {tier.skillCount} skills enabled
+                  </span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: planColor, flexShrink: 0, display: 'inline-block' }} />
+                  <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>
+                    {tier.workflowNote}
+                  </span>
+                </div>
+                {tier.extras.map((extra) => (
+                  <div key={extra} style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: planColor, flexShrink: 0, display: 'inline-block' }} />
+                    <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>
+                      {extra}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 // ── Billing toggle ────────────────────────────
 function BillingToggle({ billing, onChange }) {
@@ -185,6 +324,9 @@ export default function UpgradePage() {
           />
         ))}
       </div>
+
+      {/* ── Agent access per tier ── */}
+      <AgentAccessRow />
 
       {/* ── Outcome-based pricing ── */}
       <OutcomePricing />

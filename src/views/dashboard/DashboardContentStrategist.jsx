@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import useToast from '../../hooks/useToast';
 import { C, F, R, S, btn, cardStyle } from '../../tokens';
+import AgentFeed from '../../components/agents/AgentFeed';
 import { IconCheck, IconCircleFilled, IconCircleEmpty, IconArrowRight } from '../../components/ui/Icons';
 
 const NEEDS_REVIEW_MOCK = [
@@ -63,6 +64,12 @@ export default function DashboardContentStrategist() {
             <button style={{ ...btn.ghost, fontSize: '12px', marginTop: S[2], display: 'inline-flex', alignItems: 'center', gap: S[1] }} onClick={() => navigate('/content')}>View all content <IconArrowRight width={14} height={14} /></button>
           </div>
         </div>
+      </div>
+
+      {/* Agent Activity Feed (Content Strategist-relevant) */}
+      <div>
+        <h2 style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', margin: `0 0 ${S[3]}` }}>Agent Activity</h2>
+        <AgentFeed limit={6} />
       </div>
     </div>
   );

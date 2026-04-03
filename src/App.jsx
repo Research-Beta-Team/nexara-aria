@@ -1,71 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import useStore from './store/useStore';
 
-// Layouts
+// Layouts (not lazy — needed immediately for shell rendering)
 import AppLayout from './components/layout/AppLayout';
 import ClientLayout from './layouts/ClientLayout';
 import ForStartupsLayout from './layouts/ForStartupsLayout';
-
-// Pages
-import Dashboard      from './pages/Dashboard';
-import CampaignList   from './pages/CampaignList';
-import CampaignDetail from './pages/CampaignDetail';
-import CampaignNew    from './pages/CampaignNew';
-import AriaCampaignFlow from './pages/AriaCampaignFlow';
-import OutreachDetail from './pages/OutreachDetail';
-import Outreach from './pages/Outreach';
-import AgentRoster    from './pages/AgentRoster';
-import AgentDetail    from './pages/AgentDetail';
-import MetaMonitor    from './pages/MetaMonitor';
-import Escalations    from './pages/Escalations';
-import Analytics      from './pages/Analytics';
-import Inbox          from './pages/Inbox';
-import ContentLibrary from './pages/ContentLibrary';
-import CentralCalendar from './pages/CentralCalendar';
-import KnowledgeBase  from './pages/KnowledgeBase';
-import QueryManager   from './pages/QueryManager';
-import Settings              from './pages/Settings';
-import ARIABrain             from './pages/ARIABrain';
-import NotificationCenter   from './pages/NotificationCenter';
-import ICPBuilder           from './pages/research/ICPBuilder';
-import IntentSignals        from './pages/research/IntentSignals';
-import CompetitiveIntel     from './pages/research/CompetitiveIntel';
-import ABMEngine from './pages/ABMEngine';
-import SocialMedia          from './pages/SocialMedia';
-import SocialCampaignDetail from './pages/SocialCampaignDetail';
-import PipelineManager      from './pages/revenue/PipelineManager';
-import CustomerSuccess      from './pages/revenue/CustomerSuccess';
-import CRM                  from './pages/CRM';
-import ForecastEngine       from './pages/revenue/ForecastEngine';
-import Team                 from './pages/Team';
-import ClientPortal         from './pages/ClientPortal';
-import ForStartupsLanding  from './pages/for_startups/ForStartupsLanding';
-import ForStartupsOnboarding from './pages/for_startups/ForStartupsOnboarding';
-import StartupDashboard    from './pages/for_startups/StartupDashboard';
-import WhiteLabelConfig     from './pages/workspace/WhiteLabelConfig';
-import RoleSwitcher        from './pages/dev/RoleSwitcher';
-import Onboarding     from './pages/Onboarding';
-import ARIAMomentOnboarding from './pages/ARIAMomentOnboarding';
-import ARIAKnowledge  from './pages/ARIAKnowledge';
-import WorkflowCenter from './pages/WorkflowCenter';
-import ARIAPersonaConfig from './pages/settings/ARIAPersonaConfig';
-import UpgradePage    from './pages/billing/UpgradePage';
-import Login          from './pages/Login';
-import Signup         from './pages/Signup';
-import WorkspaceTemplates from './pages/admin/WorkspaceTemplates';
-import ClientWorkspaces from './pages/admin/ClientWorkspaces';
-import CSMWorkspaceConfigurator from './pages/admin/CSMWorkspaceConfigurator';
-import WorkspacePreview from './pages/admin/WorkspacePreview';
-import ComingSoonPage from './components/layout/ComingSoonPage';
-import ARIAMemoryEngine from './pages/ARIAMemoryEngine';
-import ContentApprovalWorkflow from './pages/ContentApprovalWorkflow';
-import MQLHandoffCenter from './pages/MQLHandoffCenter';
-import MultiTouchAttribution from './pages/MultiTouchAttribution';
-import WeeklyExecutiveDigest from './pages/WeeklyExecutiveDigest';
-import ARIACampaignBriefer from './pages/ARIACampaignBriefer';
-import LeadEnrichmentCenter from './pages/LeadEnrichmentCenter';
-import BoardReportGenerator from './pages/BoardReportGenerator';
 
 // Toast for standalone layouts
 import Toast from './components/ui/Toast';
@@ -73,6 +13,103 @@ import { C, F, S, btn } from './tokens';
 import { WorkspaceProvider } from './context/WorkspaceContext';
 import usePlan from './hooks/usePlan';
 import { PLANS } from './config/plans';
+
+// ── Page-level loader shown while chunks download ──
+function PageLoader() {
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      height: '100vh', backgroundColor: '#1C2B27',
+      flexDirection: 'column', gap: '16px',
+    }}>
+      <div style={{
+        width: '40px', height: '40px', borderRadius: '50%',
+        border: '3px solid rgba(74,124,111,0.3)',
+        borderTop: '3px solid #4A7C6F',
+        animation: 'spin 1s linear infinite',
+      }} />
+      <span style={{ color: '#8B9E98', fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '14px' }}>
+        Loading...
+      </span>
+    </div>
+  );
+}
+
+// ── Lazy page imports ──────────────────────────
+const Dashboard           = lazy(() => import('./pages/Dashboard'));
+const CampaignList        = lazy(() => import('./pages/CampaignList'));
+const CampaignDetail      = lazy(() => import('./pages/CampaignDetail'));
+const CampaignNew         = lazy(() => import('./pages/CampaignNew'));
+const AriaCampaignFlow    = lazy(() => import('./pages/AriaCampaignFlow'));
+const OutreachDetail      = lazy(() => import('./pages/OutreachDetail'));
+const Outreach            = lazy(() => import('./pages/Outreach'));
+const AgentRoster         = lazy(() => import('./pages/AgentRoster'));
+const AgentDetail         = lazy(() => import('./pages/AgentDetail'));
+const MetaMonitor         = lazy(() => import('./pages/MetaMonitor'));
+const Escalations         = lazy(() => import('./pages/Escalations'));
+const Analytics           = lazy(() => import('./pages/Analytics'));
+const Inbox               = lazy(() => import('./pages/Inbox'));
+const ContentLibrary      = lazy(() => import('./pages/ContentLibrary'));
+const CentralCalendar     = lazy(() => import('./pages/CentralCalendar'));
+const KnowledgeBase       = lazy(() => import('./pages/KnowledgeBase'));
+const QueryManager        = lazy(() => import('./pages/QueryManager'));
+const Settings            = lazy(() => import('./pages/Settings'));
+const ARIABrain           = lazy(() => import('./pages/ARIABrain'));
+const NotificationCenter  = lazy(() => import('./pages/NotificationCenter'));
+const ICPBuilder          = lazy(() => import('./pages/research/ICPBuilder'));
+const IntentSignals       = lazy(() => import('./pages/research/IntentSignals'));
+const CompetitiveIntel    = lazy(() => import('./pages/research/CompetitiveIntel'));
+const ABMEngine           = lazy(() => import('./pages/ABMEngine'));
+const SocialMedia         = lazy(() => import('./pages/SocialMedia'));
+const SocialCampaignDetail = lazy(() => import('./pages/SocialCampaignDetail'));
+const PipelineManager     = lazy(() => import('./pages/revenue/PipelineManager'));
+const CustomerSuccess     = lazy(() => import('./pages/revenue/CustomerSuccess'));
+const CRM                 = lazy(() => import('./pages/CRM'));
+const ForecastEngine      = lazy(() => import('./pages/revenue/ForecastEngine'));
+const Team                = lazy(() => import('./pages/Team'));
+const ClientPortal        = lazy(() => import('./pages/ClientPortal'));
+const ForStartupsLanding  = lazy(() => import('./pages/for_startups/ForStartupsLanding'));
+const ForStartupsOnboarding = lazy(() => import('./pages/for_startups/ForStartupsOnboarding'));
+const StartupDashboard    = lazy(() => import('./pages/for_startups/StartupDashboard'));
+const WhiteLabelConfig    = lazy(() => import('./pages/workspace/WhiteLabelConfig'));
+const RoleSwitcher        = lazy(() => import('./pages/dev/RoleSwitcher'));
+const Onboarding          = lazy(() => import('./pages/Onboarding'));
+const ARIAMomentOnboarding = lazy(() => import('./pages/ARIAMomentOnboarding'));
+const ARIAKnowledge       = lazy(() => import('./pages/ARIAKnowledge'));
+const WorkflowCenter      = lazy(() => import('./pages/WorkflowCenter'));
+const ARIAPersonaConfig   = lazy(() => import('./pages/settings/ARIAPersonaConfig'));
+const UpgradePage         = lazy(() => import('./pages/billing/UpgradePage'));
+const Login               = lazy(() => import('./pages/Login'));
+const Signup              = lazy(() => import('./pages/Signup'));
+const WorkspaceTemplates  = lazy(() => import('./pages/admin/WorkspaceTemplates'));
+const ClientWorkspaces    = lazy(() => import('./pages/admin/ClientWorkspaces'));
+const CSMWorkspaceConfigurator = lazy(() => import('./pages/admin/CSMWorkspaceConfigurator'));
+const WorkspacePreview    = lazy(() => import('./pages/admin/WorkspacePreview'));
+const ARIAMemoryEngine    = lazy(() => import('./pages/ARIAMemoryEngine'));
+const ContentApprovalWorkflow = lazy(() => import('./pages/ContentApprovalWorkflow'));
+const MQLHandoffCenter    = lazy(() => import('./pages/MQLHandoffCenter'));
+const MultiTouchAttribution = lazy(() => import('./pages/MultiTouchAttribution'));
+const WeeklyExecutiveDigest = lazy(() => import('./pages/WeeklyExecutiveDigest'));
+const ARIACampaignBriefer = lazy(() => import('./pages/ARIACampaignBriefer'));
+const LeadEnrichmentCenter = lazy(() => import('./pages/LeadEnrichmentCenter'));
+const BoardReportGenerator = lazy(() => import('./pages/BoardReportGenerator'));
+const SEOAudit            = lazy(() => import('./pages/seo/SEOAudit'));
+const SiteArchitecture    = lazy(() => import('./pages/seo/SiteArchitecture'));
+const ProgrammaticSEO     = lazy(() => import('./pages/seo/ProgrammaticSEO'));
+const SchemaMarkup        = lazy(() => import('./pages/seo/SchemaMarkup'));
+const PageCRO             = lazy(() => import('./pages/cro/PageCRO'));
+const FormCRO             = lazy(() => import('./pages/cro/FormCRO'));
+const SignupFlowCRO       = lazy(() => import('./pages/cro/SignupFlowCRO'));
+const OnboardingCRO       = lazy(() => import('./pages/cro/OnboardingCRO'));
+const PopupCRO            = lazy(() => import('./pages/cro/PopupCRO'));
+const PaywallCRO          = lazy(() => import('./pages/cro/PaywallCRO'));
+const ABTestDashboard     = lazy(() => import('./pages/cro/ABTestDashboard'));
+const LeadMagnets         = lazy(() => import('./pages/marketing/LeadMagnets'));
+const ReferralProgram     = lazy(() => import('./pages/marketing/ReferralProgram'));
+const FreeToolStrategy    = lazy(() => import('./pages/marketing/FreeToolStrategy'));
+
+// ComingSoonPage — shared layout component, not a page; kept static
+import ComingSoonPage from './components/layout/ComingSoonPage';
 
 // ── Client portal layout (no sidebar, light theme) ──
 function ClientPortalRoute() {
@@ -216,6 +253,7 @@ export default function App() {
     <WorkspaceProvider>
     <>
     <ThemeSync />
+    <Suspense fallback={<PageLoader />}>
     <Routes>
       {/* Client portal — standalone layout */}
       <Route path="/client-portal" element={<ClientPortalGuard />} />
@@ -304,6 +342,20 @@ export default function App() {
         <Route path="analytics/attribution" element={<MultiTouchAttribution />} />
         <Route path="reports/digest"   element={<WeeklyExecutiveDigest />} />
         <Route path="reports/board"    element={<BoardReportGenerator />} />
+        <Route path="seo/audit"        element={<SEOAudit />} />
+        <Route path="seo/architecture" element={<SiteArchitecture />} />
+        <Route path="seo/programmatic" element={<ProgrammaticSEO />} />
+        <Route path="seo/schema"       element={<SchemaMarkup />} />
+        <Route path="cro/page"         element={<PageCRO />} />
+        <Route path="cro/forms"        element={<FormCRO />} />
+        <Route path="cro/signup"       element={<SignupFlowCRO />} />
+        <Route path="cro/onboarding"   element={<OnboardingCRO />} />
+        <Route path="cro/popups"       element={<PopupCRO />} />
+        <Route path="cro/paywall"      element={<PaywallCRO />} />
+        <Route path="cro/ab-tests"     element={<ABTestDashboard />} />
+        <Route path="marketing/lead-magnets" element={<LeadMagnets />} />
+        <Route path="marketing/referral"     element={<ReferralProgram />} />
+        <Route path="marketing/free-tools"   element={<FreeToolStrategy />} />
         <Route path="workspace/whitelabel" element={<WhiteLabelConfig />} />
         <Route path="whitelabel"       element={<WhiteLabelConfig />} />
         <Route path="admin/workspace-templates" element={<WorkspaceTemplates />} />
@@ -314,6 +366,7 @@ export default function App() {
         <Route path="*"             element={<NotFound />} />
       </Route>
     </Routes>
+    </Suspense>
     </>
     </WorkspaceProvider>
   );

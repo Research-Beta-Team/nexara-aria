@@ -1,9 +1,13 @@
 /**
- * Freya tool definitions — Anthropic Messages API format.
- * All 12 tools for the agentic engine.
+ * FreyaTools.js — Tool definitions for Freya orchestrator.
+ * Anthropic Messages API format.
+ *
+ * Original 12 tools + 8 new orchestration tools = 20 total.
  */
 
 export const FREYA_TOOLS = [
+  // ── Original 12 tools ──────────────────────────────────────────
+
   {
     name: 'search_prospects',
     description: 'Search for prospects matching specific ICP criteria using Apollo/LinkedIn data',
@@ -186,6 +190,135 @@ export const FREYA_TOOLS = [
         options: { type: 'array', items: { type: 'string' } },
       },
       required: ['severity', 'reason', 'recommended_action'],
+    },
+  },
+
+  // ── New orchestration tools (8 tools) ──────────────────────────
+
+  {
+    name: 'delegate_to_agent',
+    description: 'Delegate a task to a specialist agent. Freya sends a task to one of 7 specialists (strategist, copywriter, analyst, prospector, optimizer, outreach, revenue, guardian) and receives their result. Use this when a task falls within an agent specialty.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        agentId: {
+          type: 'string',
+          enum: ['strategist', 'copywriter', 'analyst', 'prospector', 'optimizer', 'outreach', 'revenue', 'guardian'],
+          description: 'The specialist agent to delegate to',
+        },
+        task: { type: 'string', description: 'Description of the task for the agent' },
+        context: {
+          type: 'object',
+          description: 'Additional context the agent needs (ICP, campaign data, etc.)',
+        },
+      },
+      required: ['agentId', 'task'],
+    },
+  },
+  {
+    name: 'query_agent_status',
+    description: 'Check the current status and recent activity of a specialist agent. Use to understand agent workload before delegating.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        agentId: {
+          type: 'string',
+          enum: ['strategist', 'copywriter', 'analyst', 'prospector', 'optimizer', 'outreach', 'revenue', 'guardian'],
+          description: 'The agent to query',
+        },
+      },
+      required: ['agentId'],
+    },
+  },
+  {
+    name: 'query_memory',
+    description: 'Search the shared memory layer for knowledge across namespaces: brand, audience, campaigns, performance, knowledge, decisions. Returns matching entries ranked by relevance.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        namespace: {
+          type: 'string',
+          enum: ['brand', 'audience', 'campaigns', 'performance', 'knowledge', 'decisions'],
+          description: 'Namespace to search in, or omit to search all',
+        },
+        query: { type: 'string', description: 'Search query' },
+      },
+      required: ['query'],
+    },
+  },
+  {
+    name: 'write_memory',
+    description: 'Write a fact, insight, or decision to shared memory so all agents can access it. Use to persist learnings, ICP updates, brand voice rules, or campaign decisions.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        namespace: {
+          type: 'string',
+          enum: ['brand', 'audience', 'campaigns', 'performance', 'knowledge', 'decisions'],
+          description: 'Which namespace to write to',
+        },
+        key: { type: 'string', description: 'Unique key for this memory entry' },
+        value: { description: 'The value to store (string, number, object, or array)' },
+      },
+      required: ['namespace', 'key', 'value'],
+    },
+  },
+  {
+    name: 'trigger_workflow',
+    description: 'Start a pre-built multi-agent workflow. Available workflows: campaign_launch (strategy->content->review->schedule), content_creation (brief->generate->approve), lead_to_customer (enrich->score->contact->track), performance_review (analyze->recommend->brief), seo_audit (audit->fix->test), ab_test (design->variants->evaluate).',
+    input_schema: {
+      type: 'object',
+      properties: {
+        workflowId: {
+          type: 'string',
+          enum: ['campaign_launch', 'content_creation', 'lead_to_customer', 'performance_review', 'seo_audit', 'ab_test'],
+          description: 'The workflow to trigger',
+        },
+        context: {
+          type: 'object',
+          description: 'Context for the workflow (campaign name, ICP, channel, etc.)',
+        },
+      },
+      required: ['workflowId'],
+    },
+  },
+  {
+    name: 'get_agent_recommendations',
+    description: 'Ask a specialist agent for recommendations on a topic without executing a full task. Returns suggestions with confidence scores.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        agentId: {
+          type: 'string',
+          enum: ['strategist', 'copywriter', 'analyst', 'prospector', 'optimizer', 'outreach', 'revenue', 'guardian'],
+          description: 'The agent to ask',
+        },
+        topic: { type: 'string', description: 'What to get recommendations about' },
+      },
+      required: ['agentId', 'topic'],
+    },
+  },
+  {
+    name: 'approve_agent_action',
+    description: 'Approve a pending action from an agent (e.g., sending outreach, changing budget, publishing content)',
+    input_schema: {
+      type: 'object',
+      properties: {
+        actionId: { type: 'string', description: 'The ID of the pending action to approve' },
+      },
+      required: ['actionId'],
+    },
+  },
+  {
+    name: 'reject_agent_action',
+    description: 'Reject a pending action from an agent with feedback so it can revise',
+    input_schema: {
+      type: 'object',
+      properties: {
+        actionId: { type: 'string', description: 'The ID of the pending action to reject' },
+        reason: { type: 'string', description: 'Why the action was rejected — feedback for the agent' },
+      },
+      required: ['actionId', 'reason'],
     },
   },
 ];

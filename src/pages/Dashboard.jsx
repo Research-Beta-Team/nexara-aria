@@ -3,6 +3,14 @@ import useStore from '../store/useStore';
 import { getDashboardForClient } from '../data/dashboard';
 import { C, F, S } from '../tokens';
 import DashboardWelcome from '../components/dashboard/DashboardWelcome';
+import DashboardOwner from '../views/dashboard/DashboardOwner';
+import DashboardAdvisor from '../views/dashboard/DashboardAdvisor';
+import DashboardCSM from '../views/dashboard/DashboardCSM';
+import DashboardMediaBuyer from '../views/dashboard/DashboardMediaBuyer';
+import DashboardContentStrategist from '../views/dashboard/DashboardContentStrategist';
+import DashboardSDR from '../views/dashboard/DashboardSDR';
+import DashboardAnalyst from '../views/dashboard/DashboardAnalyst';
+import DashboardClient from '../views/dashboard/DashboardClient';
 import KPIHeader from '../components/dashboard/KPIHeader';
 import NewCampaignChoice from '../components/campaign/NewCampaignChoice';
 import CampaignHealthCards from '../components/dashboard/CampaignHealthCards';
@@ -15,6 +23,7 @@ import SocialReachWidget from '../components/dashboard/SocialReachWidget';
 import DonorPipelineWidget from '../components/dashboard/DonorPipelineWidget';
 import ROASTrackerWidget from '../components/dashboard/ROASTrackerWidget';
 import StartCampaignFromFile from '../components/dashboard/StartCampaignFromFile';
+import AgentStatusBar from '../components/agents/AgentStatusBar';
 import StartupDashboard from './for_startups/StartupDashboard';
 
 const PERSONA_LABELS = {
@@ -124,6 +133,12 @@ function WorkspaceDashboardContent() {
         <KPIHeader kpisConfig={getKPIs()} kpiValues={data.kpiValues} />
       </section>
 
+      {/* Agent Status Bar */}
+      <section style={{ marginBottom: S[6] }}>
+        <h2 style={{ ...sectionTitleStyle, marginBottom: S[3] }}>Agent status</h2>
+        <AgentStatusBar />
+      </section>
+
       {/* Widgets grid */}
       <div
         style={{
@@ -188,7 +203,20 @@ function WorkspaceDashboardContent() {
 
 export default function Dashboard() {
   const segment = useStore((s) => s.segment);
+  const role = useStore((s) => s.currentRole);
 
   if (segment === 'startup') return <StartupDashboard embedded />;
-  return <WorkspaceDashboardContent />;
+
+  switch (role) {
+    case 'owner':
+    case 'founder':            return <DashboardOwner />;
+    case 'advisor':            return <DashboardAdvisor />;
+    case 'csm':                return <DashboardCSM />;
+    case 'mediaBuyer':         return <DashboardMediaBuyer />;
+    case 'contentStrategist':  return <DashboardContentStrategist />;
+    case 'sdr':                return <DashboardSDR />;
+    case 'analyst':            return <DashboardAnalyst />;
+    case 'client':             return <DashboardClient />;
+    default:                   return <DashboardOwner />;
+  }
 }

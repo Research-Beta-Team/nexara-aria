@@ -39,9 +39,74 @@ Antarious is a dark-mode GTM AI Operating System for marketing agencies. Think: 
 
 ## Current Build Stage
 [UPDATE THIS as you build each module]
-Completed: tokens, store, toast, router, layout (AppLayout), sidebar, topbar, dashboard, campaigns (list, detail, all 8 tabs, outreach detail), agents (roster, detail), meta monitor, escalations, analytics, inbox, content library, knowledge base, query manager, notification center, settings, research (ICP builder, competitive intel), ABM engine, vertical playbooks, revenue (pipeline, customer success, forecast engine), ARIA Intelligence (ARIABrain), workspace (white-label config), dev (role switcher), client portal, onboarding, billing/upgrade, login, signup. Gap Mitigation (Sessions 1–8): ARIA Memory, Content Approval, MQL Handoff, Multi-Touch Attribution, Executive Digest, Campaign Briefer, Lead Enrichment, Board Report — all 8 pages implemented.
+Completed: tokens, store, toast, router, layout (AppLayout), sidebar, topbar, dashboard, campaigns (list, detail, all 8 tabs, outreach detail), agents (roster, detail), meta monitor, escalations, analytics, inbox, content library, knowledge base, query manager, notification center, settings, research (ICP builder, competitive intel), ABM engine, vertical playbooks, revenue (pipeline, customer success, forecast engine), ARIA Intelligence (ARIABrain), workspace (white-label config), dev (role switcher), client portal, onboarding, billing/upgrade, login, signup. Gap Mitigation (Sessions 1–8): ARIA Memory, Content Approval, MQL Handoff, Multi-Touch Attribution, Executive Digest, Campaign Briefer, Lead Enrichment, Board Report — all 8 pages implemented., Multi-Agent Runtime (AgentRegistry, AgentRuntime, MessageBus, TriggerEngine, SkillLoader), Memory Layer (MemoryLayer, KnowledgeBase, PatternStore, DecisionLog), Freya Orchestrator (workflows, delegation), Agent UI components, CRO suite (7 pages), SEO suite (4 pages), Marketing pages (3 pages), Settings agent config, Onboarding agent intro, UpgradePage agent tiers
 In Progress: —
 Not Started: —
+
+## Multi-Agent Architecture
+
+### The 8 Agents
+| Agent | ID | Role | Skills | Autonomy |
+|-------|-----|------|--------|----------|
+| Freya | `freya` | Orchestrator | All 34 | autonomous |
+| Strategist | `strategist` | Specialist | content-strategy, launch-strategy, marketing-ideas, marketing-psychology, pricing-strategy, product-marketing-context | act_with_approval |
+| Copywriter | `copywriter` | Specialist | copywriting, copy-editing, ad-creative, social-content, email-sequence, lead-magnets | act_with_approval |
+| Analyst | `analyst` | Specialist | analytics-tracking, seo-audit, ai-seo, site-architecture, programmatic-seo, schema-markup, customer-research, competitor-alternatives | act_with_approval |
+| Prospector | `prospector` | Specialist | customer-research, cold-email, revops, sales-enablement | act_with_approval |
+| Optimizer | `optimizer` | Specialist | page-cro, form-cro, signup-flow-cro, onboarding-cro, popup-cro, paywall-upgrade-cro, ab-test-setup | act_with_approval |
+| Outreach | `outreach` | Specialist | cold-email, email-sequence, social-content, referral-program, free-tool-strategy | act_with_approval |
+| Revenue | `revenue` | Specialist | revops, sales-enablement, pricing-strategy, churn-prevention, referral-program | act_with_approval |
+| Guardian | `guardian` | Specialist | copy-editing, product-marketing-context | suggest_only |
+
+### Agent System Files
+- `src/agents/AgentRegistry.js` — Agent definitions, skills, triggers, canDelegate
+- `src/agents/AgentRuntime.js` — Agent lifecycle: idle→thinking→executing→done/error
+- `src/agents/MessageBus.js` — Inter-agent messaging (TASK_REQUEST, TASK_RESULT, TRIGGER, APPROVAL_REQUEST, ESCALATION, INSIGHT)
+- `src/agents/TriggerEngine.js` — USER_ACTION, DATA_CHANGE, SCHEDULE, AGENT_MESSAGE triggers
+- `src/agents/SkillLoader.js` — 34 marketing skills registry with metadata
+- `src/memory/MemoryLayer.js` — Shared memory: brand, audience, campaigns, performance, knowledge, decisions namespaces
+- `src/memory/KnowledgeBase.js` — Document ingestion + fact extraction + semantic query
+- `src/memory/PatternStore.js` — Learned behavioral patterns
+- `src/memory/DecisionLog.js` — Full audit trail per agent
+- `src/freya/FreyaEngine.js` — Freya orchestrator with delegate() and orchestrate() methods
+- `src/freya/workflows/registry.js` — 6 pre-built multi-agent workflow definitions
+
+### Agent Hooks
+- `useAgent(agentId)` — activate/cancel agent, get live status + feed
+- `useMemory(namespace)` — read/write memory namespace
+- `useFreya()` — chat, delegate, agent statuses, pending approvals
+- `useTrigger(triggerId)` — fire triggers
+- `useAgentFeed(limit)` — global agent activity feed
+
+### Agent UI Components (src/components/agents/)
+- `AgentAvatar` — emoji avatar with status ring
+- `AgentStatusBar` — horizontal bar showing all agent statuses
+- `AgentCard` — agent card for roster view
+- `AgentFeed` — scrollable activity feed
+- `AgentChatBubble` — chat message with agent attribution
+- `AgentApprovalCard` — pending approval action card
+- `AgentWorkflowVisualizer` — step-chain visualization for active workflow
+- `AgentThinking` — loading/thinking animation
+- `AgentResultPanel` — structured output renderer per result type
+
+### Zustand Store — Agent Slice
+```js
+s.agents.statuses[agentId]  // { status, currentTask, lastResult, error }
+s.agents.messageHistory      // MessageBus ring buffer mirror
+s.agents.activeWorkflow      // currently running workflow id or null
+s.agents.pendingApprovals    // actions awaiting human approval
+s.agents.agentFeed           // chronological activity feed
+```
+
+### Pre-built Workflows (src/freya/workflows/)
+| Workflow | Steps | Time | Credits |
+|----------|-------|------|---------|
+| Campaign Launch | strategist→copywriter→guardian→outreach | 8-12m | 120 |
+| Content Creation | strategist→copywriter→guardian | 5-8m | 80 |
+| Lead to Customer | prospector→analyst→outreach→revenue | 10-15m | 100 |
+| Performance Review | analyst→strategist→freya | 5-7m | 60 |
+| SEO Audit | analyst→copywriter→optimizer | 8-12m | 90 |
+| A/B Test | optimizer→copywriter→analyst | 6-10m | 70 |
 
 ## Routes (main app, under protected layout)
 - `/` — Dashboard

@@ -1,5 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import useToast from '../hooks/useToast';
+import { useAgent } from '../hooks/useAgent';
+import AgentThinking from '../components/agents/AgentThinking';
+import AgentResultPanel from '../components/agents/AgentResultPanel';
 import { C, F, R, S, btn, badge, sectionHeading } from '../tokens';
 import { NAMED_ACCOUNTS, ABM_PIPELINE_TOTAL } from '../data/abm';
 import { getT1AccountRealityReport, getT1CallBrief } from '../data/abmControl';
@@ -69,6 +72,34 @@ export default function ABMEngine() {
   const [selectedAccountId, setSelectedAccountId] = useState(NAMED_ACCOUNTS[0]?.id || null);
   const [accountTab, setAccountTab] = useState('overview');
   const toast = useToast();
+  const strategist = useAgent('strategist');
+  const outreach = useAgent('outreach');
+  const [agentResult, setAgentResult] = useState(null);
+  const [agentTask, setAgentTask] = useState(null);
+  const [activeAgentId, setActiveAgentId] = useState(null);
+  const [workflowStep, setWorkflowStep] = useState(null); // null | 'strategy' | 'outreach' | 'done'
+
+  const handleGeneratePlaybook = async () => {
+    setAgentResult(null);
+    setWorkflowStep('strategy');
+    setAgentTask('Generating ABM strategy playbook');
+    setActiveAgentId('strategist');
+    toast.success('Strategist agent activated — building ABM strategy...');
+
+    const stratRes = await strategist.activate('Create ABM playbook strategy with account prioritization and engagement plan', { skill: 'campaign-strategy', context: { accounts: NAMED_ACCOUNTS.length, page: 'abm-engine' } });
+
+    setWorkflowStep('outreach');
+    setActiveAgentId('outreach');
+    setAgentTask('Creating outreach sequences for ABM playbook');
+    toast.success('Outreach agent activated — creating sequences...');
+
+    const outreachRes = await outreach.activate('Create multi-channel outreach sequences for ABM accounts based on strategy', { skill: 'outreach-sequences', context: { strategyOutput: stratRes?.output, page: 'abm-engine' } });
+
+    setActiveAgentId(null);
+    setWorkflowStep('done');
+    setAgentResult(outreachRes);
+    toast.success('ABM playbook generation complete!');
+  };
 
   const accountsByTier = useMemo(
     () => NAMED_ACCOUNTS.filter((a) => a.tier === selectedTier),
@@ -138,8 +169,91 @@ export default function ABMEngine() {
           <button style={{ ...btn.primary, fontSize: '13px' }} onClick={() => toast.success('Running ABM playbook…')}>
             Run ABM playbook
           </button>
+          <button
+            style={{ ...btn.secondary, fontSize: '13px', gap: S[2], opacity: activeAgentId ? 0.6 : 1 }}
+            disabled={!!activeAgentId}
+            onClick={handleGeneratePlaybook}
+          >
+            <AriaIcon size={14} />
+            Generate ABM playbook
+          </button>
         </div>
       </div>
+
+      {/* ── Agent Workflow Status ───────────────── */}
+      {workflowStep && workflowStep !== 'done' && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: S[4],
+          padding: `${S[3]} ${S[4]}`,
+          backgroundColor: C.surface2,
+          border: `1px solid ${C.border}`,
+          borderRadius: R.card,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
+            {['strategy', 'outreach'].map((step, i) => {
+              const isActive = workflowStep === step;
+              const isDone = (step === 'strategy' && workflowStep === 'outreach');
+              return (
+                <div key={step} style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
+                  {i > 0 && (
+                    <div style={{ width: 24, height: 2, backgroundColor: isDone || isActive ? C.primary : C.border }} />
+                  )}
+                  <div style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px',
+                    fontFamily: F.mono,
+                    fontWeight: 700,
+                    backgroundColor: isDone ? C.primary : isActive ? 'rgba(61,220,132,0.15)' : C.surface3,
+                    color: isDone ? C.bg : isActive ? C.primary : C.textMuted,
+                    border: `1px solid ${isDone ? C.primary : isActive ? C.primary : C.border}`,
+                  }}>
+                    {isDone ? '\u2713' : i + 1}
+                  </div>
+                  <span style={{
+                    fontFamily: F.body,
+                    fontSize: '12px',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? C.primary : isDone ? C.textSecondary : C.textMuted,
+                  }}>
+                    {step === 'strategy' ? 'Strategist' : 'Outreach'}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── Agent Thinking / Result ─────────────── */}
+      {activeAgentId && <AgentThinking agentId={activeAgentId} task={agentTask} />}
+      {agentResult && !activeAgentId && (
+        <>
+          <AgentResultPanel result={agentResult} />
+          <span style={{
+            display: 'inline-flex',
+            alignSelf: 'flex-start',
+            alignItems: 'center',
+            gap: S[1],
+            padding: `${S[1]} ${S[2]}`,
+            backgroundColor: 'rgba(61,220,132,0.08)',
+            border: '1px solid rgba(61,220,132,0.2)',
+            borderRadius: R.pill,
+            fontFamily: F.mono,
+            fontSize: '10px',
+            fontWeight: 600,
+            color: C.primary,
+          }}>
+            Generated by Strategist + Outreach agents
+          </span>
+        </>
+      )}
 
       {/* Tier tabs — T1 view shows only tier-1 accounts; tabs still allow switching segment view in future */}
       <div style={{ display: 'flex', gap: 0, borderBottom: `1px solid ${C.border}` }}>

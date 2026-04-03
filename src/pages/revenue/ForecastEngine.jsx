@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import useToast from '../../hooks/useToast';
+import { useAgent } from '../../hooks/useAgent';
+import AgentThinking from '../../components/agents/AgentThinking';
+import AgentResultPanel from '../../components/agents/AgentResultPanel';
 import { C, F, R, S, btn, sectionHeading } from '../../tokens';
 import {
   FORECAST_SCENARIOS,
@@ -24,7 +27,43 @@ function formatCurrency(value) {
 
 export default function ForecastEngine() {
   const [activeScenarioId, setActiveScenarioId] = useState('base');
+  const [forecastRunning, setForecastRunning] = useState(false);
+  const [forecastResult, setForecastResult] = useState(null);
+  const [analystResult, setAnalystResult] = useState(null);
   const toast = useToast();
+  const revenueAgent = useAgent('revenue');
+  const analystAgent = useAgent('analyst');
+
+  const handleRunForecastModel = async () => {
+    setForecastRunning(true);
+    setForecastResult(null);
+    setAnalystResult(null);
+    try {
+      // Step 1: Revenue agent runs revops forecast
+      const revResult = await revenueAgent.activate(
+        { description: 'Run multi-model revenue forecast', skill: 'revops', input: { pipeline_data: MONTHLY_FORECAST, period: 'Q1 2026', segments: ['all'] } },
+        { scenario: activeScenarioId }
+      );
+      if (revResult) {
+        setForecastResult({ ...revResult, confidence: Math.round((revResult.confidence || 0.78) * 100) });
+      }
+
+      // Step 2: Analyst agent generates insights (sequential)
+      const anResult = await analystAgent.activate(
+        { description: 'Generate forecast insights and anomaly analysis', skill: 'analytics-tracking', input: { platform: 'revenue', events: ['forecast'], goals: ['accuracy'] } },
+        { forecastData: revResult?.output, scenario: activeScenarioId }
+      );
+      if (anResult) {
+        setAnalystResult({ ...anResult, confidence: Math.round((anResult.confidence || 0.82) * 100) });
+      }
+
+      toast.success('Forecast model complete — Revenue + Analyst agents finished');
+    } catch (err) {
+      toast.error('Forecast model failed: ' + err.message);
+    } finally {
+      setForecastRunning(false);
+    }
+  };
 
   return (
     <div
@@ -49,6 +88,13 @@ export default function ForecastEngine() {
           </span>
         </div>
         <div style={{ display: 'flex', gap: S[2] }}>
+          <button
+            style={{ ...btn.primary, fontSize: '13px', opacity: forecastRunning ? 0.5 : 1 }}
+            disabled={forecastRunning}
+            onClick={handleRunForecastModel}
+          >
+            {forecastRunning ? 'Running...' : 'Run forecast model'}
+          </button>
           <button style={{ ...btn.secondary, fontSize: '13px' }} onClick={() => toast.success('Forecast exported')}>
             Export forecast
           </button>
@@ -134,6 +180,47 @@ export default function ForecastEngine() {
       <section>
         <ForecastInsights risks={FORECAST_RISKS} toast={toast} />
       </section>
+
+      {/* Agent Thinking Indicators */}
+      {forecastRunning && revenueAgent.isActive && (
+        <AgentThinking agentId="revenue" task="Running multi-model revenue forecast..." />
+      )}
+      {forecastRunning && analystAgent.isActive && (
+        <AgentThinking agentId="analyst" task="Generating forecast insights and anomaly analysis..." />
+      )}
+
+      {/* Agent Forecast Result */}
+      {forecastResult && (
+        <section style={{ display: 'flex', flexDirection: 'column', gap: S[3] }}>
+          <h3 style={{ fontFamily: F.display, fontSize: '16px', fontWeight: 700, color: C.textPrimary, margin: 0 }}>
+            Multi-Model Forecast Result
+          </h3>
+          <AgentResultPanel result={forecastResult} />
+        </section>
+      )}
+
+      {/* Analyst-Generated Insights */}
+      {analystResult && (
+        <section style={{ display: 'flex', flexDirection: 'column', gap: S[3] }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
+            <h3 style={{ fontFamily: F.display, fontSize: '16px', fontWeight: 700, color: C.textPrimary, margin: 0 }}>
+              Analyst-Generated Insights
+            </h3>
+            <span style={{
+              fontFamily: F.mono,
+              fontSize: '10px',
+              fontWeight: 700,
+              color: C.secondary,
+              backgroundColor: 'rgba(94,234,212,0.12)',
+              padding: '2px 8px',
+              borderRadius: '999px',
+            }}>
+              Agent-powered
+            </span>
+          </div>
+          <AgentResultPanel result={analystResult} />
+        </section>
+      )}
     </div>
   );
 }

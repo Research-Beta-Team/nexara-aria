@@ -509,6 +509,65 @@ export function IconCircleEmpty({ color = 'currentColor', width = size, height =
   );
 }
 
+/** Shield — compliance / Guardian */
+export function IconShield({ color = 'currentColor', width = size, height = size }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M9 2.5l6 2.2v5.2c0 3.4-2.5 6.5-6 7.6-3.5-1.1-6-4.2-6-7.6V4.7L9 2.5Z" stroke={color} strokeWidth={stroke} strokeLinejoin="round"/>
+      <path d="M9 7v4.5M9 12.2v.3" stroke={color} strokeWidth={stroke} strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+/** Stacked coins — revenue / pipeline */
+export function IconCoins({ color = 'currentColor', width = size, height = size }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <ellipse cx="9" cy="5" rx="5" ry="2" stroke={color} strokeWidth={stroke}/>
+      <path d="M4 5v2.5c0 1.1 2.2 2 5 2s5-.9 5-2V5" stroke={color} strokeWidth={stroke}/>
+      <ellipse cx="9" cy="10" rx="5" ry="2" stroke={color} strokeWidth={stroke}/>
+      <path d="M4 10v2.5c0 1.1 2.2 2 5 2s5-.9 5-2V10" stroke={color} strokeWidth={stroke}/>
+    </svg>
+  );
+}
+
+/** Palm / manual control — command mode */
+export function IconHandControl({ color = 'currentColor', width = size, height = size }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M6.5 8V4.5a1.5 1.5 0 013 0V8M9.5 8V5.5a1.5 1.5 0 013 0V10M4.5 9.5V8a1.5 1.5 0 013 0v4.5l-1.2 3.2a1 1 0 01-.95.7H5.2a1 1 0 01-.98-.8L3 12" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+/** Stop / emergency — octagon */
+export function IconStopOctagon({ color = 'currentColor', width = size, height = size }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M5.5 2.5h7l3.5 3.5v7l-3.5 3.5h-7l-3.5-3.5v-7l3.5-3.5Z" stroke={color} strokeWidth={stroke} strokeLinejoin="round"/>
+      <path d="M6.5 6.5h5v5h-5z" fill={color}/>
+    </svg>
+  );
+}
+
+/** Flame — “hot” / surge (compact UI accent) */
+export function IconFlame({ color = 'currentColor', width = size, height = size }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M9 2.5s2.5 2.2 2.5 5c0 1.2-.5 2-1.2 2.5.8-.9 1.2-2 1-3.2C9.8 3.8 7 5.2 6.2 8.5c-.4 1.5 0 3 1.2 4-1.5-.8-2.5-2.3-2.5-4.2 0-2.5 1.8-4.5 4.1-5.8Z" stroke={color} strokeWidth={stroke} strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+/** Thumbs-up — stat / approval rate */
+export function IconThumbsUp({ color = 'currentColor', width = size, height = size }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M5 8.5V16h8v-6l-2-5.5H8.5L9 3.5 7.5 8.5H5Z" stroke={color} strokeWidth={stroke} strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
 export const FEATURE_ICON_MAP = {
   competitiveIntel:      IconTarget,
   intentSignals:          IconCompass,

@@ -1,14 +1,15 @@
 /**
- * Freya Logo — Co-pilot mark per Antarious Brand Guidelines
- * Stylized "F" (Freya): geometric, sage accent, works at 14–24px.
- * Use in TopBar (Freya button), Sidebar nav, and any Freya entry point.
+ * Freya — co-pilot mark: geometric F + sage neural node (Antarious brand)
+ * Use in TopBar, sidebar, agent avatars, and chat entry points.
  */
 import { C } from '../../tokens';
+
+const SAGE = '#4A7C6F';
 
 const DEFAULT_SIZE = 24;
 
 export default function FreyaLogo({ size = DEFAULT_SIZE, color, ariaHidden = true }) {
-  const c = color ?? 'currentColor';
+  const stroke = color ?? 'currentColor';
   return (
     <svg
       width={size}
@@ -19,11 +20,12 @@ export default function FreyaLogo({ size = DEFAULT_SIZE, color, ariaHidden = tru
       style={{ flexShrink: 0, display: 'block' }}
       aria-hidden={ariaHidden}
     >
-      {/* Stylized F: stem + top bar + middle bar (rounded stroke) */}
+      <circle cx="8.5" cy="9" r="2.4" fill={SAGE} opacity={0.95} />
+      <circle cx="8.5" cy="9" r="3.6" stroke={SAGE} strokeWidth="0.85" opacity={0.35} />
       <path
-        d="M7 6v12M7 6h10M7 12h7"
-        stroke={c}
-        strokeWidth="2.25"
+        d="M6.25 5.5V18.5M6.25 5.5H16.25M6.25 11.25H13.25"
+        stroke={stroke}
+        strokeWidth="2.15"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -31,7 +33,6 @@ export default function FreyaLogo({ size = DEFAULT_SIZE, color, ariaHidden = tru
   );
 }
 
-/** Sage-colored variant for emphasis (e.g. active state, panels) */
 export function FreyaLogoSage({ size = DEFAULT_SIZE, ariaHidden = true }) {
   return <FreyaLogo size={size} color={C.primary} ariaHidden={ariaHidden} />;
 }

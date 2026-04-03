@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import useToast from '../../hooks/useToast';
+import { useAgent } from '../../hooks/useAgent';
+import AgentThinking from '../../components/agents/AgentThinking';
+import AgentResultPanel from '../../components/agents/AgentResultPanel';
 import PlanGate from '../../components/plan/PlanGate';
 import { ICP_DEFINITION } from '../../data/icp';
 import ICPDefinitionPanel       from '../../components/icp/ICPDefinitionPanel';
@@ -8,7 +11,7 @@ import ProspectScoreDistribution from '../../components/icp/ProspectScoreDistrib
 import WinLossInsights          from '../../components/icp/WinLossInsights';
 import BuyingCommitteeMap       from '../../components/icp/BuyingCommitteeMap';
 import LookalikeExpansion       from '../../components/icp/LookalikeExpansion';
-import { C, F, R, S, T, btn, shadows, sectionHeading } from '../../tokens';
+import { C, F, R, S, T, btn, badge, shadows, sectionHeading } from '../../tokens';
 
 const TABS = [
   { id: 'definition',   label: 'Definition'          },
@@ -36,6 +39,44 @@ function AriaIcon({ size = 16, color }) {
 export default function ICPBuilder() {
   const [activeTab, setActiveTab] = useState('definition');
   const toast = useToast();
+  const analyst = useAgent('analyst');
+  const prospector = useAgent('prospector');
+  const [agentResult, setAgentResult] = useState(null);
+  const [agentTask, setAgentTask] = useState(null);
+  const [activeAgentId, setActiveAgentId] = useState(null);
+
+  const handleResearchICP = async () => {
+    setAgentTask('Research ICP for target market');
+    setActiveAgentId('analyst');
+    setAgentResult(null);
+    toast.success('Insights Agent activated — researching ICP...');
+    const res = await analyst.activate('Research ICP for target market using closed-won deal analysis', { skill: 'customer-research', context: { page: 'icp-builder' } });
+    setAgentResult(res);
+    setActiveAgentId(null);
+    toast.success('ICP research complete!');
+  };
+
+  const handleScoreProspects = async () => {
+    setAgentTask('Score prospects against ICP criteria');
+    setActiveAgentId('prospector');
+    setAgentResult(null);
+    toast.success('Prospector agent activated — scoring prospects...');
+    const res = await prospector.activate('Score prospects against ICP criteria and show distribution', { skill: 'revops', context: { page: 'icp-builder' } });
+    setAgentResult(res);
+    setActiveAgentId(null);
+    toast.success('Prospect scoring complete!');
+  };
+
+  const handleMapCommittee = async () => {
+    setAgentTask('Map buying committee for target accounts');
+    setActiveAgentId('analyst');
+    setAgentResult(null);
+    toast.success('Insights Agent activated — mapping buying committee...');
+    const res = await analyst.activate('Map buying committee structure and influence dynamics', { skill: 'marketing-psychology', context: { page: 'icp-builder' } });
+    setAgentResult(res);
+    setActiveAgentId(null);
+    toast.success('Buying committee mapping complete!');
+  };
 
   const { version, lastUpdated, updatedBy, icpScore } = ICP_DEFINITION;
 
@@ -73,6 +114,55 @@ export default function ICPBuilder() {
           </button>
         </div>
       </div>
+
+      {/* ── Agent Action Buttons ────────────────── */}
+      <div style={{ display: 'flex', gap: S[2], flexWrap: 'wrap', alignItems: 'center' }}>
+        <button
+          style={{ ...btn.primary, fontSize: '13px', gap: S[2], opacity: activeAgentId ? 0.6 : 1 }}
+          disabled={!!activeAgentId}
+          onClick={handleResearchICP}
+        >
+          <AriaIcon size={14} color="#FAF8F3" />
+          Research ICP
+        </button>
+        <button
+          style={{ ...btn.secondary, fontSize: '13px', gap: S[2], opacity: activeAgentId ? 0.6 : 1 }}
+          disabled={!!activeAgentId}
+          onClick={handleScoreProspects}
+        >
+          <AriaIcon size={14} />
+          Score prospects
+        </button>
+        <button
+          style={{ ...btn.secondary, fontSize: '13px', gap: S[2], opacity: activeAgentId ? 0.6 : 1 }}
+          disabled={!!activeAgentId}
+          onClick={handleMapCommittee}
+        >
+          <AriaIcon size={14} />
+          Map buying committee
+        </button>
+        {agentResult && (
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: S[1],
+            padding: `${S[1]} ${S[2]}`,
+            backgroundColor: 'rgba(61,220,132,0.08)',
+            border: '1px solid rgba(61,220,132,0.2)',
+            borderRadius: R.pill,
+            fontFamily: F.mono,
+            fontSize: '10px',
+            fontWeight: 600,
+            color: C.primary,
+          }}>
+            Analyzed by Insights Agent
+          </span>
+        )}
+      </div>
+
+      {/* ── Agent Thinking / Result ─────────────── */}
+      {activeAgentId && <AgentThinking agentId={activeAgentId} task={agentTask} />}
+      {agentResult && !activeAgentId && <AgentResultPanel result={agentResult} />}
 
       {/* ── ARIA Confidence Banner ───────────────── */}
       <div style={{

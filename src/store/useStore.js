@@ -194,6 +194,35 @@ const useStore = create((set, get) => ({
   // ── Freya Persistent Memory (Session 1 — brand, audience, campaigns, performance) ──
   freyaMemory: getInitialFreyaMemory(),
 
+  // ── Agent System State ─────────────────────────
+  agents: {
+    statuses: {
+      freya:       { status: 'idle', currentTask: null, lastResult: null, error: null, lastAction: null },
+      strategist:  { status: 'idle', currentTask: null, lastResult: null, error: null, lastAction: null },
+      copywriter:  { status: 'idle', currentTask: null, lastResult: null, error: null, lastAction: null },
+      analyst:     { status: 'idle', currentTask: null, lastResult: null, error: null, lastAction: null },
+      prospector:  { status: 'idle', currentTask: null, lastResult: null, error: null, lastAction: null },
+      optimizer:   { status: 'idle', currentTask: null, lastResult: null, error: null, lastAction: null },
+      outreach:    { status: 'idle', currentTask: null, lastResult: null, error: null, lastAction: null },
+      revenue:     { status: 'idle', currentTask: null, lastResult: null, error: null, lastAction: null },
+      guardian:    { status: 'idle', currentTask: null, lastResult: null, error: null, lastAction: null },
+    },
+    messageHistory: [],
+    activeWorkflow: null,
+    pendingApprovals: [],
+    agentFeed: [],
+  },
+
+  // ── Memory Layer State (mirrors MemoryLayer for reactive UI) ──
+  memoryHealth: {
+    brand: { entryCount: 5, freshness: 0.9 },
+    audience: { entryCount: 8, freshness: 0.85 },
+    campaigns: { entryCount: 3, freshness: 0.95 },
+    performance: { entryCount: 12, freshness: 0.7 },
+    knowledge: { entryCount: 3, freshness: 0.8 },
+    decisions: { entryCount: 10, freshness: 0.9 },
+  },
+
   // ── Actions: Identity ────────────────────────
   setRole: (role) => set({ currentRole: role }),
 
@@ -706,6 +735,25 @@ const useStore = create((set, get) => ({
       handoffHistory: [...(state.handoffHistory || []), { ...entry, at: entry.at || new Date().toISOString() }],
     })),
 
+  // ── Command Mode ──────────────────────────────────────────────
+  commandMode: 'semi_auto', // 'manual' | 'semi_auto' | 'fully_agentic'
+  setCommandMode: (mode) => set({ commandMode: mode }),
+
+  // ── Per-page approval queues (keyed by page/context) ─────────
+  approvalQueues: {},
+  addApprovalItem: (ctx, item) => set(s => ({
+    approvalQueues: {
+      ...s.approvalQueues,
+      [ctx]: [...(s.approvalQueues[ctx] || []), { ...item, id: Date.now() + Math.random(), createdAt: new Date().toISOString(), status: 'pending' }]
+    }
+  })),
+  resolveApprovalItem: (ctx, itemId, resolution) => set(s => ({
+    approvalQueues: {
+      ...s.approvalQueues,
+      [ctx]: (s.approvalQueues[ctx] || []).map(i => i.id === itemId ? { ...i, status: resolution } : i)
+    }
+  })),
+
   // ── Multi-Touch Attribution (Session 4) ───────────────────────
   attributionModel: 'w_shaped',
   setAttributionModel: (modelId) => set({ attributionModel: modelId }),
@@ -715,6 +763,53 @@ const useStore = create((set, get) => ({
 
   deactivateAddon: (addonId) =>
     set((state) => ({ addonsActive: state.addonsActive.filter((a) => a !== addonId) })),
+
+  // ── Agent Actions ──────────────────────────────
+  setAgentStatus: (agentId, status, currentTask = null) => set(state => ({
+    agents: {
+      ...state.agents,
+      statuses: {
+        ...state.agents.statuses,
+        [agentId]: { status, currentTask, lastAction: new Date().toISOString() },
+      },
+    },
+  })),
+
+  addAgentMessage: (message) => set(state => ({
+    agents: {
+      ...state.agents,
+      messageHistory: [...state.agents.messageHistory.slice(-199), message],
+    },
+  })),
+
+  addAgentFeedItem: (item) => set(state => ({
+    agents: {
+      ...state.agents,
+      agentFeed: [{ ...item, timestamp: new Date().toISOString() }, ...state.agents.agentFeed.slice(0, 49)],
+    },
+  })),
+
+  setActiveWorkflow: (workflow) => set(state => ({
+    agents: { ...state.agents, activeWorkflow: workflow },
+  })),
+
+  addPendingApproval: (approval) => set(state => ({
+    agents: {
+      ...state.agents,
+      pendingApprovals: [...state.agents.pendingApprovals, { ...approval, timestamp: new Date().toISOString() }],
+    },
+  })),
+
+  resolvePendingApproval: (approvalId, approved, reason = '') => set(state => ({
+    agents: {
+      ...state.agents,
+      pendingApprovals: state.agents.pendingApprovals.filter(a => a.id !== approvalId),
+    },
+  })),
+
+  updateMemoryHealth: (namespace, health) => set(state => ({
+    memoryHealth: { ...state.memoryHealth, [namespace]: health },
+  })),
 
   // ── Derived (getters) ────────────────────────
   get unreadCount() {

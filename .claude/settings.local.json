@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(node -e \":*)",
+      "Bash(npx vite:*)",
+      "Bash(npm run:*)",
+      "Bash(node -e \"const fs=require\\(''fs''\\); [''src/pages/CampaignList.jsx'',''src/pages/Analytics.jsx'',''src/pages/AgentDetail.jsx''].forEach\\(f=>{ try{fs.readFileSync\\(f\\);console.log\\(''OK:'',f\\)}catch\\(e\\){console.log\\(''ERR:'',f,e.message\\)} }\\)\")",
+      "Bash(grep -E \"^.*error.*$|✓|built in\")"
+    ]
+  }
+}

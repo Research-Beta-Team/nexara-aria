@@ -3,11 +3,27 @@ import { useNavigate } from 'react-router-dom';
 import CONVERSATIONS from '../data/inbox';
 import { C, F, R, S, T, btn, shadows, scrollbarStyle } from '../tokens';
 import useToast from '../hooks/useToast';
+import { useAgent } from '../hooks/useAgent';
+import AgentThinking from '../components/agents/AgentThinking';
+import AgentResultPanel from '../components/agents/AgentResultPanel';
 import { useRoleView } from '../hooks/useRoleView';
 import { filterConversations } from '../utils/roleViews';
 import useStore from '../store/useStore';
 import ConnectAccountModal from '../components/social/ConnectAccountModal';
 import { IconLinkedIn, IconFacebook, IconWhatsApp, IconInstagram } from '../components/ui/Icons';
+
+// Auto-categorization labels from Analyst agent
+const ANALYST_CATEGORIES = {
+  'Meeting Request': 'High Priority',
+  'Interested': 'Warm Lead',
+  'Hot Lead': 'Hot Lead',
+  'Not Interested': 'Cold',
+  'Out of Office': 'OOO',
+  'Question': 'Support',
+  'Reschedule': 'Follow-up',
+  'Competitor Comparison': 'Competitive',
+  'Content Request': 'Content',
+};
 
 // ── Channel filter → full-page theme (Product UI or WhatsApp) ───
 const PRODUCT_UI = {
@@ -175,6 +191,7 @@ function ConvItem({ conv, selected, onClick, theme, channelForIcon }) {
   const t = theme || C;
   const unread = conv.status === 'unread';
   const channel = channelForIcon ?? conv.channel;
+  const analystCategory = ANALYST_CATEGORIES[conv.classification] || null;
   return (
     <div
       onClick={onClick}
@@ -194,8 +211,18 @@ function ConvItem({ conv, selected, onClick, theme, channelForIcon }) {
               <span style={{ fontFamily: F.mono, fontSize: '10px', color: t.textMuted }}>{conv.time}</span>
             </div>
           </div>
-          <div style={{ fontFamily: F.body, fontSize: '11px', color: t.textSecondary, marginTop: '1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <div style={{ fontFamily: F.body, fontSize: '11px', color: t.textSecondary, marginTop: '1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '6px' }}>
             {conv.company}
+            {/* Auto-categorization by Analyst agent */}
+            {analystCategory && (
+              <span style={{
+                fontFamily: F.mono, fontSize: '8px', fontWeight: 700, color: t.primary,
+                backgroundColor: t.primaryGlow, padding: '1px 5px', borderRadius: '3px',
+                letterSpacing: '0.03em', flexShrink: 0,
+              }}>
+                {analystCategory}
+              </span>
+            )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '3px' }}>
             <span style={{ fontFamily: F.body, fontSize: '12px', color: unread ? t.textPrimary : t.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, fontWeight: unread ? 500 : 400 }}>
@@ -361,7 +388,7 @@ function ReplyBox({ value, onChange, onSend, onUseDraft, hasDraft, theme }) {
   );
 }
 
-function CenterPanel({ conv, reply, onReplyChange, onSend, onUseDraft, theme, filter }) {
+function CenterPanel({ conv, reply, onReplyChange, onSend, onUseDraft, theme, filter, onFreyaDraft, agentActive, agentDraftResult, agentDraftForConvId }) {
   const t = theme || C;
   const bottomRef = useRef(null);
   const channelForIcon = filter && filter !== 'All' ? filter : undefined;
@@ -412,6 +439,48 @@ function CenterPanel({ conv, reply, onReplyChange, onSend, onUseDraft, theme, fi
 
       {/* Touchpoint pills */}
       <TouchpointPills touchpoints={conv.touchpoints} theme={theme}/>
+
+      {/* Freya, draft response button + agent thinking/result */}
+      <div style={{ padding: `${S[2]} ${S[4]}`, borderBottom: `1px solid ${t.border}`, display: 'flex', alignItems: 'center', gap: S[2], flexShrink: 0 }}>
+        <button
+          onClick={() => onFreyaDraft?.(conv)}
+          disabled={agentActive}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '6px',
+            padding: `5px ${S[3]}`, backgroundColor: t.primaryGlow,
+            color: t.primary, border: `1px solid ${t.selectedBorder || t.border}`,
+            borderRadius: R.button, fontFamily: F.body, fontSize: '12px',
+            fontWeight: 600, cursor: agentActive ? 'default' : 'pointer',
+            opacity: agentActive ? 0.6 : 1, transition: T.base,
+          }}
+        >
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><circle cx="5.5" cy="5.5" r="4.5" stroke="currentColor" strokeWidth="1.1"/><circle cx="5.5" cy="5.5" r="1.8" fill="currentColor"/></svg>
+          Freya, draft response
+        </button>
+        {agentActive && (
+          <span style={{ fontFamily: F.mono, fontSize: '10px', color: t.primary, animation: 'inboxPulse 1.5s ease-in-out infinite' }}>
+            Drafting...
+          </span>
+        )}
+      </div>
+      <style>{`@keyframes inboxPulse{0%,100%{opacity:.4}50%{opacity:1}}`}</style>
+
+      {/* Agent draft result inline */}
+      {agentDraftResult && agentDraftForConvId === conv.id && !agentActive && (
+        <div style={{ padding: `${S[2]} ${S[4]}`, borderBottom: `1px solid ${t.border}`, flexShrink: 0 }}>
+          <div style={{
+            backgroundColor: t.primaryGlow, border: `1px solid ${t.selectedBorder || t.border}`,
+            borderRadius: R.md, padding: `${S[2]} ${S[3]}`,
+          }}>
+            <div style={{ fontFamily: F.mono, fontSize: '9px', fontWeight: 700, color: t.primary, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[1] }}>
+              Freya suggested response
+            </div>
+            <div style={{ fontFamily: F.body, fontSize: '12px', color: t.textSecondary, lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
+              {typeof agentDraftResult?.output === 'string' ? agentDraftResult.output : agentDraftResult?.output?.content?.text || 'Draft generated. Click "Use Freya Draft" to apply.'}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Message thread */}
       <div style={{ flex: 1, overflowY: 'auto', padding: S[4], ...scrollbarStyle }}>
@@ -627,6 +696,9 @@ function RightPanel({ conv, ariaMode, onAriaMode, onSendDraft, onEscalate, theme
 export default function UnifiedInbox() {
   const navigate = useNavigate();
   const toast = useToast();
+  const outreachAgent = useAgent('outreach');
+  const [agentDraftResult, setAgentDraftResult] = useState(null);
+  const [agentDraftForConvId, setAgentDraftForConvId] = useState(null);
   const currentRole = useStore((s) => s.currentRole);
   const connectedAccounts = useStore((s) => s.connectedAccounts);
   const setInboxUnreadCount = useStore((s) => s.setInboxUnreadCount);
@@ -634,6 +706,18 @@ export default function UnifiedInbox() {
   const setInboxPlatformAssignment = useStore((s) => s.setInboxPlatformAssignment);
   const teamMembers = useStore((s) => s.teamMembers);
   const { access, filter: roleFilter, layout } = useRoleView('inbox');
+
+  const handleFreyaDraftResponse = async (conv) => {
+    if (!conv) return;
+    setAgentDraftForConvId(conv.id);
+    toast.info(`Outreach agent drafting response for ${conv.contact}...`);
+    const result = await outreachAgent.activate('cold-email', {
+      task: `Draft a contextual response for ${conv.contact} at ${conv.company} on ${conv.channel}`,
+      contact: { name: conv.contact, company: conv.company, channel: conv.channel, stage: conv.stage },
+    });
+    setAgentDraftResult(result);
+    toast.success('Draft response ready.');
+  };
 
   const [convs,         setConvs]         = useState(CONVERSATIONS);
   const [selected,      setSelected]      = useState(CONVERSATIONS[0] ?? null);
@@ -862,6 +946,10 @@ export default function UnifiedInbox() {
           onUseDraft={handleUseDraft}
           theme={theme}
           filter={filter}
+          onFreyaDraft={handleFreyaDraftResponse}
+          agentActive={outreachAgent.isActive}
+          agentDraftResult={agentDraftResult}
+          agentDraftForConvId={agentDraftForConvId}
         />
         <RightPanel
           conv={selected}

@@ -1,375 +1,394 @@
 import { useState } from 'react';
 import useToast from '../../../hooks/useToast';
+import { useAgent } from '../../../hooks/useAgent';
+import AgentThinking from '../../agents/AgentThinking';
 import { C, F, R, S, T, Z, btn, inputStyle } from '../../../tokens';
 import { CAMPAIGN_PLAN } from '../../../data/campaignPlan';
+import { AgentNameWithIcon } from '../../ui/AgentRoleIcon';
+import FreyaLogo from '../../ui/FreyaLogo';
+import { IconTarget } from '../../ui/Icons';
 
-// ── Layout constants ──────────────────────────
-const TASK_H = 40; // px — each task row
-
-// ── Status palette ────────────────────────────
-const STATUS = {
-  done:        { label: 'Done',        color: '#3DDC84', bg: 'rgba(61,220,132,0.12)',  border: 'rgba(61,220,132,0.25)'  },
-  in_progress: { label: 'In Progress', color: '#5EEAD4', bg: 'rgba(94,234,212,0.12)',  border: 'rgba(94,234,212,0.25)'  },
-  pending:     { label: 'Pending',     color: '#3A5242', bg: 'rgba(58,82,66,0.18)',     border: 'rgba(58,82,66,0.35)'    },
-};
-
-const thStyle = {
-  fontFamily: F.body, fontSize: '11px', fontWeight: 700, color: C.textMuted,
-  textTransform: 'uppercase', letterSpacing: '0.06em', padding: `${S[2]} ${S[3]}`,
-};
-const tdStyle = {
-  padding: `${S[2]} ${S[3]}`, fontSize: '12px', verticalAlign: 'middle',
-};
-
-// ── Date helpers ──────────────────────────────
-const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-function addDays(dateStr, n) {
-  const d = new Date(dateStr);
-  d.setDate(d.getDate() + n);
-  return d;
-}
-function fmtShort(d) {
-  return `${MONTHS_SHORT[d.getMonth()]} ${d.getDate()}`;
-}
-function fmtFull(d) {
-  return `${MONTHS_SHORT[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
-}
-
-// ── Table helpers ─────────────────────────────
-function getAllTasks(phases) {
-  return phases.flatMap(p => p.tasks);
-}
-
-// ── OwnerAvatar ───────────────────────────────
-function OwnerAvatar({ initials, color }) {
-  return (
-    <div style={{
-      width: '24px', height: '24px', borderRadius: '50%',
-      backgroundColor: `${color}1E`,
-      border: `1px solid ${color}44`,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: F.mono, fontSize: '9px', fontWeight: 700,
-      color, flexShrink: 0,
-    }}>
-      {initials}
-    </div>
-  );
-}
-
-// ── StatusBadge ───────────────────────────────
-function StatusBadge({ status }) {
-  const st = STATUS[status] ?? STATUS.pending;
-  return (
-    <span style={{
-      backgroundColor: st.bg, color: st.color,
-      border: `1px solid ${st.border}`,
-      borderRadius: R.pill, padding: '1px 6px',
-      fontFamily: F.mono, fontSize: '9px', fontWeight: 700,
-      letterSpacing: '0.05em', textTransform: 'uppercase', whiteSpace: 'nowrap',
-    }}>
-      {st.label}
-    </span>
-  );
-}
-
-// ── TaskDetailPanel ───────────────────────────
-function TaskDetailPanel({ task, phases, statuses, notes, onStatusChange, onNotesChange, onClose }) {
-  const toast    = useToast();
-  const isOpen   = !!task;
-  const status   = task ? (statuses[task.id] ?? task.status) : 'pending';
-  const noteVal  = task ? (notes[task.id]    ?? '')          : '';
-  const phase    = task ? phases.find(p => p.tasks.some(t => t.id === task.id)) : null;
-  const color    = phase?.color ?? '#6B9478';
-  const startDt  = task ? addDays(CAMPAIGN_PLAN.start, task.start) : null;
-  const endDt    = task ? addDays(CAMPAIGN_PLAN.start, task.start + task.duration - 1) : null;
-  const allTasks = getAllTasks(phases);
-
-  return (
-    <>
-      {/* Dim overlay */}
-      <div
-        onClick={onClose}
-        style={{
-          position: 'fixed', inset: 0,
-          backgroundColor: 'rgba(7,13,9,0.52)',
-          zIndex: Z.overlay,
-          opacity: isOpen ? 1 : 0,
-          pointerEvents: isOpen ? 'auto' : 'none',
-          transition: 'opacity 0.25s ease',
-        }}
-      />
-
-      {/* Slide-in panel */}
-      <div style={{
-        position: 'fixed', top: 0, right: 0, bottom: 0, width: '320px',
-        backgroundColor: C.surface,
-        borderLeft: `1px solid ${task ? color + '55' : C.border}`,
-        zIndex: Z.modal,
-        display: 'flex', flexDirection: 'column',
-        transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
-        transition: 'transform 0.25s ease, border-color 0.25s ease',
-        boxShadow: isOpen ? '-16px 0 48px rgba(0,0,0,0.42)' : 'none',
-      }}>
-        {task && (
-          <>
-            {/* Panel header */}
-            <div style={{
-              padding: `${S[5]} ${S[5]} ${S[4]}`,
-              borderBottom: `1px solid ${C.border}`,
-              display: 'flex', flexDirection: 'column', gap: S[3],
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{
-                  backgroundColor: `${color}1E`, color,
-                  border: `1px solid ${color}40`,
-                  borderRadius: R.pill, padding: `2px ${S[2]}`,
-                  fontFamily: F.mono, fontSize: '10px', fontWeight: 700, letterSpacing: '0.07em',
-                }}>
-                  {phase?.name ?? 'Task'}
-                </span>
-                <button
-                  style={{ ...btn.icon, padding: '4px', color: C.textMuted }}
-                  onClick={onClose}
-                >
-                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-                    <path d="M11.5 3.5l-8 8M3.5 3.5l8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                  </svg>
-                </button>
-              </div>
-
-              <h3 style={{
-                fontFamily: F.display, fontSize: '17px', fontWeight: 800,
-                color: C.textPrimary, margin: 0, lineHeight: 1.3, letterSpacing: '-0.01em',
-              }}>
-                {task.name}
-              </h3>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
-                <OwnerAvatar initials={task.owner} color={color} />
-                <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>
-                  {task.owner}
-                </span>
-                <StatusBadge status={status} />
-              </div>
-            </div>
-
-            {/* Panel body */}
-            <div style={{
-              flex: 1, overflowY: 'auto', padding: S[5],
-              display: 'flex', flexDirection: 'column', gap: S[4],
-              scrollbarWidth: 'thin', scrollbarColor: `${C.border} transparent`,
-            }}>
-              {/* Start / End dates */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: S[3] }}>
-                {[
-                  { label: 'Start Date', value: startDt ? fmtFull(startDt) : '—' },
-                  { label: 'End Date',   value: endDt   ? fmtFull(endDt)   : '—' },
-                ].map(f => (
-                  <div key={f.label}>
-                    <div style={{
-                      fontFamily: F.body, fontSize: '10px', fontWeight: 700,
-                      color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em',
-                      marginBottom: S[1],
-                    }}>
-                      {f.label}
-                    </div>
-                    <div style={{ fontFamily: F.mono, fontSize: '12px', color: C.textPrimary }}>
-                      {f.value}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Duration */}
-              <div>
-                <div style={{
-                  fontFamily: F.body, fontSize: '10px', fontWeight: 700,
-                  color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em',
-                  marginBottom: S[1],
-                }}>
-                  Duration
-                </div>
-                <div style={{ fontFamily: F.mono, fontSize: '12px', color: C.textPrimary }}>
-                  {task.duration} day{task.duration !== 1 ? 's' : ''}
-                </div>
-              </div>
-
-              {/* Status dropdown */}
-              <div>
-                <div style={{
-                  fontFamily: F.body, fontSize: '10px', fontWeight: 700,
-                  color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em',
-                  marginBottom: S[1],
-                }}>
-                  Status
-                </div>
-                <select
-                  value={status}
-                  onChange={e => onStatusChange(task.id, e.target.value)}
-                  style={{
-                    ...inputStyle,
-                    fontSize: '13px', cursor: 'pointer',
-                    appearance: 'none', WebkitAppearance: 'none',
-                  }}
-                >
-                  <option value="done">Done</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="pending">Pending</option>
-                </select>
-              </div>
-
-              {/* Notes textarea */}
-              <div>
-                <div style={{
-                  fontFamily: F.body, fontSize: '10px', fontWeight: 700,
-                  color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em',
-                  marginBottom: S[1],
-                }}>
-                  Notes
-                </div>
-                <textarea
-                  value={noteVal}
-                  onChange={e => onNotesChange(task.id, e.target.value)}
-                  placeholder="Add notes about this task…"
-                  rows={4}
-                  style={{
-                    ...inputStyle, resize: 'vertical',
-                    lineHeight: 1.6, fontSize: '13px',
-                    fontFamily: F.body, boxSizing: 'border-box',
-                  }}
-                />
-              </div>
-
-              {/* Dependencies */}
-              {task.dependencies.length > 0 && (
-                <div>
-                  <div style={{
-                    fontFamily: F.body, fontSize: '10px', fontWeight: 700,
-                    color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em',
-                    marginBottom: S[1],
-                  }}>
-                    Depends on
-                  </div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: S[1] }}>
-                    {task.dependencies.map(depId => {
-                      const dep = allTasks.find(t => t.id === depId);
-                      return dep ? (
-                        <span key={depId} style={{
-                          backgroundColor: 'rgba(245,200,66,0.1)', color: '#F5C842',
-                          border: '1px solid rgba(245,200,66,0.25)',
-                          borderRadius: R.pill, padding: `2px ${S[2]}`,
-                          fontFamily: F.body, fontSize: '11px',
-                        }}>
-                          {dep.name}
-                        </span>
-                      ) : null;
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Panel footer */}
-            <div style={{ padding: S[5], borderTop: `1px solid ${C.border}` }}>
-              <button
-                style={{ ...btn.primary, width: '100%', justifyContent: 'center', fontSize: '13px' }}
-                onClick={() => { toast.success(`"${task.name}" updated`); onClose(); }}
-              >
-                Update Task
-              </button>
-            </div>
-          </>
-        )}
-      </div>
-    </>
-  );
-}
-
-// ── SummaryBar ────────────────────────────────
-function SummaryBar({ phases, taskStatuses }) {
-  const all     = getAllTasks(phases);
-  const total   = all.length;
-  const done    = all.filter(t => (taskStatuses[t.id] ?? t.status) === 'done').length;
-  const inProg  = all.filter(t => (taskStatuses[t.id] ?? t.status) === 'in_progress').length;
-  const pending = all.filter(t => (taskStatuses[t.id] ?? t.status) === 'pending').length;
-  const pct     = Math.round((done / total) * 100);
-
-  const endDate  = new Date(CAMPAIGN_PLAN.end);
-  const today    = new Date();
-  const daysRem  = Math.max(0, Math.ceil((endDate - today) / 86400000));
-
-  const chip = (label, value, color) => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-      <span style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted }}>{label}</span>
-      <span style={{ fontFamily: F.mono, fontSize: '13px', fontWeight: 700, color: color ?? C.textPrimary }}>
-        {value}
-      </span>
-    </div>
-  );
-
-  return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: S[4], flexWrap: 'wrap',
-      padding: `${S[3]} ${S[5]}`,
-      borderTop: `1px solid ${C.border}`,
-      backgroundColor: C.surface2,
-    }}>
-      {chip('Total tasks', total)}
-      <div style={{ width: '1px', height: '14px', backgroundColor: C.border }} />
-      {chip('Done', done, '#3DDC84')}
-      {chip('In progress', inProg, '#5EEAD4')}
-      {chip('Pending', pending, C.textMuted)}
-
-      <div style={{ flex: 1 }} />
-
-      {/* Overall progress bar */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
-        <div style={{
-          width: '140px', height: '6px', borderRadius: R.pill,
-          backgroundColor: C.surface3, overflow: 'hidden',
-        }}>
-          <div style={{
-            height: '100%', width: `${pct}%`,
-            backgroundColor: '#3DDC84', borderRadius: R.pill,
-            boxShadow: '0 0 8px rgba(61,220,132,0.45)',
-            transition: 'width 0.4s ease',
-          }} />
-        </div>
-        <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, color: '#3DDC84', minWidth: '30px' }}>
-          {pct}%
-        </span>
-      </div>
-
-      <div style={{ width: '1px', height: '14px', backgroundColor: C.border }} />
-
-      <div style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted, whiteSpace: 'nowrap' }}>
-        Days remaining:{' '}
-        <span style={{ color: C.textPrimary, fontWeight: 700 }}>{daysRem}</span>
-      </div>
-    </div>
-  );
-}
-
-const PLAN_TYPES = [
-  { id: 'phased', label: 'Phased campaign', description: 'Multiple phases with clear milestones' },
-  { id: 'single', label: 'Single phase', description: 'One continuous execution block' },
-  { id: 'always_on', label: 'Always-on', description: 'Ongoing with no fixed end date' },
+/* ─── Phase data (command center version) ──────────────────── */
+const PHASES = [
+  {
+    id: 'phase-1',
+    name: 'Strategy & ICP',
+    dateRange: 'Week 1–2',
+    status: 'completed',
+    agents: [
+      { agentId: 'strategist', name: 'Strategist' },
+      { agentId: 'analyst', name: 'Analyst' },
+    ],
+    tasks: [
+      { id: 't1', name: 'Define campaign objective and KPIs', done: true,  agentGenerated: false },
+      { id: 't2', name: 'Build MENA Healthcare Donor ICP', done: true,  agentGenerated: true,  agent: { agentId: 'strategist', name: 'Strategist' } },
+      { id: 't3', name: 'Competitive analysis: MENA NGOs', done: true,  agentGenerated: true,  agent: { agentId: 'analyst', name: 'Analyst' } },
+      { id: 't4', name: 'Positioning brief approved', done: true,  agentGenerated: false },
+    ],
+  },
+  {
+    id: 'phase-2',
+    name: 'Content Production',
+    dateRange: 'Week 3–4',
+    status: 'in_progress',
+    agents: [
+      { agentId: 'copywriter', name: 'Copywriter' },
+      { agentId: 'guardian', name: 'Guardian' },
+    ],
+    tasks: [
+      { id: 't5', name: 'Email sequence (5-email nurture)', done: true,  agentGenerated: true,  agent: { agentId: 'copywriter', name: 'Copywriter' } },
+      { id: 't6', name: 'LinkedIn ad copy (4 variants)', done: true,  agentGenerated: true,  agent: { agentId: 'copywriter', name: 'Copywriter' } },
+      { id: 't7', name: 'Meta ad creative (video + carousel)', done: false, agentGenerated: true,  agent: { agentId: 'copywriter', name: 'Copywriter' } },
+      { id: 't8', name: 'Guardian compliance review', done: false, agentGenerated: false },
+    ],
+  },
+  {
+    id: 'phase-3',
+    name: 'Launch & Outreach',
+    dateRange: 'Week 5–6',
+    status: 'upcoming',
+    agents: [
+      { agentId: 'outreach', name: 'Outreach' },
+      { agentId: 'freya', name: 'Freya' },
+    ],
+    tasks: [
+      { id: 't9',  name: 'Outreach sequences configured', done: false, agentGenerated: false },
+      { id: 't10', name: 'LinkedIn connection campaign live', done: false, agentGenerated: false },
+      { id: 't11', name: 'Meta & Google ads go live', done: false, agentGenerated: false },
+      { id: 't12', name: 'Freya orchestration briefing', done: false, agentGenerated: true, agent: { agentId: 'freya', name: 'Freya' } },
+    ],
+  },
+  {
+    id: 'phase-4',
+    name: 'Optimize & Scale',
+    dateRange: 'Week 7–8',
+    status: 'upcoming',
+    agents: [
+      { agentId: 'optimizer', name: 'Optimizer' },
+      { agentId: 'analyst', name: 'Analyst' },
+    ],
+    tasks: [
+      { id: 't13', name: 'A/B test review: email subject lines', done: false, agentGenerated: false },
+      { id: 't14', name: 'Optimizer recommendation: budget shift', done: false, agentGenerated: true, agent: { agentId: 'optimizer', name: 'Optimizer' } },
+      { id: 't15', name: 'Scale winning ad creatives', done: false, agentGenerated: false },
+      { id: 't16', name: 'Analyst: month-end performance review', done: false, agentGenerated: true, agent: { agentId: 'analyst', name: 'Analyst' } },
+    ],
+  },
 ];
 
-// ── PlanTab ───────────────────────────────────
+const STATUS_CONFIG = {
+  completed:   { label: 'Completed',   color: C.green,    bg: 'rgba(16,185,129,0.12)', border: 'rgba(16,185,129,0.3)',  icon: '✓' },
+  in_progress: { label: 'In Progress', color: C.primary,  bg: 'rgba(74,124,111,0.12)', border: 'rgba(74,124,111,0.3)',  icon: '▶' },
+  upcoming:    { label: 'Upcoming',    color: C.textMuted, bg: C.surface3,              border: C.border,                icon: '○' },
+};
+
+const PLAN_TYPES = [
+  { id: 'phased',    label: 'Phased',    desc: 'Multiple phases with milestones' },
+  { id: 'single',    label: 'Single',    desc: 'One continuous block' },
+  { id: 'always_on', label: 'Always-on', desc: 'Ongoing, no fixed end' },
+];
+
+/* ─── Sub-components ────────────────────────────────────────── */
+function AgentActionBar({ strategist, onRunStrategist }) {
+  const toast = useToast();
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: S[3], flexWrap: 'wrap',
+      backgroundColor: C.surface2,
+      border: `1px solid ${C.border}`,
+      borderRadius: R.md,
+      padding: `${S[3]} ${S[4]}`,
+    }}>
+      <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+        Plan Agents
+      </span>
+      <div style={{ width: '1px', height: '20px', backgroundColor: C.border }} />
+      <button
+        onClick={onRunStrategist}
+        disabled={strategist.isActive}
+        style={{
+          ...btn.primary, fontSize: '12px', padding: `${S[1]} ${S[3]}`,
+          opacity: strategist.isActive ? 0.7 : 1,
+          cursor: strategist.isActive ? 'wait' : 'pointer',
+        }}
+      >
+        <IconTarget color={C.textInverse} width={14} height={14} />
+        {strategist.isActive ? 'Generating Plan…' : '▶ Generate Plan'}
+      </button>
+      <button
+        onClick={() => toast.info('Update plan with Freya — opening chat…')}
+        style={{ ...btn.secondary, fontSize: '12px', padding: `${S[1]} ${S[3]}` }}
+      >
+        <FreyaLogo size={16} />
+        Update with Freya
+      </button>
+    </div>
+  );
+}
+
+function PhaseCard({ phase, taskStatuses, onToggleTask, onGenerateTasks, toast }) {
+  const cfg = STATUS_CONFIG[phase.status] || STATUS_CONFIG.upcoming;
+  const tasks = phase.tasks;
+  const doneCount = tasks.filter(t => (taskStatuses[t.id] !== undefined ? taskStatuses[t.id] : t.done)).length;
+  const pct = Math.round((doneCount / tasks.length) * 100);
+
+  return (
+    <div style={{
+      backgroundColor: C.surface2,
+      border: `1px solid ${phase.status === 'in_progress' ? C.primary + '66' : C.border}`,
+      borderRadius: R.card,
+      overflow: 'hidden',
+      boxShadow: phase.status === 'in_progress' ? `0 0 0 1px ${C.primary}22` : 'none',
+    }}>
+      {/* Phase header */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: S[3],
+        padding: `${S[3]} ${S[4]}`,
+        borderBottom: `1px solid ${C.border}`,
+        backgroundColor: phase.status === 'in_progress' ? 'rgba(74,124,111,0.08)' : 'transparent',
+      }}>
+        {/* Status circle */}
+        <div style={{
+          width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0,
+          backgroundColor: cfg.bg,
+          border: `2px solid ${cfg.border}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <span style={{ fontFamily: F.mono, fontSize: '13px', fontWeight: 700, color: cfg.color }}>{cfg.icon}</span>
+        </div>
+
+        {/* Phase info */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: S[2], flexWrap: 'wrap' }}>
+            <span style={{ fontFamily: F.display, fontSize: '15px', fontWeight: 700, color: C.textPrimary }}>{phase.name}</span>
+            <span style={{
+              fontFamily: F.mono, fontSize: '10px', fontWeight: 700,
+              color: cfg.color, backgroundColor: cfg.bg,
+              border: `1px solid ${cfg.border}`,
+              borderRadius: R.pill, padding: '1px 8px',
+            }}>{cfg.label}</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: S[3], marginTop: '3px', flexWrap: 'wrap' }}>
+            <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted }}>{phase.dateRange}</span>
+            <div style={{ display: 'flex', gap: S[1] }}>
+              {phase.agents.map(a => (
+                <span key={a.name} style={{ fontFamily: F.mono, fontSize: '10px', color: C.secondary, backgroundColor: 'rgba(107,163,150,0.1)', borderRadius: R.pill, padding: '1px 6px', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <AgentNameWithIcon agentId={a.agentId} name={a.name} size={10} gap={3} />
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Progress */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', flexShrink: 0 }}>
+          <span style={{ fontFamily: F.mono, fontSize: '12px', fontWeight: 700, color: cfg.color }}>{doneCount}/{tasks.length}</span>
+          <div style={{ width: '80px', height: '4px', borderRadius: R.pill, backgroundColor: C.surface3, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${pct}%`, backgroundColor: cfg.color, borderRadius: R.pill }} />
+          </div>
+        </div>
+      </div>
+
+      {/* Task list */}
+      <div style={{ padding: `${S[2]} ${S[4]}` }}>
+        {tasks.map((task, i) => {
+          const isDone = taskStatuses[task.id] !== undefined ? taskStatuses[task.id] : task.done;
+          return (
+            <div key={task.id} style={{
+              display: 'flex', alignItems: 'center', gap: S[3],
+              padding: `${S[2]} 0`,
+              borderBottom: i < tasks.length - 1 ? `1px solid ${C.border}` : 'none',
+            }}>
+              {/* Checkbox */}
+              <div
+                onClick={() => onToggleTask(task.id, !isDone)}
+                style={{
+                  width: '18px', height: '18px', borderRadius: '4px', flexShrink: 0,
+                  backgroundColor: isDone ? C.primary : 'transparent',
+                  border: `2px solid ${isDone ? C.primary : C.border}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', transition: T.color,
+                }}
+              >
+                {isDone && <span style={{ color: C.textInverse, fontSize: '11px', fontWeight: 700, lineHeight: 1 }}>✓</span>}
+              </div>
+
+              {/* Task name */}
+              <span style={{
+                fontFamily: F.body, fontSize: '13px',
+                color: isDone ? C.textMuted : C.textPrimary,
+                textDecoration: isDone ? 'line-through' : 'none',
+                flex: 1,
+              }}>
+                {task.name}
+              </span>
+
+              {/* Agent chip */}
+              {task.agentGenerated && task.agent && (
+                <span style={{ fontFamily: F.mono, fontSize: '9px', fontWeight: 700, color: C.secondary, backgroundColor: 'rgba(107,163,150,0.1)', borderRadius: R.pill, padding: '1px 6px', whiteSpace: 'nowrap', flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <AgentNameWithIcon agentId={task.agent.agentId} name={task.agent.name} size={10} gap={3} />
+                </span>
+              )}
+            </div>
+          );
+        })}
+
+        {/* Generate tasks CTA */}
+        <div style={{ paddingTop: S[2] }}>
+          <button
+            onClick={() => onGenerateTasks(phase.id)}
+            style={{ ...btn.ghost, fontSize: '11px', color: C.secondary, padding: `${S[1]} 0` }}
+          >
+            + Generate tasks for this phase →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FreyaPlanSummary({ approved, onApprove, setTab, planHealth, toast }) {
+  const healthColor = planHealth === 'On Track' ? C.green : planHealth === 'At Risk' ? C.amber : C.red;
+
+  return (
+    <div style={{
+      backgroundColor: C.surface2,
+      border: `1px solid rgba(74,124,111,0.4)`,
+      borderRadius: R.card,
+      overflow: 'hidden',
+      position: 'sticky',
+      top: S[4],
+    }}>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: S[2],
+        padding: `${S[3]} ${S[4]}`,
+        borderBottom: `1px solid ${C.border}`,
+        backgroundColor: 'rgba(74,124,111,0.08)',
+      }}>
+        <span style={{ fontSize: '16px' }}>✦</span>
+        <span style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: C.textPrimary }}>Freya Plan Summary</span>
+      </div>
+
+      <div style={{ padding: S[4], display: 'flex', flexDirection: 'column', gap: S[3] }}>
+        {/* Health */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted }}>Plan Health</span>
+          <span style={{
+            fontFamily: F.mono, fontSize: '13px', fontWeight: 700, color: healthColor,
+            backgroundColor: `${healthColor}18`, borderRadius: R.pill, padding: '2px 10px',
+          }}>
+            {planHealth === 'On Track' ? '✓ ' : planHealth === 'At Risk' ? '⚠ ' : '✗ '}{planHealth}
+          </span>
+        </div>
+
+        {/* Next action */}
+        <div style={{
+          backgroundColor: C.surface3, border: `1px solid ${C.border}`,
+          borderRadius: R.md, padding: S[3],
+        }}>
+          <div style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
+            Next Action Needed
+          </div>
+          <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textPrimary, lineHeight: 1.5 }}>
+            Complete Guardian review of Meta ad creative (Phase 2) to unblock campaign launch by Apr 14.
+          </div>
+        </div>
+
+        {/* Projected completion */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted }}>Projected Completion</span>
+          <span style={{ fontFamily: F.mono, fontSize: '12px', fontWeight: 700, color: C.textPrimary }}>May 17, 2026</span>
+        </div>
+
+        {/* Phase progress bars */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: S[2] }}>
+          {PHASES.map(phase => {
+            const done = phase.tasks.filter(t => t.done).length;
+            const pct = Math.round((done / phase.tasks.length) * 100);
+            const cfg = STATUS_CONFIG[phase.status];
+            return (
+              <div key={phase.id} style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
+                <span style={{ fontFamily: F.body, fontSize: '10px', color: C.textMuted, width: '90px', flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {phase.name}
+                </span>
+                <div style={{ flex: 1, height: '4px', borderRadius: R.pill, backgroundColor: C.surface3, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${pct}%`, backgroundColor: cfg.color, borderRadius: R.pill }} />
+                </div>
+                <span style={{ fontFamily: F.mono, fontSize: '9px', fontWeight: 700, color: cfg.color, width: '28px', textAlign: 'right' }}>{pct}%</span>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Divider */}
+        <div style={{ height: '1px', backgroundColor: C.border }} />
+
+        {/* Approve button */}
+        <button
+          onClick={onApprove}
+          disabled={approved}
+          style={{
+            ...btn.primary,
+            width: '100%', justifyContent: 'center',
+            fontSize: '13px',
+            opacity: approved ? 0.7 : 1,
+          }}
+        >
+          {approved ? '✓ Plan Approved' : 'Approve & Generate Content →'}
+        </button>
+
+        <button
+          onClick={() => toast.info('Update plan with Freya — opening chat…')}
+          style={{ ...btn.secondary, width: '100%', justifyContent: 'center', fontSize: '12px' }}
+        >
+          ✦ Update plan with Freya
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ─── TaskDetailPanel (preserved from original) ─────────────── */
+const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function addDays(dateStr, n) { const d = new Date(dateStr); d.setDate(d.getDate() + n); return d; }
+function fmtFull(d) { return `${MONTHS_SHORT[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`; }
+
+/* ─── Main component ────────────────────────────────────────── */
 export default function PlanTab({ setTab }) {
   const toast = useToast();
-  const [selectedTask, setSelectedTask] = useState(null);
+  const strategist = useAgent('strategist');
   const [taskStatuses, setTaskStatuses] = useState({});
-  const [taskNotes, setTaskNotes] = useState({});
   const [planType, setPlanType] = useState('phased');
   const [ariaModifying, setAriaModifying] = useState(false);
   const [approved, setApproved] = useState(false);
 
-  const { phases, totalDays, start: planStart, title } = CAMPAIGN_PLAN;
+  const { phases: originalPhases, totalDays, start: planStart, title } = CAMPAIGN_PLAN;
 
-  const getStatus = (task) => taskStatuses[task.id] ?? task.status;
+  const handleGeneratePlan = async () => {
+    toast.info('Strategist agent generating plan…');
+    await strategist.activate('Generate phased campaign plan with launch-strategy skill', {
+      campaignName: title,
+      planType,
+      totalDays,
+    });
+    toast.success('Plan generated by Strategist agent');
+  };
+
+  const handleToggleTask = (taskId, newValue) => {
+    setTaskStatuses(s => ({ ...s, [taskId]: newValue }));
+    toast.success(newValue ? 'Task marked complete' : 'Task marked incomplete');
+  };
+
+  const handleGenerateTasksForPhase = (phaseId) => {
+    toast.info(`Strategist generating tasks for phase…`);
+    setTimeout(() => toast.success('3 new tasks added to phase'), 1200);
+  };
+
+  const handleApprove = () => {
+    setApproved(true);
+    toast.success('Plan approved — generating content…');
+    if (typeof setTab === 'function') setTab('content');
+  };
 
   const handlePlanTypeChange = (typeId) => {
     if (typeId === planType) return;
@@ -377,191 +396,127 @@ export default function PlanTab({ setTab }) {
     setTimeout(() => {
       setPlanType(typeId);
       setAriaModifying(false);
-      toast.success('Freya has updated the plan.');
+      toast.success('Freya has updated the plan');
     }, 1200);
   };
 
-  const handleApproveAndGenerate = () => {
-    setApproved(true);
-    toast.success('Plan approved. Generating content…');
-    if (typeof setTab === 'function') setTab('content');
-  };
+  // Calculate overall health
+  const totalTasks = PHASES.flatMap(p => p.tasks).length;
+  const doneTasks = PHASES.flatMap(p => p.tasks).filter(t => taskStatuses[t.id] !== undefined ? taskStatuses[t.id] : t.done).length;
+  const planPct = Math.round((doneTasks / totalTasks) * 100);
+  const planHealth = planPct >= 60 ? 'On Track' : planPct >= 40 ? 'At Risk' : 'Behind';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <TaskDetailPanel
-        task={selectedTask}
-        phases={phases}
-        statuses={taskStatuses}
-        notes={taskNotes}
-        onStatusChange={(id, val) => setTaskStatuses(p => ({ ...p, [id]: val }))}
-        onNotesChange={(id, val)  => setTaskNotes(p    => ({ ...p, [id]: val }))}
-        onClose={() => setSelectedTask(null)}
-      />
+    <div style={{ padding: S[5], display: 'flex', flexDirection: 'column', gap: S[4] }}>
 
-      {/* ── AI-generated plan header + type + approve ───────── */}
+      {/* Agent Action Bar */}
+      <AgentActionBar strategist={strategist} onRunStrategist={handleGeneratePlan} />
+
+      {/* Agent thinking */}
+      {strategist.isActive && <AgentThinking agentId="strategist" task="Generating phased campaign plan with launch-strategy skill…" />}
+
+      {/* Plan type + header */}
       <div style={{
-        padding: S[5],
         backgroundColor: C.surface2,
-        borderBottom: `1px solid ${C.border}`,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: S[4],
+        border: `1px solid ${C.border}`,
+        borderRadius: R.card,
+        padding: S[4],
+        display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: S[4], flexWrap: 'wrap',
       }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: S[4] }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: S[2], marginBottom: S[1] }}>
-              <span style={{
-                fontFamily: F.mono,
-                fontSize: '10px',
-                fontWeight: 700,
-                color: C.primary,
-                backgroundColor: C.primaryGlow,
-                padding: '2px 8px',
-                borderRadius: R.pill,
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-              }}>
-                AI-generated campaign plan
-              </span>
-            </div>
-            <h2 style={{ fontFamily: F.display, fontSize: '18px', fontWeight: 800, color: C.textPrimary, margin: '0 0 4px', letterSpacing: '-0.02em' }}>
-              {title}
-            </h2>
-            <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: 0 }}>
-              {totalDays} days · {phases.length} phases · {CAMPAIGN_PLAN.start} → {CAMPAIGN_PLAN.end}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={handleApproveAndGenerate}
-            disabled={approved}
-            style={{
-              ...btn.primary,
-              fontSize: '14px',
-              padding: `${S[3]} ${S[5]}`,
-              opacity: approved ? 0.7 : 1,
-            }}
-          >
-            {approved ? 'Approved — go to Content' : 'Approve & generate content'}
-          </button>
-        </div>
-
         <div>
-          <div style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.textSecondary, marginBottom: S[2] }}>
-            Plan type — modify and Freya will update the plan
+          <div style={{ display: 'flex', alignItems: 'center', gap: S[2], marginBottom: S[1] }}>
+            <span style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: C.primary, backgroundColor: 'rgba(74,124,111,0.15)', borderRadius: R.pill, padding: '1px 8px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              AI-Generated Plan
+            </span>
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: S[2] }}>
-            {PLAN_TYPES.map((t) => (
+          <h2 style={{ fontFamily: F.display, fontSize: '18px', fontWeight: 800, color: C.textPrimary, margin: '0 0 4px', letterSpacing: '-0.02em' }}>{title}</h2>
+          <p style={{ fontFamily: F.body, fontSize: '13px', color: C.textSecondary, margin: `0 0 ${S[3]}` }}>
+            {totalDays} days · {originalPhases.length} phases · {CAMPAIGN_PLAN.start} → {CAMPAIGN_PLAN.end}
+          </p>
+          <div style={{ display: 'flex', gap: S[2], flexWrap: 'wrap', alignItems: 'center' }}>
+            <span style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted }}>Plan type:</span>
+            {PLAN_TYPES.map(t => (
               <button
                 key={t.id}
-                type="button"
                 onClick={() => handlePlanTypeChange(t.id)}
                 disabled={ariaModifying}
+                title={t.desc}
                 style={{
-                  padding: `${S[2]} ${S[4]}`,
-                  fontFamily: F.body,
-                  fontSize: '13px',
-                  fontWeight: planType === t.id ? 600 : 500,
-                  color: planType === t.id ? C.primary : C.textSecondary,
-                  backgroundColor: planType === t.id ? C.primaryGlow : C.surface3,
+                  fontFamily: F.body, fontSize: '12px', fontWeight: planType === t.id ? 600 : 400,
+                  color: planType === t.id ? C.textInverse : C.textSecondary,
+                  backgroundColor: planType === t.id ? C.primary : 'transparent',
                   border: `1px solid ${planType === t.id ? C.primary : C.border}`,
                   borderRadius: R.button,
+                  padding: `${S[1]} ${S[3]}`,
                   cursor: ariaModifying ? 'wait' : 'pointer',
                   opacity: ariaModifying ? 0.8 : 1,
-                  textAlign: 'left',
+                  transition: T.color,
                 }}
               >
                 {t.label}
               </button>
             ))}
+            {ariaModifying && (
+              <span style={{ fontFamily: F.body, fontSize: '12px', color: C.primary, fontStyle: 'italic' }}>
+                Freya updating plan…
+              </span>
+            )}
           </div>
-          {ariaModifying && (
-            <p style={{ fontFamily: F.body, fontSize: '12px', color: C.primary, marginTop: S[2], marginBottom: 0 }}>
-              Freya is updating the plan…
-            </p>
-          )}
+        </div>
+
+        {/* Progress summary */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: S[2] }}>
+          <span style={{ fontFamily: F.mono, fontSize: '24px', fontWeight: 800, color: C.textPrimary }}>{planPct}%</span>
+          <span style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted }}>overall complete</span>
+          <div style={{ width: '120px', height: '6px', borderRadius: R.pill, backgroundColor: C.surface3, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${planPct}%`, backgroundColor: C.primary, borderRadius: R.pill, transition: 'width 0.4s ease' }} />
+          </div>
         </div>
       </div>
 
-      {/* ── Phases table ───────────────────────── */}
-      <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: F.body }}>
-          <thead>
-            <tr style={{ backgroundColor: C.surface3, borderBottom: `2px solid ${C.border}` }}>
-              <th style={{ ...thStyle, position: 'sticky', top: 0, zIndex: 1, backgroundColor: C.surface3, width: '14%', minWidth: 120, textAlign: 'left', paddingLeft: S[4] }}>Phase</th>
-              <th style={{ ...thStyle, position: 'sticky', top: 0, zIndex: 1, backgroundColor: C.surface3, width: '12%', minWidth: 100 }}>Date range</th>
-              <th style={{ ...thStyle, position: 'sticky', top: 0, zIndex: 1, backgroundColor: C.surface3, width: '22%', minWidth: 160, textAlign: 'left' }}>Task</th>
-              <th style={{ ...thStyle, position: 'sticky', top: 0, zIndex: 1, backgroundColor: C.surface3, width: '8%', minWidth: 56 }}>Owner</th>
-              <th style={{ ...thStyle, position: 'sticky', top: 0, zIndex: 1, backgroundColor: C.surface3, width: '12%', minWidth: 90 }}>Start</th>
-              <th style={{ ...thStyle, position: 'sticky', top: 0, zIndex: 1, backgroundColor: C.surface3, width: '12%', minWidth: 90 }}>End</th>
-              <th style={{ ...thStyle, position: 'sticky', top: 0, zIndex: 1, backgroundColor: C.surface3, width: '8%', minWidth: 64 }}>Duration</th>
-              <th style={{ ...thStyle, position: 'sticky', top: 0, zIndex: 1, backgroundColor: C.surface3, width: '12%', minWidth: 90 }}>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {phases.map((phase) =>
-              phase.tasks.map((task, taskIndex) => {
-                const status = getStatus(task);
-                const startDate = addDays(planStart, task.start);
-                const endDate = addDays(planStart, task.start + task.duration - 1);
-                const isFirstTaskInPhase = taskIndex === 0;
-                return (
-                  <tr
-                    key={task.id}
-                    style={{
-                      height: TASK_H,
-                      backgroundColor: isFirstTaskInPhase ? `${phase.color}0C` : 'transparent',
-                      borderBottom: `1px solid ${C.border}`,
-                      cursor: 'pointer',
-                      transition: T.color,
-                    }}
-                    onClick={() => setSelectedTask(task)}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = C.surface2;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = isFirstTaskInPhase ? `${phase.color}0C` : 'transparent';
-                    }}
-                  >
-                    <td style={{ ...tdStyle, paddingLeft: S[4], borderLeft: `4px solid ${phase.color}` }}>
-                      {isFirstTaskInPhase ? (
-                        <span style={{ fontFamily: F.display, fontWeight: 700, fontSize: '13px', color: C.textPrimary }}>
-                          {phase.name}
-                        </span>
-                      ) : (
-                        <span style={{ color: C.textMuted, fontSize: '12px' }}>↳</span>
-                      )}
-                    </td>
-                    <td style={tdStyle}>
-                      {isFirstTaskInPhase ? (
-                        <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.textSecondary }}>{phase.dateRange}</span>
-                      ) : (
-                        '—'
-                      )}
-                    </td>
-                    <td style={{ ...tdStyle, fontFamily: F.body, fontSize: '13px', color: C.textPrimary }}>{task.name}</td>
-                    <td style={tdStyle}>
-                      <OwnerAvatar initials={task.owner} color={phase.color} />
-                    </td>
-                    <td style={{ ...tdStyle, fontFamily: F.mono, fontSize: '11px', color: C.textSecondary }}>{fmtShort(startDate)}</td>
-                    <td style={{ ...tdStyle, fontFamily: F.mono, fontSize: '11px', color: C.textSecondary }}>{fmtShort(endDate)}</td>
-                    <td style={tdStyle}>
-                      <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted }}>{task.duration}d</span>
-                    </td>
-                    <td style={tdStyle}>
-                      <StatusBadge status={status} />
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+      {/* Two-column: Phase timeline | Freya Summary */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: S[5], alignItems: 'start' }}>
 
-      {/* ── Summary bar ──────────────────────── */}
-      <SummaryBar phases={phases} taskStatuses={taskStatuses} />
+        {/* Phase cards */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          {PHASES.map((phase, i) => (
+            <div key={phase.id} style={{ display: 'flex', gap: S[4] }}>
+              {/* Timeline connector */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, paddingTop: '16px' }}>
+                <div style={{
+                  width: '12px', height: '12px', borderRadius: '50%', flexShrink: 0,
+                  backgroundColor: STATUS_CONFIG[phase.status].color,
+                  border: `2px solid ${STATUS_CONFIG[phase.status].color}`,
+                  boxShadow: phase.status === 'in_progress' ? `0 0 8px ${STATUS_CONFIG[phase.status].color}` : 'none',
+                }} />
+                {i < PHASES.length - 1 && (
+                  <div style={{ width: '2px', flex: 1, minHeight: '32px', backgroundColor: i < 1 ? C.primary : C.border, marginTop: '4px' }} />
+                )}
+              </div>
+
+              {/* Phase card */}
+              <div style={{ flex: 1, marginBottom: S[4] }}>
+                <PhaseCard
+                  phase={phase}
+                  taskStatuses={taskStatuses}
+                  onToggleTask={handleToggleTask}
+                  onGenerateTasks={handleGenerateTasksForPhase}
+                  toast={toast}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Freya Plan Summary */}
+        <FreyaPlanSummary
+          approved={approved}
+          onApprove={handleApprove}
+          setTab={setTab}
+          planHealth={planHealth}
+          toast={toast}
+        />
+      </div>
     </div>
   );
 }

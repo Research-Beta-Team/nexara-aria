@@ -1,69 +1,105 @@
 /**
- * Antarious Logo — Logo & Mark per Brand Guidelines v1.1
- * - Dot: Sage #4A7C6F (the only brand colour in the mark)
- * - Slash form: Ink #1C2B27 on light bg, white on dark bg
- * - Wordmark: Outfit 800 (closest match to custom geometric rounded)
+ * Antarious AI — full lockup from /public/branding/antarious-main.svg, or when
+ * `showWordmark` is false (e.g. collapsed sidebar) the vector “A” mark only — same
+ * geometry as public/antarious.svg (accent node + letterform).
+ *
+ * variant:
+ * - "dark" — follow app theme: full raster gets a CSS filter on dark UI; compact mark uses tokens.
+ * - "light" — full asset as designed; compact mark uses ink-style letter for light surfaces.
+ *
+ * `showAiSuffix` — kept for API compatibility (full lockup is one raster asset).
  */
-const SAGE = '#4A7C6F';
-const INK = '#1C2B27';
+import useStore from '../../store/useStore';
+import { C } from '../../tokens';
 
-export default function AntariousLogo({ variant = 'dark', height = 28, showWordmark = true }) {
-  const slashColor = variant === 'dark' ? '#FFFFFF' : INK;
-  const wordmarkColor = variant === 'dark' ? 'var(--c-primary)' : INK;
-  const slashFill = showWordmark && variant === 'dark' ? 'currentColor' : slashColor;
+const LOGO_PATH = 'branding/antarious-main.svg';
 
-  const markHeight = height;
-  const markWidth = height * (32 / 24);
-  const dotR = (height / 24) * 2.5;
-  const dotCx = (height / 24) * 5;
-  const dotCy = height / 2;
+/** Invert light-theme raster for dark chrome; hue-shift nudges inverted accent toward teal */
+const DARK_MODE_LOGO_FILTER =
+  'invert(1) hue-rotate(180deg) saturate(1.2) brightness(1.06) contrast(1.05)';
 
-  const svgStyle = {
-    flexShrink: 0,
-    ...(variant === 'dark' && { backgroundColor: 'var(--c-border-hover)' }),
-    ...(showWordmark && variant === 'dark' && {
-      backgroundClip: 'unset',
-      WebkitBackgroundClip: 'unset',
-      color: 'rgba(74, 124, 111, 1)',
-    }),
-  };
+const MARK_VIEWBOX = '0 0 34 24';
+
+function logoSrc() {
+  const base = import.meta.env.BASE_URL || '/';
+  const path = LOGO_PATH.replace(/^\/+/, '');
+  return base.endsWith('/') ? `${base}${path}` : `${base}/${path}`;
+}
+
+/** Stylized “A” + accent — first letter of the Antarious wordmark (favicon-aligned). */
+function AntariousLetterMark({ height }) {
+  const w = (height * 34) / 24;
 
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: (height / 24) * 4 }}>
-      {/* Geometric mark: dot + slash A */}
-      <svg
-        width={markWidth}
-        height={markHeight}
-        viewBox="0 0 32 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={svgStyle}
-        aria-hidden
+    <svg
+      width={w}
+      height={height}
+      viewBox={MARK_VIEWBOX}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ flexShrink: 0, display: 'block' }}
+      aria-hidden
+      focusable="false"
+    >
+      <circle cx="6" cy="12" r="2.85" fill={C.primary} />
+      <path
+        d="M12.5 20.5L16.5 3.5L20.5 20.5H18.35L16.5 12.8L14.65 20.5H12.5Z"
+        fill={C.textPrimary}
+        fillRule="evenodd"
+      />
+    </svg>
+  );
+}
+
+export default function AntariousLogo({
+  variant = 'dark',
+  height = 28,
+  showWordmark = true,
+  showAiSuffix = false,
+}) {
+  const isDarkMode = useStore((s) => s.isDarkMode);
+  const applyDarkTreatment = variant === 'dark' && isDarkMode;
+
+  void showAiSuffix;
+
+  if (!showWordmark) {
+    return (
+      <span
+        className="antarious-logo antarious-logo--mark"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          lineHeight: 0,
+        }}
       >
-        {/* The Dot — Sage #4A7C6F */}
-        <circle cx="5" cy="12" r="2.5" fill={SAGE} />
-        {/* The Slash Form — diagonal A with notch (Ink on light, white on dark) */}
-        <path
-          d="M12 21 L16 3 L20 21 L18 21 L16 13 L14 21 Z"
-          fill={slashFill}
-          fillRule="evenodd"
-        />
-      </svg>
-      {showWordmark && (
-        <span
-          style={{
-            fontFamily: "'Outfit', sans-serif",
-            fontSize: `${height * 0.7}px`,
-            fontWeight: 800,
-            color: wordmarkColor,
-            letterSpacing: '-0.03em',
-            lineHeight: 1,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          Antarious
-        </span>
-      )}
-    </div>
+        <AntariousLetterMark height={height} />
+      </span>
+    );
+  }
+
+  return (
+    <span
+      className="antarious-logo"
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        lineHeight: 0,
+      }}
+    >
+      <img
+        src={logoSrc()}
+        alt="Antarious AI"
+        style={{
+          height: `${height}px`,
+          width: 'auto',
+          maxWidth: '100%',
+          display: 'block',
+          objectFit: 'contain',
+          ...(applyDarkTreatment ? { filter: DARK_MODE_LOGO_FILTER } : {}),
+        }}
+        loading="lazy"
+        decoding="async"
+      />
+    </span>
   );
 }

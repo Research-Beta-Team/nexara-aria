@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   ResponsiveContainer,
   LineChart,
@@ -10,9 +11,12 @@ import {
 } from 'recharts';
 import useToast from '../../hooks/useToast';
 import usePlan from '../../hooks/usePlan';
+import { useAgent } from '../../hooks/useAgent';
+import AgentThinking from '../../components/agents/AgentThinking';
+import AgentResultPanel from '../../components/agents/AgentResultPanel';
 import PlanGate from '../../components/plan/PlanGate';
 import LimitWarning from '../../components/plan/LimitWarning';
-import { C, F, R, S, btn, cardStyle, statNumber, statLabel, sectionHeading, scrollbarStyle } from '../../tokens';
+import { C, F, R, S, btn, badge, cardStyle, statNumber, statLabel, sectionHeading, scrollbarStyle } from '../../tokens';
 import {
   INTENT_SIGNALS,
   ACCOUNT_INTENT_SCORES,
@@ -37,6 +41,36 @@ const MOCK_ACCOUNTS_LIMIT = 500;
 export default function IntentSignals() {
   const toast = useToast();
   const { getLimit, isLimitReached } = usePlan();
+  const analyst = useAgent('analyst');
+  const prospector = useAgent('prospector');
+  const [agentResult, setAgentResult] = useState(null);
+  const [agentTask, setAgentTask] = useState(null);
+  const [activeAgentId, setActiveAgentId] = useState(null);
+
+  const handleAnalyzePatterns = async () => {
+    setAgentTask('Analyze intent signal patterns across tracked accounts');
+    setActiveAgentId('analyst');
+    setAgentResult(null);
+    toast.success('Insights Agent activated — analyzing intent patterns...');
+    const res = await analyst.activate('Analyze intent signal patterns to identify buying behavior clusters and timing insights', { skill: 'customer-research', context: { signals: INTENT_SIGNALS.length, page: 'intent-signals' } });
+    setAgentResult(res);
+    setActiveAgentId(null);
+    toast.success('Intent pattern analysis complete!');
+  };
+
+  const handleEnrichSurge = async () => {
+    const surgeAccounts = ACCOUNT_INTENT_SCORES.filter(a => a.score >= 80);
+    const topAccount = surgeAccounts[0]?.account || 'top accounts';
+    setAgentTask(`Enrich surge account: ${topAccount}`);
+    setActiveAgentId('prospector');
+    setAgentResult(null);
+    toast.success(`Prospector agent activated — enriching ${topAccount}...`);
+    const res = await prospector.activate(`Enrich high-intent surge account ${topAccount} with firmographic and technographic data`, { skill: 'revops', context: { account: topAccount, page: 'intent-signals' } });
+    setAgentResult(res);
+    setActiveAgentId(null);
+    toast.success('Surge account enrichment complete!');
+  };
+
   const limit = getLimit('intentSignalAccounts');
   const usage = MOCK_ACCOUNTS_TRACKED;
   const atLimit = limit !== -1 && isLimitReached('intentSignalAccounts', usage);
@@ -104,6 +138,47 @@ export default function IntentSignals() {
             </button>
           </div>
         </div>
+
+        {/* ── Agent Action Buttons ──────────────────────────── */}
+        <div style={{ display: 'flex', gap: S[2], flexWrap: 'wrap', alignItems: 'center' }}>
+          <button
+            type="button"
+            style={{ ...btn.primary, fontSize: '13px', gap: S[2], opacity: activeAgentId ? 0.6 : 1 }}
+            disabled={!!activeAgentId}
+            onClick={handleAnalyzePatterns}
+          >
+            Analyze intent patterns
+          </button>
+          <button
+            type="button"
+            style={{ ...btn.secondary, fontSize: '13px', gap: S[2], opacity: activeAgentId ? 0.6 : 1 }}
+            disabled={!!activeAgentId}
+            onClick={handleEnrichSurge}
+          >
+            Enrich surge account
+          </button>
+          {agentResult && (
+            <span style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: S[1],
+              padding: `${S[1]} ${S[2]}`,
+              backgroundColor: 'rgba(61,220,132,0.08)',
+              border: '1px solid rgba(61,220,132,0.2)',
+              borderRadius: R.pill,
+              fontFamily: F.mono,
+              fontSize: '10px',
+              fontWeight: 600,
+              color: C.primary,
+            }}>
+              Analyzed by Insights Agent
+            </span>
+          )}
+        </div>
+
+        {/* ── Agent Thinking / Result ─────────────────────── */}
+        {activeAgentId && <AgentThinking agentId={activeAgentId} task={agentTask} />}
+        {agentResult && !activeAgentId && <AgentResultPanel result={agentResult} />}
 
         {/* ── Usage / limit (when plan has cap) ───────────────── */}
         {showUsage && (

@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import useToast from '../../hooks/useToast';
-import { C, F, R, S, btn, sectionHeading } from '../../tokens';
+import { useAgent } from '../../hooks/useAgent';
+import AgentThinking from '../../components/agents/AgentThinking';
+import AgentResultPanel from '../../components/agents/AgentResultPanel';
+import { C, F, R, S, btn, badge, sectionHeading } from '../../tokens';
 import { IconStar } from '../../components/ui/Icons';
 import { COMPETITORS } from '../../data/competitors';
 import CompetitorCard from '../../components/competitive/CompetitorCard';
@@ -180,6 +183,34 @@ export default function CompetitiveIntel() {
   const [selectedCompetitorId, setSelectedCompetitorId] = useState(COMPETITORS[0]?.id || null);
   const [adFilterCompetitorId, setAdFilterCompetitorId] = useState(null);
   const toast = useToast();
+  const analyst = useAgent('analyst');
+  const [agentResult, setAgentResult] = useState(null);
+  const [agentTask, setAgentTask] = useState(null);
+  const [activeAgentId, setActiveAgentId] = useState(null);
+
+  const handleGenerateBattleCard = async () => {
+    const competitor = COMPETITORS.find(c => c.id === selectedCompetitorId);
+    const competitorName = competitor?.name || 'selected competitor';
+    setAgentTask(`Generate battle card for ${competitorName}`);
+    setActiveAgentId('analyst');
+    setAgentResult(null);
+    toast.success(`Insights Agent activated — generating battle card for ${competitorName}...`);
+    const res = await analyst.activate(`Generate battle card for ${competitorName} with strengths, weaknesses, and counter-positioning`, { skill: 'competitor-alternatives', context: { competitorId: selectedCompetitorId, page: 'competitive-intel' } });
+    setAgentResult(res);
+    setActiveAgentId(null);
+    toast.success('Battle card generation complete!');
+  };
+
+  const handleAnalyzePositioning = async () => {
+    setAgentTask('Analyze competitive positioning across all competitors');
+    setActiveAgentId('analyst');
+    setAgentResult(null);
+    toast.success('Insights Agent activated — analyzing positioning...');
+    const res = await analyst.activate('Analyze competitive positioning and generate radar chart data for market map', { skill: 'competitor-alternatives', context: { competitors: COMPETITORS.map(c => c.name), page: 'competitive-intel' } });
+    setAgentResult(res);
+    setActiveAgentId(null);
+    toast.success('Positioning analysis complete!');
+  };
 
   const handleViewBattleCard = (id) => {
     setSelectedCompetitorId(id);
@@ -217,6 +248,47 @@ export default function CompetitiveIntel() {
           </button>
         </div>
       </div>
+
+      {/* ── Agent Action Buttons ────────────────── */}
+      <div style={{ display: 'flex', gap: S[2], flexWrap: 'wrap', alignItems: 'center' }}>
+        <button
+          style={{ ...btn.primary, fontSize: '13px', gap: S[2], opacity: activeAgentId ? 0.6 : 1 }}
+          disabled={!!activeAgentId}
+          onClick={handleGenerateBattleCard}
+        >
+          <AriaIcon size={14} />
+          Generate battle card
+        </button>
+        <button
+          style={{ ...btn.secondary, fontSize: '13px', gap: S[2], opacity: activeAgentId ? 0.6 : 1 }}
+          disabled={!!activeAgentId}
+          onClick={handleAnalyzePositioning}
+        >
+          <AriaIcon size={14} />
+          Analyze positioning
+        </button>
+        {agentResult && (
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: S[1],
+            padding: `${S[1]} ${S[2]}`,
+            backgroundColor: 'rgba(61,220,132,0.08)',
+            border: '1px solid rgba(61,220,132,0.2)',
+            borderRadius: R.pill,
+            fontFamily: F.mono,
+            fontSize: '10px',
+            fontWeight: 600,
+            color: C.primary,
+          }}>
+            Analyzed by Insights Agent
+          </span>
+        )}
+      </div>
+
+      {/* ── Agent Thinking / Result ─────────────── */}
+      {activeAgentId && <AgentThinking agentId={activeAgentId} task={agentTask} />}
+      {agentResult && !activeAgentId && <AgentResultPanel result={agentResult} />}
 
       {/* Tab bar */}
       <div style={{ display: 'flex', gap: 0, borderBottom: `1px solid ${C.border}`, overflowX: 'auto' }}>

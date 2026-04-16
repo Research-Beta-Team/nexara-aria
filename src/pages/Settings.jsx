@@ -3,9 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import useStore from '../store/useStore';
 import useToast from '../hooks/useToast';
 import { C, F, R, S, T, shadows, badge } from '../tokens';
+import { AGENTS, getSpecialistAgents } from '../agents/AgentRegistry';
+import AgentRoleIcon from '../components/ui/AgentRoleIcon';
+import CommandModeGlyph from '../components/ui/CommandModeGlyph';
+import { IconRefresh, IconStopOctagon } from '../components/ui/Icons';
 
 // ── Nav sections ──────────────────────────────
 const SECTIONS = [
+  {
+    id: 'agents', label: 'Agents',
+    icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5.5" r="2" stroke="currentColor" strokeWidth="1.4"/><path d="M3 13c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><circle cx="11.5" cy="3.5" r="1.5" stroke="currentColor" strokeWidth="1.2"/><circle cx="3.5" cy="3.5" r="1.5" stroke="currentColor" strokeWidth="1.2"/></svg>,
+  },
   {
     id: 'profile', label: 'Profile',
     icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="3" stroke="currentColor" strokeWidth="1.4"/><path d="M1.5 14c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>,
@@ -47,9 +55,9 @@ function SectionHeader({ title, description }) {
   );
 }
 
-function Card({ children, style }) {
+function Card({ children, style, id }) {
   return (
-    <div style={{ backgroundColor: C.surface2, border: `1px solid ${C.border}`, borderRadius: R.card, overflow: 'hidden', ...style }}>
+    <div id={id} style={{ backgroundColor: C.surface2, border: `1px solid ${C.border}`, borderRadius: R.card, overflow: 'hidden', ...style }}>
       {children}
     </div>
   );
@@ -554,8 +562,496 @@ function DangerSection() {
   );
 }
 
+// ── Agent Configuration section ───────────────
+const AUTONOMY_LEVELS = [
+  { id: 'autonomous',        label: 'Autonomous',        color: C.green,   desc: 'Acts independently, no approval needed' },
+  { id: 'act_with_approval', label: 'Act with Approval', color: C.primary, desc: 'Plans and drafts, you approve before sending' },
+  { id: 'suggest_only',      label: 'Suggest Only',      color: C.amber,   desc: 'Recommends actions, never executes' },
+  { id: 'disabled',          label: 'Disabled',          color: C.red,     desc: 'Agent is off — no processing or output' },
+];
+
+const COMMAND_MODES = [
+  { id: 'manual', label: 'Manual', desc: 'All agents require explicit trigger' },
+  { id: 'semi_auto', label: 'Semi-Auto', desc: 'Agents respond to triggers; you approve sensitive actions' },
+  { id: 'fully_agentic', label: 'Fully Agentic', desc: 'Agents run autonomously; you get digests and escalations' },
+];
+
+const APPROVAL_ROLES = ['Owner', 'CMO', 'Legal', 'Brand', 'SDR', 'CSM'];
+
+function AgentConfigSection() {
+  const toast = useToast();
+  const allAgents = Object.values(AGENTS);
+  const commandMode = useStore((s) => s.commandMode);
+  const setCommandModeStore = useStore((s) => s.setCommandMode);
+
+  const [globalOverride, setGlobalOverride] = useState(false);
+  const [expandedAgent, setExpandedAgent] = useState(null);
+  const [agentAutonomy, setAgentAutonomy] = useState(() =>
+    Object.fromEntries(allAgents.map((a) => [a.id, a.autonomyLevel]))
+  );
+  const [skillToggles, setSkillToggles] = useState(() =>
+    Object.fromEntries(
+      allAgents.map((a) => [a.id, Object.fromEntries(a.skills.map((s) => [s, true]))])
+    )
+  );
+  const [triggerToggles, setTriggerToggles] = useState(() =>
+    Object.fromEntries(
+      allAgents.map((a) => [a.id, Object.fromEntries((a.triggers || []).map((t) => [t, true]))])
+    )
+  );
+  const [approvalRoles, setApprovalRoles] = useState(() =>
+    Object.fromEntries(allAgents.map((a) => [a.id, ['Owner']]))
+  );
+  const [budgetLimits, setBudgetLimits] = useState(() =>
+    Object.fromEntries(allAgents.map((a) => [a.id, 100]))
+  );
+  const [testModalAgent, setTestModalAgent] = useState(null);
+  const [emergencyStop, setEmergencyStop] = useState(false);
+
+  const handleCommandMode = (modeId) => {
+    setCommandModeStore(modeId);
+    const labels = { manual: 'Manual', semi_auto: 'Semi-Auto', fully_agentic: 'Fully Agentic' };
+    toast.info(`Command mode set to "${labels[modeId]}".`);
+  };
+
+  const handleGlobalOverride = (on) => {
+    setGlobalOverride(on);
+    if (on) {
+      setAgentAutonomy(Object.fromEntries(allAgents.map((a) => [a.id, 'act_with_approval'])));
+      toast.info('All agents set to "Act with Approval".');
+    } else {
+      setAgentAutonomy(Object.fromEntries(allAgents.map((a) => [a.id, a.autonomyLevel])));
+      toast.info('Autonomy levels restored to defaults.');
+    }
+  };
+
+  const handleAutonomyChange = (agentId, level) => {
+    setAgentAutonomy((prev) => ({ ...prev, [agentId]: level }));
+    toast.success(`${AGENTS[agentId]?.name} set to "${level}".`);
+  };
+
+  const handleSkillToggle = (agentId, skill) => {
+    const wasOn = skillToggles[agentId][skill] !== false;
+    setSkillToggles((prev) => ({
+      ...prev,
+      [agentId]: { ...prev[agentId], [skill]: !wasOn },
+    }));
+    toast.info(`Skill "${skill}" ${wasOn ? 'disabled' : 'enabled'} for ${AGENTS[agentId]?.name}.`);
+  };
+
+  const handleTriggerToggle = (agentId, trigger) => {
+    const wasOn = triggerToggles[agentId]?.[trigger] !== false;
+    setTriggerToggles((prev) => ({
+      ...prev,
+      [agentId]: { ...(prev[agentId] ?? {}), [trigger]: !wasOn },
+    }));
+    toast.info(`Trigger "${trigger}" ${wasOn ? 'disabled' : 'enabled'} for ${AGENTS[agentId]?.name}.`);
+  };
+
+  const handleApprovalRoleToggle = (agentId, role) => {
+    setApprovalRoles((prev) => {
+      const current = prev[agentId] ?? [];
+      const next = current.includes(role) ? current.filter((r) => r !== role) : [...current, role];
+      return { ...prev, [agentId]: next };
+    });
+  };
+
+  const handleResetAgent = (agentId) => {
+    const agent = AGENTS[agentId];
+    setAgentAutonomy((prev) => ({ ...prev, [agentId]: agent.autonomyLevel }));
+    setSkillToggles((prev) => ({
+      ...prev,
+      [agentId]: Object.fromEntries(agent.skills.map((s) => [s, true])),
+    }));
+    setTriggerToggles((prev) => ({
+      ...prev,
+      [agentId]: Object.fromEntries((agent.triggers || []).map((t) => [t, true])),
+    }));
+    setApprovalRoles((prev) => ({ ...prev, [agentId]: ['Owner'] }));
+    setBudgetLimits((prev) => ({ ...prev, [agentId]: 100 }));
+    toast.success(`${agent.name} reset to defaults.`);
+  };
+
+  const handleEmergencyStop = () => {
+    setEmergencyStop(true);
+    setAgentAutonomy(Object.fromEntries(allAgents.map((a) => [a.id, 'disabled'])));
+    toast.warning('Emergency stop activated — all agents disabled.');
+  };
+
+  const handleResetAll = () => {
+    setEmergencyStop(false);
+    setGlobalOverride(false);
+    setCommandModeStore('semi_auto');
+    setAgentAutonomy(Object.fromEntries(allAgents.map((a) => [a.id, a.autonomyLevel])));
+    setSkillToggles(Object.fromEntries(allAgents.map((a) => [a.id, Object.fromEntries(a.skills.map((s) => [s, true]))])));
+    setTriggerToggles(Object.fromEntries(allAgents.map((a) => [a.id, Object.fromEntries((a.triggers || []).map((t) => [t, true]))])));
+    setApprovalRoles(Object.fromEntries(allAgents.map((a) => [a.id, ['Owner']])));
+    setBudgetLimits(Object.fromEntries(allAgents.map((a) => [a.id, 100])));
+    toast.success('All agent configs reset to defaults.');
+  };
+
+  return (
+    <div>
+      <SectionHeader
+        title="Agent Fleet Configuration"
+        description="Command mode, autonomy levels, triggers, and skill controls for all 9 agents."
+      />
+
+      {/* ── Command Mode ─────────────────────────── */}
+      <Card id="settings-command-mode" style={{ marginBottom: S[5] }}>
+        <div style={{ padding: S[5], borderBottom: `1px solid ${C.border}` }}>
+          <div style={{ fontFamily: F.display, fontSize: '15px', fontWeight: 700, color: C.textPrimary, marginBottom: 4 }}>
+            Command Mode
+          </div>
+          <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, marginBottom: S[4] }}>
+            The primary setting for the whole workspace. The top bar shows your active mode only; switch between Manual, Semi-Auto, and Fully Agentic here.
+          </div>
+          <div style={{ display: 'flex', gap: S[3] }}>
+            {COMMAND_MODES.map((mode) => {
+              const active = commandMode === mode.id;
+              return (
+                <button
+                  type="button"
+                  key={mode.id}
+                  onClick={() => handleCommandMode(mode.id)}
+                  style={{
+                    flex: 1, padding: S[4], borderRadius: R.md, cursor: 'pointer', transition: T.base,
+                    backgroundColor: active ? `${C.primary}18` : C.surface3,
+                    border: `2px solid ${active ? C.primary : C.border}`,
+                    textAlign: 'left',
+                  }}
+                >
+                  <div style={{ marginBottom: S[1], display: 'flex', alignItems: 'center' }}>
+                    <CommandModeGlyph modeId={mode.id} size={22} color={active ? C.primary : C.textMuted} />
+                  </div>
+                  <div style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: active ? C.primary : C.textPrimary, marginBottom: 3 }}>
+                    {mode.label}
+                  </div>
+                  <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textSecondary, lineHeight: 1.4 }}>
+                    {mode.desc}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Global override + emergency controls */}
+        <div style={{ padding: `${S[4]} ${S[5]}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: S[3] }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: S[3] }}>
+            <div>
+              <div style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 600, color: C.textPrimary }}>Global Approval Override</div>
+              <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textSecondary }}>Force all agents to require approval</div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
+              {globalOverride && (
+                <span style={{ fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: C.amber, backgroundColor: C.amberDim, border: `1px solid ${C.amber}`, borderRadius: R.pill, padding: `2px ${S[2]}` }}>
+                  ACTIVE
+                </span>
+              )}
+              <Toggle on={globalOverride} onChange={handleGlobalOverride} />
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: S[2] }}>
+            <button
+              onClick={() => { toast.info('Exporting agent configuration...'); }}
+              style={{ padding: `${S[1]} ${S[3]}`, backgroundColor: 'transparent', color: C.textSecondary, border: `1px solid ${C.border}`, borderRadius: R.button, fontFamily: F.body, fontSize: '12px', cursor: 'pointer', transition: T.color }}
+            >
+              Export Config
+            </button>
+            <button
+              onClick={() => { toast.info('Importing agent configuration...'); }}
+              style={{ padding: `${S[1]} ${S[3]}`, backgroundColor: 'transparent', color: C.textSecondary, border: `1px solid ${C.border}`, borderRadius: R.button, fontFamily: F.body, fontSize: '12px', cursor: 'pointer', transition: T.color }}
+            >
+              Import Config
+            </button>
+          </div>
+        </div>
+      </Card>
+
+      {/* Emergency + Reset global buttons */}
+      <div style={{ display: 'flex', gap: S[3], marginBottom: S[5] }}>
+        <button
+          onClick={() => {
+            if (!emergencyStop) {
+              if (window.confirm('Emergency stop all agents? This will disable all agents immediately.')) handleEmergencyStop();
+            } else {
+              setEmergencyStop(false);
+              setAgentAutonomy(Object.fromEntries(allAgents.map((a) => [a.id, a.autonomyLevel])));
+              toast.success('Emergency stop lifted — agents restored to defaults.');
+            }
+          }}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: S[2],
+            padding: `${S[2]} ${S[4]}`, fontSize: '13px', fontFamily: F.body, fontWeight: 700,
+            borderRadius: R.button, cursor: 'pointer', transition: T.color,
+            backgroundColor: emergencyStop ? C.redDim : 'rgba(239,68,68,0.1)',
+            color: '#EF4444',
+            border: `1px solid ${emergencyStop ? '#EF4444' : 'rgba(239,68,68,0.3)'}`,
+          }}
+        >
+          <IconStopOctagon color="#EF4444" width={16} height={16} />
+          {emergencyStop ? 'Lift Emergency Stop' : 'Emergency Stop All Agents'}
+        </button>
+        <button
+          onClick={handleResetAll}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: S[2],
+            padding: `${S[2]} ${S[4]}`, fontSize: '13px', fontFamily: F.body, fontWeight: 500,
+            borderRadius: R.button, cursor: 'pointer', transition: T.color,
+            backgroundColor: 'transparent', color: C.textSecondary, border: `1px solid ${C.border}`,
+          }}
+        >
+          <IconRefresh color={C.textSecondary} w={14} />
+          Reset All to Defaults
+        </button>
+      </div>
+
+      {/* ── Per-Agent Cards ───────────────────────── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: S[4] }}>
+        {allAgents.map((agent) => {
+          const currentAutonomy = agentAutonomy[agent.id];
+          const autonomyInfo = AUTONOMY_LEVELS.find((l) => l.id === currentAutonomy);
+          const skills = skillToggles[agent.id] ?? {};
+          const triggers = triggerToggles[agent.id] ?? {};
+          const roles = approvalRoles[agent.id] ?? ['Owner'];
+          const budget = budgetLimits[agent.id] ?? 100;
+          const isExpanded = expandedAgent === agent.id;
+          const isDisabled = currentAutonomy === 'disabled';
+
+          return (
+            <Card key={agent.id} style={{ opacity: isDisabled ? 0.65 : 1, transition: T.base }}>
+              {/* Agent header — always visible */}
+              <div style={{
+                padding: S[5], borderBottom: isExpanded ? `1px solid ${C.border}` : 'none',
+                display: 'flex', alignItems: 'flex-start', gap: S[4],
+                cursor: 'pointer',
+              }}
+                onClick={() => setExpandedAgent(isExpanded ? null : agent.id)}
+              >
+                {/* Avatar */}
+                <div style={{
+                  width: '44px', height: '44px', borderRadius: R.md, flexShrink: 0,
+                  backgroundColor: `${agent.color}22`, border: `1px solid ${agent.color}55`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  lineHeight: 0,
+                }}>
+                  <AgentRoleIcon agentId={agent.id} size={22} color={agent.color} />
+                </div>
+
+                {/* Identity */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: S[2], marginBottom: '4px', flexWrap: 'wrap' }}>
+                    <span style={{ fontFamily: F.display, fontSize: '15px', fontWeight: 700, color: C.textPrimary }}>
+                      {agent.displayName}
+                    </span>
+                    <span style={{
+                      fontFamily: F.mono, fontSize: '10px', fontWeight: 600,
+                      color: agent.color, backgroundColor: `${agent.color}18`,
+                      border: `1px solid ${agent.color}44`, borderRadius: R.pill,
+                      padding: `1px ${S[2]}`, letterSpacing: '0.04em', textTransform: 'uppercase',
+                    }}>
+                      {agent.role}
+                    </span>
+                    {autonomyInfo && (
+                      <span style={{
+                        fontFamily: F.mono, fontSize: '10px', fontWeight: 700,
+                        color: autonomyInfo.color, backgroundColor: `${autonomyInfo.color}18`,
+                        border: `1px solid ${autonomyInfo.color}44`, borderRadius: R.pill,
+                        padding: `1px ${S[2]}`, letterSpacing: '0.04em',
+                      }}>
+                        {autonomyInfo.label}
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, lineHeight: 1.45 }}>
+                    {agent.description}
+                  </div>
+                </div>
+
+                {/* Controls */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: S[2], flexShrink: 0 }}>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleResetAgent(agent.id); }}
+                    style={{ padding: `${S[1]} ${S[2]}`, backgroundColor: 'transparent', color: C.textMuted, border: `1px solid ${C.border}`, borderRadius: R.button, fontFamily: F.body, fontSize: '11px', cursor: 'pointer', transition: T.color, whiteSpace: 'nowrap' }}
+                  >
+                    Reset
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setTestModalAgent(agent.id); toast.info(`Test panel for ${agent.displayName} coming soon.`); }}
+                    style={{ padding: `${S[1]} ${S[2]}`, backgroundColor: `${agent.color}18`, color: agent.color, border: `1px solid ${agent.color}44`, borderRadius: R.button, fontFamily: F.body, fontSize: '11px', cursor: 'pointer', transition: T.color, whiteSpace: 'nowrap' }}
+                  >
+                    Test agent
+                  </button>
+                  <span style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted }}>
+                    {isExpanded ? '▲' : '▼'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Expanded content */}
+              {isExpanded && (
+                <div>
+                  {/* Autonomy Level */}
+                  <div style={{ padding: `${S[4]} ${S[5]}`, borderBottom: `1px solid ${C.border}` }}>
+                    <div style={{ fontFamily: F.body, fontSize: '11px', fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[3] }}>
+                      Autonomy Level
+                    </div>
+                    <div style={{ display: 'flex', gap: S[2], flexWrap: 'wrap' }}>
+                      {AUTONOMY_LEVELS.map(({ id, label, color, desc }) => {
+                        const active = currentAutonomy === id;
+                        return (
+                          <button
+                            key={id}
+                            onClick={() => handleAutonomyChange(agent.id, id)}
+                            style={{
+                              padding: `${S[2]} ${S[3]}`, borderRadius: R.md, cursor: 'pointer', transition: T.base,
+                              backgroundColor: active ? `${color}18` : C.surface3,
+                              border: `1px solid ${active ? color : C.border}`,
+                              textAlign: 'left', minWidth: '130px',
+                            }}
+                          >
+                            <div style={{ fontFamily: F.body, fontSize: '12px', fontWeight: active ? 700 : 500, color: active ? color : C.textPrimary, marginBottom: 2 }}>
+                              {label}
+                            </div>
+                            <div style={{ fontFamily: F.body, fontSize: '10px', color: C.textMuted, lineHeight: 1.3 }}>
+                              {desc}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Triggers + Budget side by side */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: `1px solid ${C.border}` }}>
+                    {/* Triggers */}
+                    <div style={{ padding: `${S[4]} ${S[5]}`, borderRight: `1px solid ${C.border}` }}>
+                      <div style={{ fontFamily: F.body, fontSize: '11px', fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[3] }}>
+                        Triggers Enabled
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: S[2] }}>
+                        {(agent.triggers || []).map((trigger) => {
+                          const on = triggers[trigger] !== false;
+                          return (
+                            <div key={trigger} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: S[2] }}>
+                              <span style={{ fontFamily: F.mono, fontSize: '11px', color: on ? C.textSecondary : C.textMuted, flexShrink: 0 }}>
+                                {trigger}
+                              </span>
+                              <div
+                                onClick={() => handleTriggerToggle(agent.id, trigger)}
+                                style={{
+                                  width: '32px', height: '18px', borderRadius: '999px', flexShrink: 0,
+                                  backgroundColor: on ? C.primary : C.surface3,
+                                  border: `1px solid ${on ? C.primary : C.border}`,
+                                  position: 'relative', cursor: 'pointer', transition: 'background-color 0.2s',
+                                }}
+                              >
+                                <div style={{
+                                  position: 'absolute', top: '2px',
+                                  left: on ? '14px' : '2px', width: '12px', height: '12px', borderRadius: '50%',
+                                  backgroundColor: on ? C.textInverse : C.textMuted,
+                                  transition: 'left 0.2s',
+                                }} />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Approval roles + budget */}
+                    <div style={{ padding: `${S[4]} ${S[5]}` }}>
+                      <div style={{ fontFamily: F.body, fontSize: '11px', fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[3] }}>
+                        Approval Requirements
+                      </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: S[1], marginBottom: S[4] }}>
+                        {APPROVAL_ROLES.map((role) => {
+                          const selected = roles.includes(role);
+                          return (
+                            <button
+                              key={role}
+                              onClick={() => handleApprovalRoleToggle(agent.id, role)}
+                              style={{
+                                padding: `3px ${S[2]}`, fontSize: '11px', fontFamily: F.body, fontWeight: selected ? 600 : 400,
+                                borderRadius: R.sm, cursor: 'pointer', transition: T.color,
+                                backgroundColor: selected ? `${C.primary}18` : C.surface3,
+                                color: selected ? C.primary : C.textMuted,
+                                border: `1px solid ${selected ? C.primary + '55' : C.border}`,
+                              }}
+                            >
+                              {role}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <div style={{ fontFamily: F.body, fontSize: '11px', fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[2] }}>
+                        Budget Limit (credits / task)
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
+                        <input
+                          type="number"
+                          min={0} max={500}
+                          value={budget}
+                          onChange={(e) => {
+                            const v = Math.max(0, Math.min(500, Number(e.target.value)));
+                            setBudgetLimits((prev) => ({ ...prev, [agent.id]: v }));
+                          }}
+                          style={{
+                            width: '80px', backgroundColor: C.surface3, color: C.textPrimary,
+                            border: `1px solid ${C.border}`, borderRadius: R.input,
+                            padding: `${S[1]} ${S[2]}`, fontFamily: F.mono, fontSize: '13px',
+                            outline: 'none',
+                          }}
+                        />
+                        <span style={{ fontFamily: F.body, fontSize: '12px', color: C.textMuted }}>credits max per task (0 = unlimited)</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Skills */}
+                  <div style={{ padding: S[5] }}>
+                    <div style={{ fontFamily: F.body, fontSize: '11px', fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[3] }}>
+                      Skills ({agent.skills.length})
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: S[2] }}>
+                      {agent.skills.map((skill) => {
+                        const enabled = skills[skill] !== false;
+                        return (
+                          <button
+                            key={skill}
+                            onClick={() => handleSkillToggle(agent.id, skill)}
+                            style={{
+                              display: 'inline-flex', alignItems: 'center', gap: '5px',
+                              padding: `3px ${S[2]}`,
+                              border: `1px solid ${enabled ? C.primary : C.border}`,
+                              borderRadius: R.sm,
+                              backgroundColor: enabled ? C.primaryGlow : C.surface3,
+                              color: enabled ? C.primary : C.textMuted,
+                              fontFamily: F.mono, fontSize: '11px', fontWeight: enabled ? 600 : 400,
+                              cursor: 'pointer', transition: T.color,
+                            }}
+                          >
+                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: enabled ? C.green : C.border, flexShrink: 0, display: 'inline-block' }} />
+                            {skill}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ── Main Settings page ────────────────────────
 const SECTION_COMPONENTS = {
+  agents:        AgentConfigSection,
   profile:       ProfileSection,
   organization:  WorkspaceSection,
   appearance:    AppearanceSection,

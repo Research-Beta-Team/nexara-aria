@@ -1,5 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import useToast from '../../hooks/useToast';
+import { useAgent } from '../../hooks/useAgent';
+import AgentThinking from '../../components/agents/AgentThinking';
+import AgentResultPanel from '../../components/agents/AgentResultPanel';
 import { C, F, R, S, btn, sectionHeading } from '../../tokens';
 import { IconClose } from '../../components/ui/Icons';
 import { CUSTOMERS, CHURN_RISK_ALERTS, getCustomerStats } from '../../data/customers';
@@ -61,12 +64,55 @@ function CustomerDetailPanel({ customer, onClose }) {
 export default function CustomerSuccess() {
   const [activeTab, setActiveTab] = useState('all');
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [churnResult, setChurnResult] = useState(null);
+  const [expansionResult, setExpansionResult] = useState(null);
+  const [churnRunning, setChurnRunning] = useState(false);
+  const [expansionRunning, setExpansionRunning] = useState(false);
   const toast = useToast();
+  const revenueAgent = useAgent('revenue');
 
   const stats = useMemo(() => getCustomerStats(CUSTOMERS), []);
   const atRiskCustomers = useMemo(() => CUSTOMERS.filter((c) => c.status === 'at_risk' || c.status === 'churning'), []);
   const expandingCustomers = useMemo(() => CUSTOMERS.filter((c) => c.status === 'expanding'), []);
   const onboardingCustomers = useMemo(() => CUSTOMERS.filter((c) => c.onboarding && !c.onboarding.complete), []);
+
+  const handleAnalyzeChurnRisk = useCallback(async () => {
+    setChurnRunning(true);
+    setChurnResult(null);
+    try {
+      const result = await revenueAgent.activate(
+        { description: 'Analyze churn risk across customer portfolio', skill: 'churn-prevention', input: { churn_signals: atRiskCustomers.map(c => ({ id: c.id, name: c.name, health: c.healthScore })), customer_data: CUSTOMERS, product_usage: [] } },
+        { focus: 'intervention-plan' }
+      );
+      if (result) {
+        setChurnResult({ ...result, confidence: Math.round((result.confidence || 0.82) * 100) });
+        toast.success('Churn risk analysis complete');
+      }
+    } catch (err) {
+      toast.error('Churn analysis failed: ' + err.message);
+    } finally {
+      setChurnRunning(false);
+    }
+  }, [revenueAgent, toast, atRiskCustomers]);
+
+  const handleIdentifyExpansion = useCallback(async () => {
+    setExpansionRunning(true);
+    setExpansionResult(null);
+    try {
+      const result = await revenueAgent.activate(
+        { description: 'Identify expansion and upsell opportunities', skill: 'revops', input: { pipeline_data: expandingCustomers.map(c => ({ id: c.id, name: c.name, mrr: c.mrr, plan: c.plan })), period: 'Q2 2026', segments: ['expanding'] } },
+        { focus: 'upsell-opportunities' }
+      );
+      if (result) {
+        setExpansionResult({ ...result, confidence: Math.round((result.confidence || 0.79) * 100) });
+        toast.success('Expansion opportunities identified');
+      }
+    } catch (err) {
+      toast.error('Expansion analysis failed: ' + err.message);
+    } finally {
+      setExpansionRunning(false);
+    }
+  }, [revenueAgent, toast, expandingCustomers]);
 
   return (
     <div
@@ -89,8 +135,22 @@ export default function CustomerSuccess() {
             {formatMrr(stats.mrr)} MRR · {CUSTOMERS.length} customers · Churn risk: {stats.churnRiskCount}
           </span>
         </div>
-        <div style={{ display: 'flex', gap: S[2] }}>
-          <button style={{ ...btn.secondary, fontSize: '13px' }} onClick={() => toast.info('Running health check…')}>
+        <div style={{ display: 'flex', gap: S[2], flexWrap: 'wrap' }}>
+          <button
+            style={{ ...btn.primary, fontSize: '13px', opacity: churnRunning ? 0.5 : 1 }}
+            disabled={churnRunning}
+            onClick={handleAnalyzeChurnRisk}
+          >
+            {churnRunning ? 'Analyzing...' : 'Analyze churn risk'}
+          </button>
+          <button
+            style={{ ...btn.secondary, fontSize: '13px', opacity: expansionRunning ? 0.5 : 1 }}
+            disabled={expansionRunning}
+            onClick={handleIdentifyExpansion}
+          >
+            {expansionRunning ? 'Identifying...' : 'Identify expansion'}
+          </button>
+          <button style={{ ...btn.secondary, fontSize: '13px' }} onClick={() => toast.info('Running health check...')}>
             Run health check
           </button>
           <button style={{ ...btn.secondary, fontSize: '13px' }} onClick={() => toast.success('Report exported')}>
@@ -163,6 +223,21 @@ export default function CustomerSuccess() {
         ))}
       </div>
 
+      {/* Revenue Agent Status */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: S[3], padding: `${S[2]} ${S[3]}`, backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card }}>
+        <div style={{
+          width: 8,
+          height: 8,
+          borderRadius: '50%',
+          backgroundColor: revenueAgent.isActive ? C.amber : C.green,
+          animation: revenueAgent.isActive ? 'csAgentPulse 2s ease-in-out infinite' : 'none',
+        }} />
+        <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 600, color: revenueAgent.isActive ? C.amber : C.textSecondary }}>
+          Revenue Agent: {revenueAgent.isActive ? 'Working...' : 'Ready'}
+        </span>
+      </div>
+      <style>{`@keyframes csAgentPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }`}</style>
+
       <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
         <div style={{ flex: 1, minWidth: 0, overflow: 'auto' }}>
           {activeTab === 'all' && (
@@ -190,6 +265,60 @@ export default function CustomerSuccess() {
           <CustomerDetailPanel customer={selectedCustomer} onClose={() => setSelectedCustomer(null)} />
         )}
       </div>
+
+      {/* Agent Thinking Indicators */}
+      {churnRunning && revenueAgent.isActive && (
+        <AgentThinking agentId="revenue" task="Analyzing churn risk and building intervention plan..." />
+      )}
+      {expansionRunning && revenueAgent.isActive && (
+        <AgentThinking agentId="revenue" task="Identifying upsell and expansion opportunities..." />
+      )}
+
+      {/* Churn Risk Analysis Result */}
+      {churnResult && (
+        <section style={{ display: 'flex', flexDirection: 'column', gap: S[3] }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
+            <h3 style={{ fontFamily: F.display, fontSize: '16px', fontWeight: 700, color: C.textPrimary, margin: 0 }}>
+              Churn Risk Intervention Plan
+            </h3>
+            <span style={{
+              fontFamily: F.mono,
+              fontSize: '10px',
+              fontWeight: 700,
+              color: C.red,
+              backgroundColor: 'rgba(239,68,68,0.12)',
+              padding: '2px 8px',
+              borderRadius: '999px',
+            }}>
+              Save offers + dunning strategies
+            </span>
+          </div>
+          <AgentResultPanel result={churnResult} />
+        </section>
+      )}
+
+      {/* Expansion Opportunities Result */}
+      {expansionResult && (
+        <section style={{ display: 'flex', flexDirection: 'column', gap: S[3] }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
+            <h3 style={{ fontFamily: F.display, fontSize: '16px', fontWeight: 700, color: C.textPrimary, margin: 0 }}>
+              Expansion Opportunities
+            </h3>
+            <span style={{
+              fontFamily: F.mono,
+              fontSize: '10px',
+              fontWeight: 700,
+              color: C.secondary,
+              backgroundColor: 'rgba(94,234,212,0.12)',
+              padding: '2px 8px',
+              borderRadius: '999px',
+            }}>
+              Upsell flagged
+            </span>
+          </div>
+          <AgentResultPanel result={expansionResult} />
+        </section>
+      )}
     </div>
   );
 }

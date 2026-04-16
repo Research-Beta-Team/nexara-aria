@@ -3,9 +3,12 @@ import {
   ResponsiveContainer, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine,
 } from 'recharts';
-import { C, F, R, S, T, scrollbarStyle, btn } from '../tokens';
+import { C, F, R, S, T, scrollbarStyle, btn, cardStyle, badge } from '../tokens';
 import useStore from '../store/useStore';
 import useToast from '../hooks/useToast';
+import { useAgent } from '../hooks/useAgent';
+import AgentThinking from '../components/agents/AgentThinking';
+import AgentResultPanel from '../components/agents/AgentResultPanel';
 
 /* Product UI palette — Antarious Brand Guidelines v1.1 (Meta Command) */
 const UI = {
@@ -224,7 +227,7 @@ function MetaConnectionCard() {
   );
 }
 
-/* ─── Previous ads & Freya: permission to fetch and add to ARIA ─── */
+/* ─── Previous ads & Freya: permission to fetch and add to Freya ─── */
 function PaidAdsAriaCard() {
   const metaConnected = useStore((s) => s.connections?.meta);
   const paidAds = useStore((s) => s.paidAdsPermissions);
@@ -234,7 +237,7 @@ function PaidAdsAriaCard() {
 
   if (!metaConnected) return null;
 
-  const handleFetchAndAddToAria = () => {
+  const handleFetchAndAddToFreya = () => {
     setFetching(true);
     setTimeout(() => {
       setPaidAdsPermissions({ allowFetch: true, allowFreyaLearn: true });
@@ -273,7 +276,7 @@ function PaidAdsAriaCard() {
       </div>
       <button
         type="button"
-        onClick={handleFetchAndAddToAria}
+        onClick={handleFetchAndAddToFreya}
         disabled={fetching}
         style={{
           fontSize: '13px',
@@ -587,14 +590,128 @@ function MetaCampaignsSection({ campaign, stats }) {
   );
 }
 
+/* ─── Analyst insight cards (mock) ─────────────────────────── */
+const ANALYST_INSIGHTS = [
+  { id: 'ai1', type: 'anomaly', title: 'CTR anomaly detected', body: 'Feb 22 CTR drop of 46% across Medglobal CFQ2 LinkedIn. Root cause: creative rotation stalled during overnight hours. Freya auto-paused the affected creative.', severity: 'high' },
+  { id: 'ai2', type: 'trend', title: 'Upward CPM trend in APAC', body: 'CPM increased 24% over 48h in APAC Brand Awareness. Competitor bid activity detected. Recommend dayparting adjustments to avoid peak auction windows.', severity: 'medium' },
+  { id: 'ai3', type: 'opportunity', title: 'High-performing creative identified', body: 'CFO Pain Point Video 30s consistently outperforms other creatives by 30%+ on CTR. Consider increasing budget allocation and testing variants.', severity: 'low' },
+];
+
+const INSIGHT_SEV_COLOR = {
+  high: { bg: `${C.red}18`, border: `${C.red}30`, color: C.red, label: 'Anomaly' },
+  medium: { bg: `${C.amber}18`, border: `${C.amber}30`, color: C.amber, label: 'Trend' },
+  low: { bg: `${UI.electric}12`, border: `${UI.electric}30`, color: UI.sky, label: 'Opportunity' },
+};
+
 /* ─── MetaMonitor (main) ──────────────────────────────────── */
 export default function MetaMonitor() {
   const [campaign, setCampaign] = useState('all');
   const stats = STATS[campaign] ?? STATS.all;
+  const toast = useToast();
+
+  // Agent integration
+  const optimizer = useAgent('optimizer');
+  const analyst = useAgent('analyst');
+  const [optimizeResult, setOptimizeResult] = useState(null);
+  const [analyzeResult, setAnalyzeResult] = useState(null);
+
+  const handleOptimize = async () => {
+    setOptimizeResult(null);
+    toast.success('Optimizer Agent activated...');
+    const res = await optimizer.activate('Optimize campaign', {
+      campaign,
+      skill: 'paid-ads',
+    });
+    setOptimizeResult(res);
+  };
+
+  const handleAnalyze = async () => {
+    setAnalyzeResult(null);
+    toast.success('Analyst Agent activated...');
+    const res = await analyst.activate('Analyze performance', {
+      campaign,
+      skill: 'performance-analysis',
+    });
+    setAnalyzeResult(res);
+  };
 
   return (
     <div style={{ height: '100vh', overflowY: 'auto', backgroundColor: UI.navy, ...scrollbarStyle }}>
       <div style={{ padding: `${S[6]} ${S[8]} ${S[10]}` }}>
+
+        {/* Analyst insight cards */}
+        <div style={{ display: 'flex', gap: S[3], marginBottom: S[5], flexWrap: 'wrap' }}>
+          {ANALYST_INSIGHTS.map((insight) => {
+            const sev = INSIGHT_SEV_COLOR[insight.severity] || INSIGHT_SEV_COLOR.low;
+            return (
+              <div
+                key={insight.id}
+                style={{
+                  flex: '1 1 280px',
+                  backgroundColor: sev.bg,
+                  border: `1px solid ${sev.border}`,
+                  borderRadius: R.card,
+                  padding: S[4],
+                  cursor: 'pointer',
+                }}
+                onClick={() => toast.info(insight.body)}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: S[2], marginBottom: S[2] }}>
+                  <span style={{
+                    fontFamily: F.mono,
+                    fontSize: '9px',
+                    fontWeight: 700,
+                    color: sev.color,
+                    backgroundColor: `${sev.color}20`,
+                    borderRadius: R.pill,
+                    padding: '2px 7px',
+                    textTransform: 'uppercase',
+                  }}>
+                    {sev.label}
+                  </span>
+                  <span style={{ fontFamily: F.mono, fontSize: '10px', color: UI.textMuted }}>Analyst Agent</span>
+                </div>
+                <div style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: UI.text, marginBottom: '2px' }}>
+                  {insight.title}
+                </div>
+                <div style={{ fontFamily: F.body, fontSize: '11px', color: UI.textMuted, lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  {insight.body}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Agent status indicator */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: S[2],
+          marginBottom: S[4],
+          padding: `${S[2]} ${S[3]}`,
+          backgroundColor: UI.surface,
+          border: `1px solid ${UI.border}`,
+          borderRadius: R.md,
+          width: 'fit-content',
+        }}>
+          <div style={{
+            width: '8px',
+            height: '8px',
+            borderRadius: R.full,
+            backgroundColor: C.green,
+            boxShadow: `0 0 6px ${C.green}`,
+            animation: 'agentMonitorPulse 2s ease-in-out infinite',
+          }} />
+          <span style={{ fontFamily: F.mono, fontSize: '11px', color: UI.textMuted }}>
+            Analyst monitoring in background...
+          </span>
+          <style>{`
+            @keyframes agentMonitorPulse {
+              0%, 100% { opacity: 1; }
+              50% { opacity: 0.4; }
+            }
+          `}</style>
+        </div>
 
         {/* Header + campaign filter */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: S[6], paddingBottom: S[4], borderBottom: `3px solid ${UI.electric}` }}>
@@ -631,6 +748,77 @@ export default function MetaMonitor() {
 
         {/* Previous campaigns & analytics from Meta Business Suite (when connected) */}
         <MetaCampaignsSection campaign={campaign} stats={stats} />
+
+        {/* Agent-powered actions */}
+        <div style={{ backgroundColor: UI.surface, border: `1px solid ${UI.border}`, borderLeft: `4px solid ${UI.electric}`, borderRadius: R.card, padding: S[5], marginTop: S[5] }}>
+          <div style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: UI.text, marginBottom: S[2] }}>
+            Agent-powered campaign actions
+          </div>
+          <p style={{ fontFamily: F.body, fontSize: '12px', color: UI.textMuted, marginBottom: S[4], lineHeight: 1.5 }}>
+            Use AI agents to optimize campaigns and analyze performance in depth.
+          </p>
+          <div style={{ display: 'flex', gap: S[3], flexWrap: 'wrap', marginBottom: S[4] }}>
+            <button
+              onClick={handleOptimize}
+              disabled={optimizer.isActive}
+              style={{
+                fontSize: '13px',
+                padding: `${S[2]} ${S[4]}`,
+                fontFamily: F.body,
+                fontWeight: 700,
+                color: '#FFFFFF',
+                background: `linear-gradient(135deg,${UI.electric},${UI.electric2})`,
+                border: 'none',
+                borderRadius: R.button,
+                cursor: optimizer.isActive ? 'wait' : 'pointer',
+                opacity: optimizer.isActive ? 0.7 : 1,
+                boxShadow: '0 0 0 1px rgba(37,99,235,0.5), 0 4px 16px rgba(37,99,235,0.3)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: S[2],
+              }}
+            >
+              Optimize campaign
+            </button>
+            <button
+              onClick={handleAnalyze}
+              disabled={analyst.isActive}
+              style={{
+                ...btn.ghost,
+                fontSize: '13px',
+                padding: `${S[2]} ${S[4]}`,
+                color: UI.sky,
+                border: `1px solid ${UI.borderHover}`,
+                borderRadius: R.button,
+                cursor: analyst.isActive ? 'wait' : 'pointer',
+                opacity: analyst.isActive ? 0.7 : 1,
+              }}
+            >
+              Analyze performance
+            </button>
+          </div>
+
+          {optimizer.isActive && (
+            <div style={{ marginBottom: S[3] }}>
+              <AgentThinking agentId="optimizer" task="Optimizing campaign bids, budgets, and creative rotation..." />
+            </div>
+          )}
+          {analyst.isActive && (
+            <div style={{ marginBottom: S[3] }}>
+              <AgentThinking agentId="analyst" task="Analyzing performance trends and anomalies..." />
+            </div>
+          )}
+          {optimizeResult && (
+            <div style={{ marginBottom: S[3] }}>
+              <AgentResultPanel result={optimizeResult} />
+            </div>
+          )}
+          {analyzeResult && (
+            <div style={{ marginBottom: S[3] }}>
+              <AgentResultPanel result={analyzeResult} />
+            </div>
+          )}
+        </div>
 
       </div>
     </div>

@@ -3,6 +3,9 @@ import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import useToast from '../hooks/useToast';
 import useStore from '../store/useStore';
+import { useAgent } from '../hooks/useAgent';
+import AgentThinking from '../components/agents/AgentThinking';
+import AgentResultPanel from '../components/agents/AgentResultPanel';
 import { C, F, R, S, btn, badge, flex, shadows, Z } from '../tokens';
 import { IconSend, IconEye, IconLink, IconMessage, IconCalendar, IconCompass, IconPhone, IconPen, IconLinkedIn, IconMail, IconMic, IconDocument } from '../components/ui/Icons';
 import { prospects } from '../data/campaigns';
@@ -337,7 +340,7 @@ function TimelineNode({ touchpoint, isLast }) {
   );
 }
 
-// ── ARIA panel ────────────────────────────────
+// ── Freya panel ────────────────────────────────
 function AriaSidebar() {
   const toast = useToast();
   return (
@@ -401,6 +404,8 @@ export default function OutreachDetail() {
   const toast = useToast();
   const toggleFreya = useStore((s) => s.toggleFreya);
   const addFreyaChat = useStore((s) => s.addFreyaChat);
+  const outreachAgent = useAgent('outreach');
+  const [agentReplyResult, setAgentReplyResult] = useState(null);
   const [logActivityOpen, setLogActivityOpen] = useState(false);
   const [updateStageOpen, setUpdateStageOpen] = useState(false);
   const [bookDemoOpen, setBookDemoOpen] = useState(false);
@@ -439,6 +444,17 @@ export default function OutreachDetail() {
       detail: `Calendar invite sent to ${prospect.email}. Demo booking link shared.`,
     };
     setTouchpoints((prev) => [...prev, newTp]);
+  };
+
+  const handleFreyaDraftReply = async () => {
+    toast.info('Outreach agent drafting reply...');
+    const result = await outreachAgent.activate('cold-email', {
+      task: `Draft a contextual reply for ${prospect.name} at ${prospect.company} based on conversation history`,
+      lead: { name: prospect.name, company: prospect.company, title: prospect.title, intent: prospect.intent },
+      touchpoints: prospect.touchpoints?.length || 0,
+    });
+    setAgentReplyResult(result);
+    toast.success('Freya draft reply ready.');
   };
 
   const handleSendFollowUp = () => {
@@ -529,7 +545,21 @@ export default function OutreachDetail() {
         </div>
 
         {/* Actions */}
-        <div style={{ display: 'flex', gap: S[2], flexShrink: 0 }}>
+        <div style={{ display: 'flex', gap: S[2], flexShrink: 0, flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            style={{ ...btn.primary, fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleFreyaDraftReply();
+            }}
+            disabled={outreachAgent.isActive}
+            title="Freya drafts a contextual reply based on conversation history"
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.1"/><circle cx="6" cy="6" r="1.5" fill="currentColor"/></svg>
+            Freya, draft reply
+          </button>
           <button
             type="button"
             style={{ ...btn.ghost, fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: 8 }}
@@ -610,7 +640,15 @@ export default function OutreachDetail() {
         document.body
       )}
 
-      {/* Two-column: timeline + ARIA */}
+      {/* Agent-generated reply suggestions */}
+      {outreachAgent.isActive && (
+        <AgentThinking agentId="outreach" task={`Drafting reply for ${prospect.name}...`} />
+      )}
+      {agentReplyResult && !outreachAgent.isActive && (
+        <AgentResultPanel result={agentReplyResult} />
+      )}
+
+      {/* Two-column: timeline + Freya */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: S[5], alignItems: 'start' }}>
         {/* Timeline */}
         <div style={{ backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card, padding: S[5] }}>
@@ -626,7 +664,7 @@ export default function OutreachDetail() {
           ))}
         </div>
 
-        {/* ARIA sidebar */}
+        {/* Freya sidebar */}
         <AriaSidebar />
       </div>
     </div>

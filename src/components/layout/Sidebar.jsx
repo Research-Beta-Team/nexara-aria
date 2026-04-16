@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Lock, Brain, GitBranch, UserCog, FilePenLine, Mail, ArrowRightCircle, Database } from 'lucide-react';
+import { Lock, Brain, GitBranch, UserCog, FilePenLine, Mail, ArrowRightCircle, Database, X } from 'lucide-react';
 import useStore from '../../store/useStore';
 import { PLANS } from '../../config/plans';
 import usePlan from '../../hooks/usePlan';
@@ -10,11 +10,17 @@ import useWorkspace from '../../hooks/useWorkspace';
 import CreditBar from '../plan/CreditBar';
 import PlanBadge from '../plan/PlanBadge';
 import UpgradeModal from '../plan/UpgradeModal';
-import { getSidebarSections } from '../../config/roleConfig';
+import { getSidebarSectionsForRoleAndPlan } from '../../config/roleConfig';
+import { getCommandModeTheme } from '../../config/commandModeTheme';
+import { isSidebarNavItemVisibleForPlan } from '../../config/sidebarAccess';
 import { getTemplateById } from '../../data/workspaceTemplates';
 import AntariousLogo from '../ui/AntariousLogo';
 import FreyaLogo from '../ui/FreyaLogo';
-import { C, F, R, S, T, shadows } from '../../tokens';
+import SidebarManual from './SidebarManual';
+import SidebarSemiAuto from './SidebarSemiAuto';
+import SidebarAgentic from './SidebarAgentic';
+import SidebarRailToggle from './SidebarRailToggle';
+import { C, F, R, S, T, shadows, Z } from '../../tokens';
 
 // ── Founder nav SVG icons (theme: currentColor) ──
 const IconTasks = () => (
@@ -248,6 +254,8 @@ const NAV_SECTIONS = [
         label: 'ABM Engine',
         path: '/abm',
         comingSoon: true,
+        gatedFeature: 'abmEngine',
+        requiredPlan: 'growth',
         description: 'Named-account targeting, tier management, and buying committee timelines. Run ABM campaigns with account playbooks, stakeholder maps, and pipeline visibility.',
         moduleId: 'abm',
         icon: (
@@ -265,6 +273,7 @@ const NAV_SECTIONS = [
         label: 'Playbooks',
         path: '/playbooks',
         comingSoon: true,
+        gatedFeature: 'verticalPlaybooks',
         description: 'Pre-built GTM playbooks by vertical and use case. Pick a playbook and Freya customises it for your context. Launch campaigns in hours with sequences, content, and channels defined.',
         moduleId: 'playbooks',
         icon: (
@@ -438,18 +447,21 @@ const NAV_SECTIONS = [
         label: 'Attribution',
         path: '/analytics/attribution',
         moduleId: 'attribution',
+        minPlan: 'growth',
         icon: <GitBranch size={18} strokeWidth={1.5} />,
       },
       {
         label: 'Executive Digest',
         path: '/reports/digest',
         moduleId: 'digest',
+        minPlan: 'growth',
         icon: <Mail size={18} strokeWidth={1.5} />,
       },
       {
         label: 'Board Report',
         path: '/reports/board',
         moduleId: 'board-report',
+        minPlan: 'scale',
         icon: (
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
             <rect x="2" y="2" width="14" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
@@ -620,10 +632,41 @@ const NAV_SECTIONS = [
       },
     ],
   },
+
+  {
+    id: 'devTools',
+    dividerBefore: true,
+    label: 'DEV TOOLS',
+    collapsible: true,
+    items: [
+      {
+        label: 'Role Switcher',
+        path: '/dev/roles',
+        icon: (
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="5" r="3" stroke="currentColor" strokeWidth="1.5"/>
+            <path d="M3 16v-1a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
+        ),
+      },
+      {
+        label: 'Mode Design',
+        path: '/dev/modes',
+        icon: (
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <rect x="2" y="2" width="14" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+            <path d="M2 7h14M7 7v9" stroke="currentColor" strokeWidth="1.5"/>
+          </svg>
+        ),
+      },
+    ],
+  },
 ];
 
 // ── Logo mark ─────────────────────────────────
-function Logo({ collapsed }) {
+function Logo({ collapsed, isMobile, onCloseMobile, onToggleRail }) {
+  const showWebRailToggle = Boolean(onToggleRail);
+
   return (
     <div style={{
       display: 'flex',
@@ -631,20 +674,75 @@ function Logo({ collapsed }) {
       padding: collapsed ? `${S[3]} ${S[3]}` : `${S[5]} ${S[5]}`,
       borderBottom: `1px solid ${C.border}`,
       flexShrink: 0,
-      flexDirection: collapsed ? 'row' : 'column',
-      alignItems: collapsed ? 'center' : 'flex-start',
+      flexDirection: collapsed && showWebRailToggle ? 'column' : collapsed ? 'row' : 'column',
+      alignItems: collapsed && showWebRailToggle ? 'center' : collapsed ? 'center' : 'flex-start',
+      position: 'relative',
     }}>
-      <AntariousLogo variant="dark" height={collapsed ? 28 : 26} showWordmark={!collapsed} />
-      {!collapsed && (
-        <div style={{
-          fontFamily: F.body,
-          fontSize: '11px',
-          color: C.textSecondary,
-          marginTop: '4px',
-          lineHeight: 1.3,
-        }}>
-          Your GTM, now <em style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', color: C.primary }}>autonomous.</em>
+      {isMobile && (
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', width: '100%', gap: S[2] }}>
+          <AntariousLogo variant="dark" height={26} showWordmark showAiSuffix />
+          <button
+            type="button"
+            aria-label="Close menu"
+            onClick={() => {
+              onCloseMobile?.();
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '40px',
+              height: '40px',
+              flexShrink: 0,
+              borderRadius: R.button,
+              border: `1px solid ${C.border}`,
+              backgroundColor: C.surface2,
+              color: C.textSecondary,
+              cursor: 'pointer',
+            }}
+          >
+            <X size={18} strokeWidth={2} />
+          </button>
         </div>
+      )}
+      {!isMobile && showWebRailToggle && collapsed && (
+        <SidebarRailToggle collapsed={collapsed} onClick={onToggleRail} />
+      )}
+      {!isMobile && (
+        showWebRailToggle && !collapsed ? (
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: S[2], width: '100%' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <AntariousLogo variant="dark" height={26} showWordmark showAiSuffix />
+              <div style={{
+                fontFamily: F.body,
+                fontSize: '11px',
+                color: C.textSecondary,
+                marginTop: '4px',
+                lineHeight: 1.3,
+              }}>
+                Your GTM, now <em style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', color: C.primary }}>autonomous.</em>
+              </div>
+            </div>
+            <SidebarRailToggle collapsed={collapsed} onClick={onToggleRail} />
+          </div>
+        ) : showWebRailToggle && collapsed ? (
+          <AntariousLogo variant="dark" height={24} showWordmark={false} showAiSuffix={false} />
+        ) : (
+          <>
+            <AntariousLogo variant="dark" height={collapsed ? 28 : 26} showWordmark={!collapsed} showAiSuffix={!collapsed} />
+            {!collapsed && (
+              <div style={{
+                fontFamily: F.body,
+                fontSize: '11px',
+                color: C.textSecondary,
+                marginTop: '4px',
+                lineHeight: 1.3,
+              }}>
+                Your GTM, now <em style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', color: C.primary }}>autonomous.</em>
+              </div>
+            )}
+          </>
+        )
       )}
     </div>
   );
@@ -693,7 +791,7 @@ function SectionHeader({ label, collapsible, isOpen, onToggle }) {
 }
 
 // ── Nav Item (unlocked) ────────────────────────
-function NavItem({ item, collapsed }) {
+function NavItem({ item, collapsed, onNavigate }) {
   const baseStyle = {
     display:        'flex',
     alignItems:     'center',
@@ -727,6 +825,7 @@ function NavItem({ item, collapsed }) {
     <NavLink
       to={item.path}
       end={item.exact}
+      onClick={() => onNavigate?.()}
       style={({ isActive }) => ({
         ...baseStyle,
         backgroundColor: isActive ? C.primaryGlow : 'transparent',
@@ -782,7 +881,7 @@ function NavItem({ item, collapsed }) {
 
 // ── Coming Soon Nav Item ───────────────────────
 // Shows label, "Coming soon" badge, and description (tooltip). Links to coming-soon page.
-function ComingSoonNavItem({ item, collapsed }) {
+function ComingSoonNavItem({ item, collapsed, onNavigate }) {
   const baseStyle = {
     display:        'flex',
     alignItems:     'center',
@@ -804,6 +903,7 @@ function ComingSoonNavItem({ item, collapsed }) {
     <NavLink
       to={item.path}
       end={item.exact}
+      onClick={() => onNavigate?.()}
       style={({ isActive }) => ({
         ...baseStyle,
         backgroundColor: isActive ? C.surface2 : 'transparent',
@@ -836,68 +936,69 @@ function ComingSoonNavItem({ item, collapsed }) {
 // ── Gated Nav Item ─────────────────────────────
 // Self-contained: checks plan access and renders either a normal NavItem or a
 // locked placeholder that opens UpgradeModal on click.
-function GatedNavItem({ item, collapsed }) {
+function GatedNavItem({ item, collapsed, onNavigate }) {
   const { hasFeature, planId } = usePlan();
   const [showUpgrade, setShowUpgrade] = useState(false);
 
-  if (item.comingSoon) {
-    return <ComingSoonNavItem item={item} collapsed={collapsed} />;
-  }
+  const planBlocksItem = Boolean(item.gatedFeature && !hasFeature(item.gatedFeature));
 
-  // No gate defined, or user has access → regular nav item
-  if (!item.gatedFeature || hasFeature(item.gatedFeature)) {
-    return <NavItem item={item} collapsed={collapsed} />;
-  }
+  // Plan gate runs before “coming soon” so locked tiers still see upgrade path.
+  if (planBlocksItem) {
+    const requiredPlanObj = PLANS[item.requiredPlan] ?? PLANS.growth;
+    const tooltip = collapsed
+      ? `${item.label} — Requires ${requiredPlanObj.displayName}`
+      : `Requires ${requiredPlanObj.displayName} · Click to upgrade`;
 
-  // Plan access denied → locked appearance
-  const requiredPlanObj = PLANS[item.requiredPlan] ?? PLANS.growth;
-  const tooltip = collapsed
-    ? `${item.label} — Requires ${requiredPlanObj.displayName}`
-    : `Requires ${requiredPlanObj.displayName} · Click to upgrade`;
+    return (
+      <>
+        <div
+          role="button"
+          title={tooltip}
+          onClick={() => setShowUpgrade(true)}
+          style={{
+            display:     'flex',
+            alignItems:  'center',
+            gap:         S[3],
+            padding:     `${S[2]} ${S[3]}`,
+            borderRadius: R.md,
+            fontFamily:  F.body,
+            fontSize:    '13px',
+            fontWeight:  500,
+            transition:  T.color,
+            position:    'relative',
+            margin:      `0 ${S[2]}`,
+            opacity:     0.45,
+            cursor:      'default',
+            color:       C.textSecondary,
+            userSelect:  'none',
+          }}
+        >
+          <span style={{ flexShrink: 0, display: 'flex' }}>{item.icon}</span>
+          {!collapsed && (
+            <>
+              <span style={{ flex: 1 }}>{item.label}</span>
+              <Lock size={12} color={C.textMuted} />
+            </>
+          )}
+        </div>
 
-  return (
-    <>
-      <div
-        role="button"
-        title={tooltip}
-        onClick={() => setShowUpgrade(true)}
-        style={{
-          display:     'flex',
-          alignItems:  'center',
-          gap:         S[3],
-          padding:     `${S[2]} ${S[3]}`,
-          borderRadius: R.md,
-          fontFamily:  F.body,
-          fontSize:    '13px',
-          fontWeight:  500,
-          transition:  T.color,
-          position:    'relative',
-          margin:      `0 ${S[2]}`,
-          opacity:     0.45,
-          cursor:      'default',
-          color:       C.textSecondary,
-          userSelect:  'none',
-        }}
-      >
-        <span style={{ flexShrink: 0, display: 'flex' }}>{item.icon}</span>
-        {!collapsed && (
-          <>
-            <span style={{ flex: 1 }}>{item.label}</span>
-            <Lock size={12} color={C.textMuted} />
-          </>
+        {showUpgrade && (
+          <UpgradeModal
+            fromPlan={planId}
+            toPlan={item.requiredPlan}
+            featureUnlocked={item.gatedFeature}
+            onClose={() => setShowUpgrade(false)}
+          />
         )}
-      </div>
+      </>
+    );
+  }
 
-      {showUpgrade && (
-        <UpgradeModal
-          fromPlan={planId}
-          toPlan={item.requiredPlan}
-          featureUnlocked={item.gatedFeature}
-          onClose={() => setShowUpgrade(false)}
-        />
-      )}
-    </>
-  );
+  if (item.comingSoon) {
+    return <ComingSoonNavItem item={item} collapsed={collapsed} onNavigate={onNavigate} />;
+  }
+
+  return <NavItem item={item} collapsed={collapsed} onNavigate={onNavigate} />;
 }
 
 // ── Plan Status Section ────────────────────────
@@ -994,13 +1095,22 @@ function PlanStatusSection({ collapsed }) {
 }
 
 // ── Sidebar ───────────────────────────────────
-export default function Sidebar({ onOpenFreya }) {
+export default function Sidebar({ isMobile = false, mobileOpen = false, onCloseMobile }) {
   const collapsed     = useStore((s) => s.sidebarCollapsed);
   const toggleSidebar = useStore((s) => s.toggleSidebar);
   const currentRole   = useStore((s) => s.currentRole);
+  const currentPlanId = useStore((s) => s.currentPlanId);
+  const commandMode   = useStore((s) => s.commandMode);
   const segment       = useStore((s) => s.segment);
-  const toast         = useToast();
   const isStartup     = segment === 'startup';
+
+  const cmdModeBorder = useMemo(
+    () => `1px solid color-mix(in srgb, ${getCommandModeTheme(commandMode).accent} 24%, ${C.border})`,
+    [commandMode],
+  );
+
+  // For owner/founder roles, use mode-specific sidebars
+  const useModeSpecificSidebar = currentRole === 'owner' || currentRole === 'founder';
 
   const { isModuleVisible, profile } = useWorkspace();
   const sidebarOrder = profile?.layout?.sidebarOrder ?? [];
@@ -1019,35 +1129,65 @@ export default function Sidebar({ onOpenFreya }) {
 
   // Items visible when: sidebar collapsed (show all) | section not collapsible | section is open
   const isSectionOpen = (section) => {
-    if (collapsed) return true;
+    if (effectiveCollapsed) return true;
     if (!section.collapsible) return true;
     return openSections[section.id] !== false;
   };
 
-  // Role-based section visibility (same design for enterprise & startup)
-  const visibleSections = (() => {
-    const sections = getSidebarSections(currentRole);
-    return NAV_SECTIONS.filter((s) => sections.includes(s.id));
-  })();
+  // Role ∩ subscription plan (sections); items also filtered per plan below.
+  const visibleSections = useMemo(() => {
+    const ids = getSidebarSectionsForRoleAndPlan(currentRole, currentPlanId);
+    return NAV_SECTIONS.filter((s) => ids.includes(s.id));
+  }, [currentRole, currentPlanId]);
 
   const isItemVisibleForRole = (item) => {
     if (!item.hideForRoles) return true;
     return !item.hideForRoles.includes(currentRole);
   };
 
-  const sidebarStyle = {
-    width:           collapsed ? '60px' : '220px',
-    minWidth:        collapsed ? '60px' : '220px',
-    height:          '100vh',
-    backgroundColor: C.surface,
-    borderRight:     `1px solid ${C.border}`,
-    display:         'flex',
-    flexDirection:   'column',
-    transition:      'width 0.2s ease, min-width 0.2s ease',
-    overflow:        'hidden',
-    flexShrink:      0,
-    position:        'relative',
-  };
+  const effectiveCollapsed = isMobile ? false : collapsed;
+
+  const modeShellWidth = useModeSpecificSidebar ? (collapsed ? 64 : 260) : null;
+  const defaultShellWidth = collapsed ? 60 : 220;
+
+  const sidebarStyle = isMobile
+    ? {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        height: '100dvh',
+        maxHeight: '100dvh',
+        width: 'min(300px, calc(100vw - 24px))',
+        minWidth: 0,
+        zIndex: Z.navDrawer,
+        backgroundColor: C.surface,
+        borderRight: cmdModeBorder,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        flexShrink: 0,
+        transform: mobileOpen ? 'translateX(0)' : 'translateX(-108%)',
+        transition: 'transform 0.28s cubic-bezier(0.22, 1, 0.36, 1)',
+        boxShadow: mobileOpen ? shadows.modal : 'none',
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        pointerEvents: mobileOpen ? 'auto' : 'none',
+      }
+    : {
+        width:           useModeSpecificSidebar ? modeShellWidth : defaultShellWidth,
+        minWidth:        useModeSpecificSidebar ? modeShellWidth : defaultShellWidth,
+        height:          '100dvh',
+        maxHeight:       '100dvh',
+        backgroundColor: C.surface,
+        borderRight:     cmdModeBorder,
+        display:         'flex',
+        flexDirection:   'column',
+        transition:      'width 0.2s ease, min-width 0.2s ease, border-color 0.25s ease',
+        overflow:        'hidden',
+        flexShrink:      0,
+        position:        'relative',
+        minHeight:       0,
+      };
 
   const navStyle = {
     flex:           1,
@@ -1057,22 +1197,111 @@ export default function Sidebar({ onOpenFreya }) {
     scrollbarWidth: 'none',
   };
 
-  const collapseButtonStyle = {
-    display:         'flex',
-    alignItems:      'center',
-    justifyContent:  'center',
-    margin:          `${S[2]} ${S[3]}`,
-    padding:         S[2],
-    borderRadius:    R.md,
-    backgroundColor: 'transparent',
-    border:          'none',
-    color:           C.textMuted,
-    cursor:          'pointer',
-    transition:      T.color,
+  // Render mode-specific sidebar for owner/founder roles
+  const renderModeSpecificSidebar = () => {
+    switch (commandMode) {
+      case 'manual':
+        return (
+          <SidebarManual
+            collapsed={effectiveCollapsed}
+            isMobile={isMobile}
+            onCloseMobile={onCloseMobile}
+            onToggleRail={!isMobile ? toggleSidebar : undefined}
+          />
+        );
+      case 'semi_auto':
+        return (
+          <SidebarSemiAuto
+            collapsed={effectiveCollapsed}
+            isMobile={isMobile}
+            onCloseMobile={onCloseMobile}
+            onToggleRail={!isMobile ? toggleSidebar : undefined}
+          />
+        );
+      case 'fully_agentic':
+        return (
+          <SidebarAgentic
+            collapsed={effectiveCollapsed}
+            isMobile={isMobile}
+            onCloseMobile={onCloseMobile}
+            onToggleRail={!isMobile ? toggleSidebar : undefined}
+          />
+        );
+      default:
+        return (
+          <SidebarSemiAuto
+            collapsed={effectiveCollapsed}
+            isMobile={isMobile}
+            onCloseMobile={onCloseMobile}
+            onToggleRail={!isMobile ? toggleSidebar : undefined}
+          />
+        );
+    }
   };
 
+  // For owner/founder roles: render mode-specific sidebars
+  if (useModeSpecificSidebar) {
+    return (
+      <aside style={sidebarStyle} aria-hidden={isMobile ? !mobileOpen : undefined}>
+        <div
+          style={{
+            flex: 1,
+            minHeight: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+          }}
+        >
+          {renderModeSpecificSidebar()}
+        </div>
+
+        {profile && (
+          <div
+            style={{
+              borderTop: `1px solid ${C.border}`,
+              padding: effectiveCollapsed ? S[2] : S[3],
+              flexShrink: 0,
+            }}
+          >
+            <div
+              style={{
+                fontFamily: F.body,
+                fontSize: effectiveCollapsed ? '10px' : '12px',
+                fontWeight: 600,
+                color: C.textPrimary,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                textAlign: effectiveCollapsed ? 'center' : 'left',
+              }}
+            >
+              {profile.clientName}
+            </div>
+            {!effectiveCollapsed && (
+              <div
+                style={{
+                  fontFamily: F.mono,
+                  fontSize: '9px',
+                  fontWeight: 600,
+                  color: C.textMuted,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  marginTop: '2px',
+                }}
+              >
+                {getTemplateById(profile.templateBase)?.name ?? profile.templateBase}
+              </div>
+            )}
+          </div>
+        )}
+        {!isStartup && <PlanStatusSection collapsed={effectiveCollapsed} />}
+      </aside>
+    );
+  }
+
+  // Default sidebar for other roles
   return (
-    <aside style={sidebarStyle}>
+    <aside style={sidebarStyle} aria-hidden={isMobile ? !mobileOpen : undefined}>
       <style>{`
         .sidebar-nav-item-collapsed:hover {
           color: ${C.textPrimary} !important;
@@ -1080,12 +1309,19 @@ export default function Sidebar({ onOpenFreya }) {
         }
       `}</style>
 
-      <Logo collapsed={collapsed} />
+      <Logo
+        collapsed={effectiveCollapsed}
+        isMobile={isMobile}
+        onCloseMobile={onCloseMobile}
+        onToggleRail={!isMobile ? toggleSidebar : undefined}
+      />
 
       <nav style={navStyle}>
         {visibleSections.map((section) => {
             const filteredItems = section.items
-              .filter((item) => isItemVisibleForRole(item) && (!item.moduleId || isModuleVisible(item.moduleId)))
+              .filter((item) => isItemVisibleForRole(item))
+              .filter((item) => isSidebarNavItemVisibleForPlan(item, currentPlanId))
+              .filter((item) => !item.moduleId || isModuleVisible(item.moduleId))
               .sort((a, b) => orderIndex(a.moduleId) - orderIndex(b.moduleId));
             if (filteredItems.length === 0) return null;
             return (
@@ -1100,7 +1336,7 @@ export default function Sidebar({ onOpenFreya }) {
             )}
 
             {/* Section header — expanded sidebar only */}
-            {section.label && !collapsed && (
+            {section.label && !effectiveCollapsed && (
               <SectionHeader
                 label={section.label}
                 collapsible={section.collapsible}
@@ -1111,23 +1347,28 @@ export default function Sidebar({ onOpenFreya }) {
 
             {/* Nav items — filter by role, then GatedNavItem */}
             {isSectionOpen(section) && filteredItems.map((item) => (
-              <GatedNavItem key={item.path || item.label} item={item} collapsed={collapsed} />
+              <GatedNavItem
+                key={item.path || item.label}
+                item={item}
+                collapsed={effectiveCollapsed}
+                onNavigate={isMobile ? onCloseMobile : undefined}
+              />
             ))}
           </div>
         );
         })}
       </nav>
 
-      {/* Plan status panel — above the collapse toggle */}
+      {/* Plan status panel */}
       {profile && (
         <div style={{
           borderTop: `1px solid ${C.border}`,
-          padding: collapsed ? S[2] : S[3],
+          padding: effectiveCollapsed ? S[2] : S[3],
           flexShrink: 0,
         }}>
           <div style={{
             fontFamily: F.body,
-            fontSize: collapsed ? '10px' : '11px',
+            fontSize: effectiveCollapsed ? '10px' : '11px',
             fontWeight: 600,
             color: C.textPrimary,
             overflow: 'hidden',
@@ -1136,7 +1377,7 @@ export default function Sidebar({ onOpenFreya }) {
           }}>
             {profile.clientName}
           </div>
-          {!collapsed && (
+          {!effectiveCollapsed && (
             <div style={{
               fontFamily: F.mono,
               fontSize: '9px',
@@ -1151,28 +1392,7 @@ export default function Sidebar({ onOpenFreya }) {
           )}
         </div>
       )}
-      {!isStartup && <PlanStatusSection collapsed={collapsed} />}
-
-      {/* Collapse toggle */}
-      <div style={{ borderTop: `1px solid ${C.border}`, padding: S[2] }}>
-        <button
-          style={collapseButtonStyle}
-          onClick={toggleSidebar}
-          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          <svg
-            width="16" height="16" viewBox="0 0 16 16" fill="none"
-            style={{ transform: collapsed ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}
-          >
-            <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          {!collapsed && (
-            <span style={{ marginLeft: S[2], fontFamily: F.body, fontSize: '12px', color: C.textMuted }}>
-              Collapse
-            </span>
-          )}
-        </button>
-      </div>
+      {!isStartup && <PlanStatusSection collapsed={effectiveCollapsed} />}
     </aside>
   );
 }

@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import useToast from '../../hooks/useToast';
 import { C, F, R, S, btn, cardStyle } from '../../tokens';
+import AgentFeed from '../../components/agents/AgentFeed';
 
 const APPROVAL_QUEUE_MOCK = [
   { id: 'a1', title: 'Q2 ICP Refresh', campaign: 'CFO VN', confidence: 87 },
@@ -59,6 +60,12 @@ export default function DashboardAdvisor() {
       </div>
       <div style={{ ...cardStyle, padding: S[4], border: `1px solid ${C.border}` }}>
         <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>Strategy Intel — Market signals relevant to your client strategies. "Textile CFO hiring surge in Vietnam Q1 — opportunity signal."</div>
+      </div>
+
+      {/* Agent Activity Feed (Advisor-relevant) */}
+      <div>
+        <h2 style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', margin: `0 0 ${S[3]}` }}>Agent Activity</h2>
+        <AgentFeed limit={6} />
       </div>
     </div>
   );

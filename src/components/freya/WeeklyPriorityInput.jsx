@@ -8,7 +8,7 @@ import { IconTarget, IconMegaphone, IconSettings } from '../ui/Icons';
 const PRIORITY_ICON_MAP = { target: IconTarget, megaphone: IconMegaphone, settings: IconSettings };
 
 /**
- * Weekly priority input for ARIA: chips + free text + Set button.
+ * Weekly priority input for Freya: chips + free text + Set button.
  * When already set, shows teal chip with [Edit].
  */
 export default function WeeklyPriorityInput() {
@@ -130,7 +130,7 @@ export default function WeeklyPriorityInput() {
         letterSpacing: '0.06em',
         marginBottom: S[3],
       }}>
-        What should ARIA focus on this week?
+        What should Freya focus on this week?
       </div>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: S[2], marginBottom: S[3] }}>

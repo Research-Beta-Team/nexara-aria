@@ -72,6 +72,15 @@ const ROLES = [
     permissions: ['Read-only analytics', 'Reports', 'No edits'],
     dashboardVariant: 'Analytics view',
   },
+  {
+    id: 'client',
+    name: 'Client',
+    description: 'Approvals · Content · Inbox (client-safe)',
+    color: '#94A3B8',
+    icon: 'user',
+    permissions: ['Dashboard', 'Content', 'Inbox', 'Settings'],
+    dashboardVariant: 'Client portal style',
+  },
 ];
 
 // Re-export for TopBar and other consumers

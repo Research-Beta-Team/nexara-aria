@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import useToast from '../../hooks/useToast';
 import { C, F, R, S, btn, cardStyle } from '../../tokens';
+import AgentFeed from '../../components/agents/AgentFeed';
 
 const METRICS_MOCK = [
   { label: 'Leads Generated', value: '312', delta: '+18%', vs: '264 last week' },
@@ -48,6 +49,12 @@ export default function DashboardAnalyst() {
         <button style={{ ...btn.primary }} onClick={() => toast.success('Generating report')}>Generate weekly report</button>
         <button style={{ ...btn.secondary }} onClick={() => toast.info('Export PDF')}>Export to PDF</button>
         <button style={{ ...btn.secondary }} onClick={() => toast.info('Share')}>Share with team</button>
+      </div>
+
+      {/* Agent Activity Feed (Analyst-relevant) */}
+      <div>
+        <h2 style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', margin: `0 0 ${S[3]}` }}>Agent Activity</h2>
+        <AgentFeed limit={6} />
       </div>
     </div>
   );

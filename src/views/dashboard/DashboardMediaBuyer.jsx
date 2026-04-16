@@ -3,6 +3,7 @@ import useToast from '../../hooks/useToast';
 import usePlan from '../../hooks/usePlan';
 import { C, F, R, S, btn, cardStyle } from '../../tokens';
 import MetaPerformanceWidget from '../../components/dashboard/MetaPerformanceWidget';
+import AgentFeed from '../../components/agents/AgentFeed';
 import { metaStats, ctrChartData } from '../../data/dashboard';
 import { IconCheck, IconWarning, IconArrowRight } from '../../components/ui/Icons';
 
@@ -63,6 +64,12 @@ export default function DashboardMediaBuyer() {
           <button style={{ ...btn.primary, fontSize: '12px' }} onClick={() => toast.info('Execute')}>Execute top recommendation</button>
           <button style={{ ...btn.secondary, fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: S[1] }} onClick={() => toast.info('Review all')}>Review all <IconArrowRight width={14} height={14} /></button>
         </div>
+      </div>
+
+      {/* Agent Activity Feed (Media Buyer-relevant) */}
+      <div>
+        <h2 style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', margin: `0 0 ${S[3]}` }}>Agent Activity</h2>
+        <AgentFeed limit={6} />
       </div>
     </div>
   );

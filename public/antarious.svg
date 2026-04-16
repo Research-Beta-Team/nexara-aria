@@ -1,6 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 24" fill="none" aria-hidden="true">
-  <!-- The Dot  Sage #4A7C6F (brand colour in the mark) -->
-  <circle cx="5" cy="12" r="2.5" fill="#4A7C6F"/>
-  <!-- The Slash Form  diagonal A with notch (Ink; for light-background favicon) -->
-  <path d="M12 21 L16 3 L20 21 L18 21 L16 13 L14 21 Z" fill="#1C2B27" fill-rule="evenodd"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 24" fill="none" aria-hidden="true">
+  <circle cx="6" cy="12" r="2.85" fill="#0ea5e9"/>
+  <path d="M12.5 20.5L16.5 3.5L20.5 20.5H18.35L16.5 12.8L14.65 20.5H12.5Z" fill="#0f172a" fill-rule="evenodd"/>
 </svg>

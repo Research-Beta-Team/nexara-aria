@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import useToast from '../../hooks/useToast';
 import { C, F, R, S, btn, cardStyle } from '../../tokens';
+import AgentFeed from '../../components/agents/AgentFeed';
 
 const CLIENT_PORTFOLIO_MOCK = [
   { name: 'Apex Corp', health: 82, demos: '8/12', status: 'On track', lastTouch: '2 days ago', tip: 'Share win from LinkedIn' },
@@ -64,6 +65,12 @@ export default function DashboardCSM() {
           <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary }}>Medglobal: Email seq step 3 · Delta: LinkedIn ad creative</div>
           <button style={{ ...btn.primary, fontSize: '12px', marginTop: S[3] }} onClick={() => toast.info('Review + approve')}>Review + approve →</button>
         </div>
+      </div>
+
+      {/* Agent Activity Feed (CSM-relevant) */}
+      <div>
+        <h2 style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', margin: `0 0 ${S[3]}` }}>Agent Activity</h2>
+        <AgentFeed limit={6} />
       </div>
     </div>
   );

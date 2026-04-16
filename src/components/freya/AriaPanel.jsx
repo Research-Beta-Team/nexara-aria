@@ -3,11 +3,34 @@ import { useNavigate } from 'react-router-dom';
 import { C, F, R, S, T, shadows, Z, LAYOUT } from '../../tokens';
 import ContentIDChip from '../ui/ContentIDChip';
 import FreyaLogo from '../ui/FreyaLogo';
+import AgentRoleIcon, { AgentNameWithIcon } from '../ui/AgentRoleIcon';
+import CommandModeGlyph from '../ui/CommandModeGlyph';
+import { IconClock } from '../ui/Icons';
 import ARIAActionApproval from './ARIAActionApproval';
 import AriaPanelHistory from './AriaPanelHistory';
 import useToast from '../../hooks/useToast';
 import useStore from '../../store/useStore';
 import { getRoleConfig } from '../../config/roleConfig';
+import { AGENTS, getAllAgentIds } from '../../agents/AgentRegistry';
+import { WORKFLOWS } from '../../freya/workflows/registry';
+import { AgentRuntime } from '../../agents/AgentRuntime';
+
+// ── Panel Approvals mock data ─────────────────
+const PANEL_APPROVALS_INITIAL = [
+  { id: 1, type: 'CONTENT',  title: 'Email #3: The Operating Table in Rafah',       agentId: 'copywriter', agentNote: '', confidence: 94 },
+  { id: 2, type: 'OUTREACH', title: '47 MENA Lead Sequences',                        agentId: 'outreach', agentNote: '', confidence: 87 },
+  { id: 3, type: 'STRATEGY', title: 'Q2 Donor ICP Update — MENA Healthcare',         agentId: 'analyst', agentNote: '', confidence: 91 },
+  { id: 4, type: 'CONTENT',  title: 'Yemen Campaign LinkedIn Post',                  agentId: 'copywriter', agentNote: '+ Guardian', confidence: 89 },
+  { id: 5, type: 'BUDGET',   title: 'ANZ Retargeting Pause — $4,200 reallocate',    agentId: 'optimizer', agentNote: '', confidence: 78 },
+];
+
+const APPROVAL_TYPE_COLORS = {
+  CONTENT:  { color: '#6BA396', bg: 'rgba(107,163,150,0.14)' },
+  STRATEGY: { color: C.primary, bg: 'rgba(74,124,111,0.14)' },
+  OUTREACH: { color: C.secondary, bg: 'rgba(107,163,150,0.12)' },
+  BUDGET:   { color: C.amber,   bg: 'rgba(251,191,36,0.14)' },
+  ICP:      { color: C.green,   bg: 'rgba(16,185,129,0.12)' },
+};
 
 // ── Contextual page actions ───────────────────
 const PAGE_ACTIONS = {
@@ -576,7 +599,7 @@ function AriaFloatBtn({ open, onOpen, onSend, page, actions: actionsProp }) {
   const fabStyle = {
     width: '52px',
     height: '52px',
-    borderRadius: '50%',
+    borderRadius: R.card,
     backgroundColor: C.primary,
     color: C.textInverse,
     border: 'none',
@@ -602,8 +625,355 @@ function AriaFloatBtn({ open, onOpen, onSend, page, actions: actionsProp }) {
           onSend={(a) => { onOpen(); setTimeout(() => onSend(a), 150); }}
         />
       )}
-      <button style={fabStyle} onClick={onOpen} title="Ask Freya">
-        <FreyaLogo size={22} />
+      <button type="button" style={fabStyle} onClick={onOpen} title="Ask Freya">
+        <FreyaLogo size={34} />
+      </button>
+    </div>
+  );
+}
+
+// ── Agent status color helper ─────────────────
+function statusColor(status) {
+  if (status === 'thinking')  return C.amber;
+  if (status === 'executing') return C.primary;
+  if (status === 'done')      return C.green;
+  if (status === 'error')     return C.red;
+  return C.textMuted;
+}
+
+// ── Agents Tab (improved) ─────────────────────
+function AgentsTab({ toast }) {
+  const agentStatuses = useStore((s) => s.agents.statuses);
+  const commandMode   = useStore((s) => s.commandMode);
+  const setCommandMode = useStore((s) => s.setCommandMode);
+  const navigate = useNavigate();
+
+  const allAgents = Object.values(AGENTS);
+  const idleAgents = allAgents.filter((a) => {
+    const st = (agentStatuses[a.id] || {}).status || 'idle';
+    return st === 'idle';
+  });
+
+  const MODES = [
+    { id: 'manual',        label: 'Manual',    color: C.red,   dim: C.redDim   },
+    { id: 'semi_auto',     label: 'Semi-Auto', color: C.amber, dim: C.amberDim },
+    { id: 'fully_agentic', label: 'Agentic',   color: C.green, dim: C.greenDim },
+  ];
+
+  const handleRunAllIdle = () => {
+    if (idleAgents.length === 0) { toast?.info('No idle agents to run'); return; }
+    idleAgents.forEach((a) => {
+      AgentRuntime.activateAgent(a.id, { description: 'Batch activation from Freya panel' }, {})
+        .then(() => toast?.success(`${a.displayName} completed`))
+        .catch(() => {});
+    });
+    toast?.info(`Activating ${idleAgents.length} idle agent${idleAgents.length !== 1 ? 's' : ''}…`);
+  };
+
+  return (
+    <div style={{ flex: 1, overflowY: 'auto', padding: S[3], display: 'flex', flexDirection: 'column', gap: S[2], scrollbarWidth: 'thin', scrollbarColor: `${C.border} transparent` }}>
+      {/* Command Mode toggle */}
+      <div style={{ backgroundColor: C.surface2, border: `1px solid ${C.border}`, borderRadius: R.md, padding: S[3], marginBottom: S[1] }}>
+        <div style={{ fontFamily: F.body, fontSize: '10px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: S[2] }}>Command Mode</div>
+        <div style={{ display: 'flex', gap: '4px' }}>
+          {MODES.map((mode) => {
+            const active = commandMode === mode.id;
+            return (
+              <button
+                key={mode.id}
+                onClick={() => { setCommandMode(mode.id); toast?.info(`Mode: ${mode.label}`); }}
+                style={{ flex: 1, padding: '5px 2px', fontFamily: F.body, fontSize: '10px', fontWeight: active ? 700 : 500, color: active ? mode.color : C.textMuted, backgroundColor: active ? mode.dim : 'transparent', border: `1px solid ${active ? mode.color : C.border}`, borderRadius: R.button, cursor: 'pointer', transition: T.color, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}
+              >
+                <CommandModeGlyph modeId={mode.id} size={14} color={active ? mode.color : C.textMuted} />
+                <span>{mode.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Agent list */}
+      {allAgents.map((agent) => {
+        const statusObj  = agentStatuses[agent.id] || {};
+        const status     = statusObj.status || 'idle';
+        const currentTask = statusObj.currentTask || null;
+        const dotColor   = statusColor(status);
+        const isActive   = status === 'thinking' || status === 'executing';
+        return (
+          <div
+            key={agent.id}
+            style={{
+              backgroundColor: C.surface2,
+              border: `1px solid ${C.border}`,
+              borderRadius: R.md,
+              padding: `${S[3]} ${S[3]}`,
+              display: 'flex',
+              alignItems: 'center',
+              gap: S[2],
+            }}
+          >
+            {/* Avatar */}
+            <div style={{
+              width: '34px', height: '34px', borderRadius: '50%',
+              backgroundColor: C.surface3,
+              border: `1.5px solid ${dotColor}`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0, lineHeight: 0,
+            }}>
+              <AgentRoleIcon agentId={agent.id} size={18} color={agent.color} />
+            </div>
+
+            {/* Info */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '2px' }}>
+                <span style={{ fontFamily: F.display, fontSize: '12px', fontWeight: 700, color: C.textPrimary }}>{agent.displayName}</span>
+                <span style={{ fontFamily: F.mono, fontSize: '9px', fontWeight: 700, color: dotColor, textTransform: 'uppercase' }}>{status}</span>
+              </div>
+              {isActive && currentTask ? (
+                <div style={{ fontFamily: F.body, fontSize: '10px', color: C.amber, backgroundColor: C.amberDim, borderRadius: R.sm, padding: '2px 5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{currentTask}</div>
+              ) : (
+                <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{agent.description}</div>
+              )}
+            </div>
+
+            {/* Run button */}
+            <button
+              style={{ padding: '4px 8px', fontFamily: F.body, fontSize: '10px', fontWeight: 600, color: C.primary, backgroundColor: C.primaryGlow, border: `1px solid rgba(74,124,111,0.35)`, borderRadius: R.button, cursor: 'pointer', flexShrink: 0, transition: T.color }}
+              onClick={() => {
+                AgentRuntime.activateAgent(agent.id, { description: 'Manual activation from Freya panel' }, {})
+                  .then(() => toast?.success(`${agent.displayName} completed task`))
+                  .catch(() => toast?.error(`${agent.displayName} encountered an error`));
+                toast?.info(`Activating ${agent.displayName}...`);
+              }}
+            >
+              ▶ Run
+            </button>
+          </div>
+        );
+      })}
+
+      {/* Run all idle */}
+      <button
+        style={{ marginTop: S[2], padding: `${S[2]} 0`, fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.amber, backgroundColor: C.amberDim, border: `1px solid rgba(251,191,36,0.3)`, borderRadius: R.button, cursor: 'pointer' }}
+        onClick={handleRunAllIdle}
+      >
+        ▶▶ Run All Idle Agents ({idleAgents.length})
+      </button>
+
+      <button
+        style={{ padding: `${S[2]} 0`, fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.primary, backgroundColor: 'transparent', border: `1px solid ${C.border}`, borderRadius: R.button, cursor: 'pointer' }}
+        onClick={() => navigate('/agents')}
+      >
+        View full Agent Roster →
+      </button>
+    </div>
+  );
+}
+
+// ── Approvals Tab ─────────────────────────────
+function ApprovalsTab({ toast }) {
+  const navigate = useNavigate();
+  const [approvals, setApprovals] = useState(PANEL_APPROVALS_INITIAL);
+  const [filter, setFilter]       = useState('All');
+
+  const FILTERS = ['All', 'Content', 'Strategy', 'Outreach', 'Budget'];
+
+  const filtered = filter === 'All'
+    ? approvals
+    : approvals.filter((a) => a.type === filter.toUpperCase());
+
+  const handleApprove = (id, title) => {
+    setApprovals((prev) => prev.filter((a) => a.id !== id));
+    toast?.success(`Approved: ${title.slice(0, 40)}`);
+  };
+
+  const handleReject = (id, title) => {
+    setApprovals((prev) => prev.filter((a) => a.id !== id));
+    toast?.warning(`Rejected: ${title.slice(0, 40)}`);
+  };
+
+  const handleChanges = (title) => {
+    toast?.info(`Requested changes for: ${title.slice(0, 40)}`);
+    navigate('/campaigns/approvals');
+  };
+
+  const handleBulkApprove = () => {
+    const count = filtered.length;
+    setApprovals((prev) => prev.filter((a) => !filtered.find((f) => f.id === a.id)));
+    toast?.success(`Bulk approved ${count} item${count !== 1 ? 's' : ''}`);
+  };
+
+  return (
+    <div style={{ flex: 1, overflowY: 'auto', padding: S[3], display: 'flex', flexDirection: 'column', gap: S[3], scrollbarWidth: 'thin', scrollbarColor: `${C.border} transparent` }}>
+      {/* Bulk approve */}
+      <button
+        onClick={handleBulkApprove}
+        style={{ width: '100%', padding: `${S[2]} 0`, fontFamily: F.body, fontSize: '12px', fontWeight: 700, color: C.green, backgroundColor: 'rgba(16,185,129,0.1)', border: `1px solid rgba(16,185,129,0.3)`, borderRadius: R.button, cursor: 'pointer' }}
+      >
+        ✓ Bulk Approve All ({filtered.length})
+      </button>
+
+      {/* Filter chips */}
+      <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+        {FILTERS.map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            style={{ padding: '3px 8px', fontFamily: F.body, fontSize: '10px', fontWeight: filter === f ? 700 : 500, color: filter === f ? C.primary : C.textMuted, backgroundColor: filter === f ? C.primaryGlow : 'transparent', border: `1px solid ${filter === f ? C.primary : C.border}`, borderRadius: R.pill, cursor: 'pointer', transition: T.color }}
+          >
+            {f}
+          </button>
+        ))}
+      </div>
+
+      {/* Items */}
+      {filtered.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: `${S[8]} 0`, color: C.textMuted, fontFamily: F.body, fontSize: '12px' }}>
+          <div style={{ fontSize: '20px', marginBottom: S[2] }}>✓</div>
+          All clear in this category
+        </div>
+      ) : (
+        filtered.map((item) => {
+          const tc = APPROVAL_TYPE_COLORS[item.type] || APPROVAL_TYPE_COLORS.CONTENT;
+          return (
+            <div key={item.id} style={{ backgroundColor: C.surface2, border: `1px solid ${C.border}`, borderRadius: R.md, padding: S[3] }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                <span style={{ fontFamily: F.mono, fontSize: '9px', fontWeight: 700, letterSpacing: '0.06em', padding: '2px 5px', borderRadius: R.pill, backgroundColor: tc.bg, color: tc.color }}>{item.type}</span>
+                <span style={{ marginLeft: 'auto', fontFamily: F.mono, fontSize: '10px', fontWeight: 700, color: item.confidence >= 90 ? C.green : item.confidence >= 80 ? C.primary : C.amber }}>{item.confidence}%</span>
+              </div>
+              <div style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.textPrimary, marginBottom: '4px', lineHeight: 1.4 }}>{item.title}</div>
+              <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted, marginBottom: S[3], display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                <AgentNameWithIcon agentId={item.agentId} size={12} />
+                {item.agentNote ? <span>{item.agentNote}</span> : null}
+              </div>
+              <div style={{ display: 'flex', gap: '5px' }}>
+                <button onClick={() => handleApprove(item.id, item.title)} style={{ flex: 1, padding: '5px 0', fontFamily: F.body, fontSize: '11px', fontWeight: 700, color: C.textInverse, backgroundColor: C.primary, border: 'none', borderRadius: R.button, cursor: 'pointer' }}>Approve</button>
+                <button onClick={() => handleReject(item.id, item.title)} style={{ flex: 1, padding: '5px 0', fontFamily: F.body, fontSize: '11px', fontWeight: 600, color: C.red, backgroundColor: 'rgba(239,68,68,0.1)', border: `1px solid rgba(239,68,68,0.3)`, borderRadius: R.button, cursor: 'pointer' }}>Reject</button>
+                <button onClick={() => handleChanges(item.title)} style={{ flex: 1, padding: '5px 0', fontFamily: F.body, fontSize: '11px', fontWeight: 500, color: C.textMuted, backgroundColor: 'transparent', border: `1px solid ${C.border}`, borderRadius: R.button, cursor: 'pointer' }}>Changes</button>
+              </div>
+            </div>
+          );
+        })
+      )}
+
+      <button
+        onClick={() => navigate('/campaigns/approvals')}
+        style={{ padding: `${S[2]} 0`, fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.primary, backgroundColor: 'transparent', border: `1px solid ${C.border}`, borderRadius: R.button, cursor: 'pointer' }}
+      >
+        View all approvals →
+      </button>
+    </div>
+  );
+}
+
+// ── Workflows Tab ─────────────────────────────
+function WorkflowsTab({ toast }) {
+  const navigate = useNavigate();
+  const allWorkflows = Object.values(WORKFLOWS);
+
+  const parseSteps = (steps) => {
+    return steps.map((s) => {
+      const [agentId] = s.split(':');
+      const agentDef = AGENTS[agentId];
+      return {
+        agentId,
+        label: agentDef ? agentDef.displayName : agentId,
+      };
+    });
+  };
+
+  const handleRunWorkflow = (workflow) => {
+    AgentRuntime.activateAgent('freya', { description: `${workflow.name} workflow` }, {})
+      .catch(() => {});
+    toast?.info(`Starting ${workflow.name} workflow...`);
+  };
+
+  return (
+    <div style={{ flex: 1, overflowY: 'auto', padding: S[3], display: 'flex', flexDirection: 'column', gap: S[3], scrollbarWidth: 'thin', scrollbarColor: `${C.border} transparent` }}>
+      {allWorkflows.map((wf) => {
+        const steps = parseSteps(wf.steps);
+        return (
+          <div
+            key={wf.id}
+            style={{
+              backgroundColor: C.surface2,
+              border: `1px solid ${C.border}`,
+              borderRadius: R.md,
+              padding: S[3],
+            }}
+          >
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: S[2], marginBottom: S[2] }}>
+              <div>
+                <div style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.textPrimary, marginBottom: '2px' }}>{wf.name}</div>
+                <div style={{ fontFamily: F.body, fontSize: '11px', color: C.textMuted, lineHeight: '1.4' }}>{wf.description}</div>
+              </div>
+              <button
+                style={{
+                  padding: '4px 10px', fontFamily: F.body, fontSize: '11px', fontWeight: 600,
+                  color: C.textInverse, backgroundColor: C.primary,
+                  border: 'none', borderRadius: R.button, cursor: 'pointer', flexShrink: 0,
+                }}
+                onClick={() => handleRunWorkflow(wf)}
+              >
+                Run
+              </button>
+            </div>
+
+            {/* Step chain */}
+            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '4px', marginBottom: S[2] }}>
+              {steps.map((step, i) => (
+                <span key={i} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 5,
+                    padding: '2px 6px',
+                    backgroundColor: C.surface3, border: `1px solid ${C.border}`,
+                    borderRadius: R.pill, fontFamily: F.body, fontSize: '10px',
+                    fontWeight: 600, color: C.textSecondary,
+                  }}>
+                    <AgentRoleIcon agentId={step.agentId} size={11} color={C.textSecondary} />
+                    {step.label}
+                  </span>
+                  {i < steps.length - 1 && (
+                    <span style={{ color: C.textMuted, fontSize: '10px' }}>→</span>
+                  )}
+                </span>
+              ))}
+            </div>
+
+            {/* Meta */}
+            <div style={{ display: 'flex', gap: S[2] }}>
+              <span style={{
+                fontFamily: F.mono, fontSize: '10px', color: C.textMuted,
+                backgroundColor: C.bg, border: `1px solid ${C.border}`,
+                borderRadius: R.pill, padding: '2px 6px',
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+              }}>
+                <IconClock color={C.textMuted} width={11} height={11} />
+                {wf.estimatedTime}
+              </span>
+              <span style={{
+                fontFamily: F.mono, fontSize: '10px', color: C.amber,
+                backgroundColor: C.amberDim, border: `1px solid rgba(251,191,36,0.2)`,
+                borderRadius: R.pill, padding: '2px 6px',
+              }}>
+                {wf.creditCost} credits
+              </span>
+            </div>
+          </div>
+        );
+      })}
+
+      <button
+        style={{
+          padding: `${S[2]} 0`,
+          fontFamily: F.body, fontSize: '12px', fontWeight: 600,
+          color: C.primary, backgroundColor: 'transparent',
+          border: `1px solid ${C.border}`, borderRadius: R.button, cursor: 'pointer',
+        }}
+        onClick={() => navigate('/aria/workflows')}
+      >
+        Workflow Center →
       </button>
     </div>
   );
@@ -616,6 +986,14 @@ const DEFAULT_WELCOME = {
   text: "Hi, I'm **Freya** — your AI co-pilot. I monitor your campaigns, explain performance data, draft content, and take actions on your behalf. What would you like to do?",
   type: 'text',
 };
+
+// Tab bar labels
+const PANEL_TABS = [
+  { id: 'chat',      label: 'Chat'      },
+  { id: 'agents',    label: 'Agents'    },
+  { id: 'workflows', label: 'Workflows' },
+  { id: 'approvals', label: 'Approvals', badgeCount: 5 },
+];
 
 export default function AriaPanel({ open, onOpen, onClose, page }) {
   const toast = useToast();
@@ -639,6 +1017,7 @@ export default function AriaPanel({ open, onOpen, onClose, page }) {
     ? currentChat.messages
     : [welcomeMessage];
 
+  const [panelTab, setPanelTab] = useState('chat');
   const [historyOpen, setHistoryOpen] = useState(false);
   const [input, setInput] = useState('');
   const [typing, setTyping] = useState(false);
@@ -649,11 +1028,21 @@ export default function AriaPanel({ open, onOpen, onClose, page }) {
   const fileInputRef = useRef(null);
   const recognitionRef = useRef(null);
 
+  const commandMode = useStore((s) => s.commandMode);
   const pageActions = getActions(page ?? '/');
   const roleActions = roleConfig.freyaQuickActions ?? [];
-  const actions = roleActions.length > 0 ? roleActions : pageActions;
 
-  // When panel opens, if we have only the welcome message (new chat), welcome text is already from roleConfig
+  // Mode-aware quick actions override page/role actions on the dashboard
+  const modeActions = {
+    manual:        ["What needs my attention?", "Show all outputs", "List approvals"],
+    semi_auto:     ["Review latest outputs", "Approve safe items", "What's running?"],
+    fully_agentic: ["Status report", "Pause all agents", "Weekly summary"],
+  };
+  const isModeAware = page === '/' || page === '';
+  const actions = isModeAware
+    ? (modeActions[commandMode] || pageActions)
+    : (roleActions.length > 0 ? roleActions : pageActions);
+
   useEffect(() => {
     if (!open) return;
   }, [open, currentRole]);
@@ -747,15 +1136,15 @@ export default function AriaPanel({ open, onOpen, onClose, page }) {
 
   const removeAttachment = (id) => setAttachments((prev) => prev.filter((a) => a.id !== id));
 
-  // Scroll to bottom whenever messages/typing changes
+  // Scroll to bottom when messages/typing changes
   useEffect(() => {
-    if (open) messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, typing, open]);
+    if (open && panelTab === 'chat') messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, typing, open, panelTab]);
 
-  // Focus textarea when panel opens
+  // Focus textarea when panel opens on chat tab
   useEffect(() => {
-    if (open) setTimeout(() => inputRef.current?.focus(), 320);
-  }, [open]);
+    if (open && panelTab === 'chat') setTimeout(() => inputRef.current?.focus(), 320);
+  }, [open, panelTab]);
 
   const panelStyle = {
     position: 'fixed',
@@ -771,6 +1160,7 @@ export default function AriaPanel({ open, onOpen, onClose, page }) {
     flexDirection: 'column',
     transition: 'right 0.28s cubic-bezier(0.4, 0, 0.2, 1), width 0.2s ease',
     overflow: 'hidden',
+    animation: open ? 'fadeIn 0.3s ease' : 'none',
   };
 
   return (
@@ -785,7 +1175,7 @@ export default function AriaPanel({ open, onOpen, onClose, page }) {
 
       {/* Slide-in panel */}
       <div style={panelStyle}>
-        {/* Header */}
+        {/* Panel header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${S[4]}`, height: '52px', borderBottom: `1px solid ${C.border}`, flexShrink: 0, backgroundColor: C.surface2 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: S[2] }}>
             <button
@@ -798,9 +1188,7 @@ export default function AriaPanel({ open, onOpen, onClose, page }) {
                 <path d="M2 2h10v2H2V2ZM2 6h10v2H2V6ZM2 10h6v2H2v-2Z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
               </svg>
             </button>
-            <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: C.primaryGlow, border: `1.5px solid ${C.primary}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <FreyaLogo size={14} color={C.primary} />
-            </div>
+            <FreyaLogo size={26} />
             <div>
               <div style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: C.textPrimary, lineHeight: 1 }}>Freya</div>
               <div style={{ fontFamily: F.body, fontSize: '11px', color: C.primary, lineHeight: 1, marginTop: '2px' }}>AI Co-pilot · Online</div>
@@ -816,8 +1204,39 @@ export default function AriaPanel({ open, onOpen, onClose, page }) {
           </button>
         </div>
 
+        {/* Tab bar */}
+        <div style={{
+          display: 'flex', borderBottom: `1px solid ${C.border}`,
+          flexShrink: 0, backgroundColor: C.surface2,
+        }}>
+          {PANEL_TABS.map((tab) => {
+            const active = panelTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setPanelTab(tab.id)}
+                style={{
+                  flex: 1, padding: `${S[2]} 0`,
+                  fontFamily: F.body, fontSize: '12px', fontWeight: active ? 700 : 500,
+                  color: active ? C.primary : C.textMuted,
+                  backgroundColor: 'transparent', border: 'none',
+                  borderBottom: `2px solid ${active ? C.primary : 'transparent'}`,
+                  cursor: 'pointer', transition: T.color,
+                  marginBottom: '-1px',
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+                }}
+              >
+                {tab.label}
+                {tab.badgeCount > 0 && (
+                  <span style={{ fontFamily: F.mono, fontSize: '9px', fontWeight: 700, padding: '1px 5px', borderRadius: R.pill, backgroundColor: 'rgba(239,68,68,0.2)', color: C.red, border: '1px solid rgba(239,68,68,0.3)', lineHeight: 1.4 }}>{tab.badgeCount}</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
         <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
-          {historyOpen && (
+          {historyOpen && panelTab === 'chat' && (
             <div style={{ width: '180px', flexShrink: 0 }}>
               <AriaPanelHistory
                 onSelectChat={handleSelectChat}
@@ -826,180 +1245,164 @@ export default function AriaPanel({ open, onOpen, onClose, page }) {
               />
             </div>
           )}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden' }}>
-        {/* Quick action chips */}
-        <div style={{ padding: `${S[2]} ${S[4]}`, borderBottom: `1px solid ${C.border}`, display: 'flex', gap: '6px', flexWrap: 'wrap', flexShrink: 0, backgroundColor: C.surface }}>
-          {actions.map((a) => (
-            <button
-              key={a}
-              onClick={() => sendMessage(a)}
-              style={{ padding: '4px 10px', backgroundColor: C.surface3, color: C.textSecondary, border: `1px solid ${C.border}`, borderRadius: R.pill, fontFamily: F.body, fontSize: '11px', fontWeight: 500, cursor: 'pointer', transition: T.color, whiteSpace: 'nowrap' }}
-            >
-              {a}
-            </button>
-          ))}
-        </div>
 
-        {/* Messages */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: `${S[4]}`, display: 'flex', flexDirection: 'column', gap: '10px', scrollbarWidth: 'thin', scrollbarColor: `${C.border} transparent` }}>
-          {messages.map((msg) => (
-            <MessageBubble key={msg.id} msg={msg} toast={toast}/>
-          ))}
-          {typing && <TypingIndicator/>}
-          <div ref={messagesEndRef}/>
-        </div>
-
-        {/* Input area */}
-        <div
-          style={{
-            padding: `${S[3]} ${S[4]} ${Math.max(LAYOUT.footerHeightPx, 48)}px ${S[4]}`,
-            borderTop: `1px solid ${C.border}`,
-            backgroundColor: C.surface2,
-            flexShrink: 0,
-          }}
-        >
-          {attachments.length > 0 && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
-              {attachments.map((a) => (
-                <span
-                  key={a.id}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 8px', backgroundColor: C.bg, border: `1px solid ${C.border}`, borderRadius: R.pill, fontFamily: F.body, fontSize: '11px', color: C.textSecondary }}
-                >
-                  <svg width="12" height="12" viewBox="0 0 14 14"><path d="M4 2h7l4 4v10H4V2Z" fill="none" stroke="currentColor" strokeWidth="1.2"/></svg>
-                  {a.name}
-                  <button type="button" onClick={() => removeAttachment(a.id)} style={{ marginLeft: '2px', padding: 0, border: 'none', background: 'transparent', color: C.textMuted, cursor: 'pointer', display: 'flex' }} aria-label="Remove">
-                    <svg width="12" height="12" viewBox="0 0 14 14"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" strokeWidth="1.5"/></svg>
+          {/* Chat tab */}
+          {panelTab === 'chat' && (
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden' }}>
+              {/* Quick action chips */}
+              <div style={{ padding: `${S[2]} ${S[4]}`, borderBottom: `1px solid ${C.border}`, display: 'flex', gap: '6px', flexWrap: 'wrap', flexShrink: 0, backgroundColor: C.surface }}>
+                {actions.map((a) => (
+                  <button
+                    key={a}
+                    onClick={() => sendMessage(a)}
+                    style={{ padding: '4px 10px', backgroundColor: C.surface3, color: C.textSecondary, border: `1px solid ${C.border}`, borderRadius: R.pill, fontFamily: F.body, fontSize: '11px', fontWeight: 500, cursor: 'pointer', transition: T.color, whiteSpace: 'nowrap' }}
+                  >
+                    {a}
                   </button>
-                </span>
-              ))}
+                ))}
+              </div>
+
+              {/* Messages */}
+              <div style={{ flex: 1, overflowY: 'auto', padding: `${S[4]}`, display: 'flex', flexDirection: 'column', gap: '10px', scrollbarWidth: 'thin', scrollbarColor: `${C.border} transparent` }}>
+                {messages.map((msg) => (
+                  <MessageBubble key={msg.id} msg={msg} toast={toast}/>
+                ))}
+                {typing && <TypingIndicator/>}
+                <div ref={messagesEndRef}/>
+              </div>
+
+              {/* Input area */}
+              <div
+                style={{
+                  padding: `${S[3]} ${S[4]} ${Math.max(LAYOUT.footerHeightPx, 48)}px ${S[4]}`,
+                  borderTop: `1px solid ${C.border}`,
+                  backgroundColor: C.surface2,
+                  flexShrink: 0,
+                }}
+              >
+                {attachments.length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
+                    {attachments.map((a) => (
+                      <span
+                        key={a.id}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 8px', backgroundColor: C.bg, border: `1px solid ${C.border}`, borderRadius: R.pill, fontFamily: F.body, fontSize: '11px', color: C.textSecondary }}
+                      >
+                        <svg width="12" height="12" viewBox="0 0 14 14"><path d="M4 2h7l4 4v10H4V2Z" fill="none" stroke="currentColor" strokeWidth="1.2"/></svg>
+                        {a.name}
+                        <button type="button" onClick={() => removeAttachment(a.id)} style={{ marginLeft: '2px', padding: 0, border: 'none', background: 'transparent', color: C.textMuted, cursor: 'pointer', display: 'flex' }} aria-label="Remove">
+                          <svg width="12" height="12" viewBox="0 0 14 14"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" strokeWidth="1.5"/></svg>
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-end', minWidth: 0 }}>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    onChange={handleFileSelect}
+                    style={{ display: 'none' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    title="Attach file"
+                    style={{
+                      width: '32px', height: '32px', minWidth: '32px',
+                      backgroundColor: 'transparent', color: C.textMuted,
+                      border: `1px solid ${C.border}`, borderRadius: R.button,
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      flexShrink: 0, transition: T.color,
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = C.primary; e.currentTarget.style.borderColor = C.primary; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = C.textMuted; e.currentTarget.style.borderColor = C.border; }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={toggleVoice}
+                    title={listening ? 'Stop listening' : 'Voice input'}
+                    style={{
+                      width: '32px', height: '32px', minWidth: '32px',
+                      backgroundColor: listening ? C.red : 'transparent',
+                      color: listening ? C.textInverse : C.textMuted,
+                      border: `1px solid ${listening ? C.red : C.border}`,
+                      borderRadius: R.button, cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      flexShrink: 0, transition: T.color,
+                    }}
+                    onMouseEnter={(e) => { if (!listening) { e.currentTarget.style.color = C.primary; e.currentTarget.style.borderColor = C.primary; } }}
+                    onMouseLeave={(e) => { if (!listening) { e.currentTarget.style.color = C.textMuted; e.currentTarget.style.borderColor = C.border; } }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                      <line x1="12" y1="19" x2="12" y2="22"/>
+                      <line x1="8" y1="22" x2="16" y2="22"/>
+                    </svg>
+                  </button>
+                  <textarea
+                    ref={inputRef}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input); } }}
+                    placeholder="Ask Freya anything..."
+                    rows={2}
+                    style={{
+                      flex: 1, minWidth: 0,
+                      backgroundColor: C.bg, color: C.textPrimary,
+                      border: `1px solid ${C.border}`, borderRadius: R.input,
+                      padding: `${S[2]} ${S[3]}`, fontFamily: F.body, fontSize: '13px',
+                      resize: 'none', outline: 'none', lineHeight: '1.5',
+                      scrollbarWidth: 'thin',
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => sendMessage(input)}
+                    disabled={!input.trim() && !attachments.length}
+                    style={{
+                      width: '32px', height: '32px', minWidth: '32px',
+                      backgroundColor: input.trim() || attachments.length ? C.primary : C.surface3,
+                      color: input.trim() || attachments.length ? C.textInverse : C.textMuted,
+                      border: 'none', borderRadius: R.button,
+                      cursor: input.trim() || attachments.length ? 'pointer' : 'not-allowed',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      flexShrink: 0, transition: T.base,
+                    }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
           )}
-          <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-end', minWidth: 0 }}>
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              onChange={handleFileSelect}
-              style={{ display: 'none' }}
-            />
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              title="Attach file"
-              style={{
-                width: '32px',
-                height: '32px',
-                minWidth: '32px',
-                backgroundColor: 'transparent',
-                color: C.textMuted,
-                border: `1px solid ${C.border}`,
-                borderRadius: R.button,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-                transition: T.color,
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = C.primary; e.currentTarget.style.borderColor = C.primary; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = C.textMuted; e.currentTarget.style.borderColor = C.border; }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-              </svg>
-            </button>
-            <button
-              type="button"
-              onClick={toggleVoice}
-              title={listening ? 'Stop listening' : 'Voice input'}
-              style={{
-                width: '32px',
-                height: '32px',
-                minWidth: '32px',
-                backgroundColor: listening ? C.red : 'transparent',
-                color: listening ? C.textInverse : C.textMuted,
-                border: `1px solid ${listening ? C.red : C.border}`,
-                borderRadius: R.button,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-                transition: T.color,
-              }}
-              onMouseEnter={(e) => { if (!listening) { e.currentTarget.style.color = C.primary; e.currentTarget.style.borderColor = C.primary; } }}
-              onMouseLeave={(e) => { if (!listening) { e.currentTarget.style.color = C.textMuted; e.currentTarget.style.borderColor = C.border; } }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                <line x1="12" y1="19" x2="12" y2="22"/>
-                <line x1="8" y1="22" x2="16" y2="22"/>
-              </svg>
-            </button>
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input); } }}
-              placeholder="Ask Freya anything..."
-              rows={2}
-              style={{
-                flex: 1,
-                minWidth: 0,
-                width: '100%',
-                backgroundColor: C.bg,
-                color: C.textPrimary,
-                border: `1px solid ${C.border}`,
-                borderRadius: R.md,
-                padding: '8px 12px',
-                fontFamily: F.body,
-                fontSize: '13px',
-                resize: 'none',
-                outline: 'none',
-                lineHeight: 1.5,
-                scrollbarWidth: 'thin',
-              }}
-            />
-            <button
-              onClick={() => sendMessage(input)}
-              disabled={!input.trim() && !attachments.length}
-              style={{ width: '32px', height: '32px', minWidth: '32px', backgroundColor: (input.trim() || attachments.length) ? C.primary : C.surface3, color: (input.trim() || attachments.length) ? C.textInverse : C.textMuted, border: 'none', borderRadius: R.button, cursor: (input.trim() || attachments.length) ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: T.color }}
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-          </div>
-          <div style={{ fontFamily: F.body, fontSize: '10px', color: C.textMuted, marginTop: '6px', textAlign: 'center' }}>
-            Enter to send · Shift+Enter for new line · Attach files · Use mic for voice
-          </div>
-          <div
-            style={{
-              marginTop: S[2],
-              paddingTop: S[2],
-              borderTop: `1px solid ${C.border}`,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontFamily: F.body,
-              fontSize: '10px',
-              color: C.textMuted,
-            }}
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, color: C.amber }} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 9v2M12 17h.01"/>
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-            </svg>
-            <span>Freya can make mistakes. Verify important decisions and data before taking action.</span>
-          </div>
-        </div>
-          </div>
+
+          {/* Agents tab */}
+          {panelTab === 'agents' && (
+            <AgentsTab toast={toast} />
+          )}
+
+          {/* Workflows tab */}
+          {panelTab === 'workflows' && (
+            <WorkflowsTab toast={toast} />
+          )}
+
+          {/* Approvals tab */}
+          {panelTab === 'approvals' && (
+            <ApprovalsTab toast={toast} />
+          )}
         </div>
       </div>
 
-      {/* Float button (only shown when panel is closed) */}
-      <AriaFloatBtn open={open} onOpen={onOpen} onSend={sendMessage} page={page ?? '/'} actions={actions}/>
+      {/* Float button (when panel is closed) */}
+      <AriaFloatBtn open={open} onOpen={onOpen} onSend={sendMessage} page={page} />
     </>
   );
 }

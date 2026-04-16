@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { C, F, R, S, btn, inputStyle } from '../../../tokens';
 
 /**
- * Inline editor for adding a new fact/rule for ARIA.
- * Used by "+ Add a rule for ARIA to follow" in each category.
+ * Inline editor for adding a new fact/rule for Freya.
+ * Used by "+ Add a rule for Freya to follow" in each category.
  */
 export default function ARIABeliefEditor({ categoryLabel, onSave, onCancel }) {
   const [text, setText] = useState('');

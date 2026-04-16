@@ -5,6 +5,9 @@ import useToast from '../hooks/useToast';
 import { C, F, R, S, cardStyle, btn, badge, flex } from '../tokens';
 import { getSocialCampaignById } from '../data/social';
 import EditPostModal from '../components/social/EditPostModal';
+import { useAgent } from '../hooks/useAgent';
+import AgentThinking from '../components/agents/AgentThinking';
+import AgentResultPanel from '../components/agents/AgentResultPanel';
 
 function moveItem(arr, fromIndex, direction) {
   const toIndex = direction === 'up' ? fromIndex - 1 : fromIndex + 1;
@@ -24,6 +27,32 @@ export default function SocialCampaignDetail() {
   const updateSocialPost = useStore((s) => s.updateSocialPost);
 
   const [editingPost, setEditingPost] = useState(null);
+
+  // Agent integration
+  const copywriter = useAgent('copywriter');
+  const analyst = useAgent('analyst');
+  const [contentResult, setContentResult] = useState(null);
+  const [engagementResult, setEngagementResult] = useState(null);
+
+  const handleGenerateMore = async () => {
+    setContentResult(null);
+    toast.success('Content Agent activated...');
+    const res = await copywriter.activate('Generate more content', {
+      campaignId,
+      skill: 'social-content',
+    });
+    setContentResult(res);
+  };
+
+  const handleAnalyzeEngagement = async () => {
+    setEngagementResult(null);
+    toast.success('Analyst Agent activated...');
+    const res = await analyst.activate('Analyze engagement', {
+      campaignId,
+      skill: 'engagement-analysis',
+    });
+    setEngagementResult(res);
+  };
 
   const campaign = getSocialCampaignById(socialCampaigns, campaignId);
   const posts = campaign?.posts?.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0)) ?? [];
@@ -144,6 +173,103 @@ export default function SocialCampaignDetail() {
                 </button>
               </div>
             ))}
+          </div>
+        )}
+      </div>
+
+      {/* Per-platform performance metrics */}
+      <div style={cardStyle}>
+        <div style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[4] }}>
+          Platform performance
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: S[3] }}>
+          {[
+            { platform: 'LinkedIn', reach: '12.4K', engagement: '4.2%', clicks: 528 },
+            { platform: 'Twitter', reach: '8.1K', engagement: '2.8%', clicks: 227 },
+            { platform: 'Instagram', reach: '15.6K', engagement: '5.1%', clicks: 795 },
+            { platform: 'Facebook', reach: '6.3K', engagement: '3.4%', clicks: 214 },
+          ].map((p) => (
+            <div
+              key={p.platform}
+              style={{
+                backgroundColor: C.surface2,
+                border: `1px solid ${C.border}`,
+                borderRadius: R.md,
+                padding: S[3],
+              }}
+            >
+              <div style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 700, color: C.textPrimary, marginBottom: S[2] }}>
+                {p.platform}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted }}>Reach</span>
+                  <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 600, color: C.textPrimary }}>{p.reach}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted }}>Engagement</span>
+                  <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 600, color: C.textPrimary }}>{p.engagement}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontFamily: F.mono, fontSize: '10px', color: C.textMuted }}>Clicks</span>
+                  <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 600, color: C.textPrimary }}>{p.clicks}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Agent-powered actions */}
+      <div style={cardStyle}>
+        <div style={{ fontFamily: F.display, fontSize: '13px', fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: S[3] }}>
+          Agent actions
+        </div>
+        <div style={{ display: 'flex', gap: S[3], flexWrap: 'wrap', marginBottom: S[4] }}>
+          <button
+            onClick={handleGenerateMore}
+            disabled={copywriter.isActive}
+            style={{
+              ...btn.primary,
+              fontSize: '13px',
+              opacity: copywriter.isActive ? 0.7 : 1,
+              cursor: copywriter.isActive ? 'wait' : 'pointer',
+            }}
+          >
+            Generate more content
+          </button>
+          <button
+            onClick={handleAnalyzeEngagement}
+            disabled={analyst.isActive}
+            style={{
+              ...btn.secondary,
+              fontSize: '13px',
+              opacity: analyst.isActive ? 0.7 : 1,
+              cursor: analyst.isActive ? 'wait' : 'pointer',
+            }}
+          >
+            Analyze engagement
+          </button>
+        </div>
+
+        {copywriter.isActive && (
+          <div style={{ marginBottom: S[3] }}>
+            <AgentThinking agentId="copywriter" task="Generating additional content for this campaign..." />
+          </div>
+        )}
+        {analyst.isActive && (
+          <div style={{ marginBottom: S[3] }}>
+            <AgentThinking agentId="analyst" task="Analyzing engagement patterns across platforms..." />
+          </div>
+        )}
+        {contentResult && (
+          <div style={{ marginBottom: S[3] }}>
+            <AgentResultPanel result={contentResult} />
+          </div>
+        )}
+        {engagementResult && (
+          <div style={{ marginBottom: S[3] }}>
+            <AgentResultPanel result={engagementResult} />
           </div>
         )}
       </div>

@@ -1,108 +1,128 @@
 /* ─────────────────────────────────────────────
    Antarious — CSS Design Token Variables
-   Product UI uses Charged Teal palette
-   per Antarious Brand Guidelines v1.2.
-   Light theme via [data-theme="light"].
+   Aligned with https://antarious.com/ embedded :root + [data-theme="dark"]
+   (navy ink, sky/teal accent, slate text). Light = marketing light theme.
+   Product toggles light via [data-theme="light"] on <html>.
+   data-shell-density: comfortable | compact (set by AppLayout per role)
 ───────────────────────────────────────────── */
 
-/* ── Dark theme (Product UI — Charged Teal) ── */
+/* ── Dark theme (default product — antarious.com dark) ── */
 :root {
-  /* Backgrounds — deep navy/ink */
-  --c-bg:       #060D10;  /* dark-bg */
-  --c-surface:  #091520;  /* dark-surf */
-  --c-surface2: #0A1628;  /* navy */
-  --c-surface3: #0B1B2F;  /* slightly lighter navy */
+  /* Backgrounds — --bg / --bg2 / --bg3 */
+  --c-bg:       #07131E;
+  --c-surface:  #0B1722;
+  --c-surface2: #102032;
+  --c-surface3: #152a3d;
 
-  /* Borders — teal-tinted */
-  --c-border:       rgba(14, 165, 233, 0.18); /* dark-border */
-  --c-border-hover: rgba(56, 189, 248, 0.6);  /* sky / hover */
+  /* Borders — --bdr / sky tint on hover */
+  --c-border:       rgba(255, 255, 255, 0.09);
+  --c-border-hover: rgba(125, 211, 252, 0.45);
 
-  /* Brand accents — Charged Teal primary, Electric secondary */
-  --c-primary:       #0EA5E9;                       /* teal */
-  --c-primary-dim:   #0891B2;                       /* teal-dark */
-  --c-primary-glow:  rgba(14, 165, 233, 0.25);      /* teal glow */
-  --c-secondary:     #2563EB;                       /* electric */
-  --c-secondary-dim: #1D4ED8;                       /* electric-2 */
+  /* Brand — --teal / --teal2 / --teal3 */
+  --c-primary:       #38bdf8;
+  --c-primary-dim:   #0ea5e9;
+  --c-primary-glow:  rgba(56, 189, 248, 0.18);
+  --c-secondary:     #7dd3fc;
+  --c-secondary-dim: #38bdf8;
 
-  /* Legacy alias (previously sage) now maps to primary teal */
-  --c-sage: #0EA5E9;
+  /* Legacy alias (Freya / CTAs) */
+  --c-sage: #38bdf8;
 
-  /* Text — light ink on dark */
-  --c-text-primary:   #E5F3FF;
-  --c-text-secondary: rgba(226, 232, 240, 0.85);
-  --c-text-muted:     #64748B;
-  --c-text-inverse:   #060D10;
+  /* Text — --ink family */
+  --c-text-primary:   #e5eef7;
+  --c-text-secondary: #c3d1dd;
+  --c-text-muted:     #8ea4b8;
+  --c-text-inverse:   #07131e;
 
-  /* Semantic */
-  --c-red:       #EF4444;
-  --c-red-dim:   rgba(239, 68, 68, 0.15);
-  --c-amber:     #FBBF24;
+  /* Semantic — antarious.com dark */
+  --c-red:       #f87171;
+  --c-red-dim:   rgba(248, 113, 113, 0.15);
+  --c-amber:     #fbbf24;
   --c-amber-dim: rgba(251, 191, 36, 0.15);
-  --c-green:     #10B981;
-  --c-green-dim: rgba(16, 185, 129, 0.15);
+  --c-green:     #34d399;
+  --c-green-dim: rgba(52, 211, 153, 0.15);
 
-  /* Overlays — dark ink */
-  --c-overlay:       rgba(6, 13, 16, 0.78);
-  --c-overlay-heavy: rgba(6, 13, 16, 0.94);
+  /* Overlays */
+  --c-overlay:       rgba(7, 19, 30, 0.78);
+  --c-overlay-heavy: rgba(7, 19, 30, 0.94);
 
-  /* Shadows — teal tint */
-  --shadow-card:       0 1px 3px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(14, 165, 233, 0.16);
-  --shadow-card-hover: 0 4px 16px rgba(14, 165, 233, 0.32), 0 0 0 1px rgba(14, 165, 233, 0.4);
-  --shadow-glow:       0 0 20px rgba(14, 165, 233, 0.3);
-  --shadow-glow-sm:    0 0 8px rgba(14, 165, 233, 0.2);
-  --shadow-modal:      0 24px 64px rgba(0, 0, 0, 0.7);
-  --shadow-dropdown:   0 8px 24px rgba(6, 13, 16, 0.85), 0 0 0 1px rgba(14, 165, 233, 0.25);
+  /* Shadows — teal-tinted (site --sh / --sh-blue) */
+  --shadow-card:       0 1px 3px rgba(0, 0, 0, 0.22), 0 8px 32px rgba(0, 0, 0, 0.24), 0 0 0 1px rgba(56, 189, 248, 0.1);
+  --shadow-card-hover: 0 4px 6px rgba(0, 0, 0, 0.22), 0 20px 60px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(56, 189, 248, 0.22);
+  --shadow-glow:       0 0 22px rgba(56, 189, 248, 0.22);
+  --shadow-glow-sm:    0 0 10px rgba(56, 189, 248, 0.14);
+  --shadow-modal:      0 24px 64px rgba(0, 0, 0, 0.55);
+  --shadow-dropdown:   0 8px 28px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(56, 189, 248, 0.2);
   --shadow-inset:      inset 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
-/* ── Light theme (Marketing / onboarding — Charged Teal) ── */
+/* ── Light theme (antarious.com marketing :root) ── */
 [data-theme="light"] {
-  /* Backgrounds — cream/stone */
-  --c-bg:       #F7F5F0; /* cream */
-  --c-surface:  #FFFFFF;
-  --c-surface2: #FAF8F3; /* cream */
-  --c-surface3: #F2EDE4; /* parchment */
+  --c-bg:       #ffffff;
+  --c-surface:  #f8fafc;
+  --c-surface2: #f1f5f9;
+  --c-surface3: #e2e8f0;
 
-  /* Borders */
-  --c-border:       #E8E3D8;            /* stone */
-  --c-border-hover: #0EA5E9;           /* teal */
+  --c-border:       rgba(15, 23, 42, 0.09);
+  --c-border-hover: #0ea5e9;
 
-  /* Brand accents — Charged Teal primary, Electric secondary */
-  --c-primary:       #0EA5E9;
-  --c-primary-dim:   #0891B2;
+  --c-primary:       #0ea5e9;
+  --c-primary-dim:   #0284c7;
   --c-primary-glow:  rgba(14, 165, 233, 0.15);
-  --c-secondary:     #2563EB;
-  --c-secondary-dim: #1D4ED8;
+  --c-secondary:     #38bdf8;
+  --c-secondary-dim: #0284c7;
 
-  /* Legacy alias (previously sage) now maps to primary teal */
-  --c-sage: #0EA5E9;
+  --c-sage: #0ea5e9;
 
-  /* Text — ink */
-  --c-text-primary:   #1C2B27;
-  --c-text-secondary: #5A7168;
-  --c-text-muted:     #8B9E98;
-  --c-text-inverse:   #FFFFFF;
+  --c-text-primary:   #0f172a;
+  --c-text-secondary: #334155;
+  --c-text-muted:     #64748b;
+  --c-text-inverse:   #ffffff;
 
-  /* Semantic */
-  --c-red:       #EF4444;
-  --c-red-dim:   rgba(239, 68, 68, 0.10);
-  --c-amber:     #FBBF24;
-  --c-amber-dim: rgba(251, 191, 36, 0.12);
-  --c-green:     #10B981;
-  --c-green-dim: rgba(16, 185, 129, 0.12);
+  --c-red:       #dc2626;
+  --c-red-dim:   rgba(220, 38, 38, 0.1);
+  --c-amber:     #d97706;
+  --c-amber-dim: rgba(217, 119, 6, 0.12);
+  --c-green:     #059669;
+  --c-green-dim: rgba(5, 150, 105, 0.12);
 
-  /* Overlays */
-  --c-overlay:       rgba(28, 43, 39, 0.45);
-  --c-overlay-heavy: rgba(28, 43, 39, 0.88);
+  --c-overlay:       rgba(15, 23, 42, 0.45);
+  --c-overlay-heavy: rgba(15, 23, 42, 0.88);
 
-  /* Shadows */
-  --shadow-card:       0 1px 3px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(200, 221, 216, 0.8);
-  --shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(74, 124, 111, 0.25);
-  --shadow-glow:       0 0 20px rgba(74, 124, 111, 0.12);
-  --shadow-glow-sm:    0 0 8px rgba(74, 124, 111, 0.1);
-  --shadow-modal:      0 24px 64px rgba(0, 0, 0, 0.12);
-  --shadow-dropdown:   0 8px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(200, 221, 216, 1);
-  --shadow-inset:      inset 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-card:       0 1px 3px rgba(15, 23, 42, 0.05), 0 8px 32px rgba(15, 23, 42, 0.06);
+  --shadow-card-hover: 0 4px 6px rgba(15, 23, 42, 0.04), 0 20px 60px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(14, 165, 233, 0.12);
+  --shadow-glow:       0 0 20px rgba(14, 165, 233, 0.14);
+  --shadow-glow-sm:    0 0 8px rgba(14, 165, 233, 0.1);
+  --shadow-modal:      0 24px 64px rgba(15, 23, 42, 0.12);
+  --shadow-dropdown:   0 8px 24px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(14, 165, 233, 0.2);
+  --shadow-inset:      inset 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+/* ── Animation keyframes ─────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes freyaLogoPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.88; transform: scale(0.98); }
 }
 
 /* ── Global base ──────────────────────────── */
@@ -114,6 +134,21 @@ html {
 body {
   background-color: var(--c-bg);
   color: var(--c-text-primary);
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  /* antarious.com: DM Sans primary UI, Plus Jakarta secondary */
+  font-family: 'DM Sans', 'Plus Jakarta Sans', system-ui, sans-serif;
   transition: background-color 0.25s ease, color 0.2s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Role shell density (AppLayout sets data-shell-density on <html>) */
+html[data-shell-density='compact'] {
+  --shell-content-pad-y: 10px;
+}
+html[data-shell-density='comfortable'] {
+  --shell-content-pad-y: 16px;
+}
+
+#root {
+  min-height: 100dvh;
 }

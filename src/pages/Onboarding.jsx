@@ -5,6 +5,8 @@ import useStore from '../store/useStore';
 import { PLANS } from '../config/plans';
 import AntariousLogo from '../components/ui/AntariousLogo';
 import OnboardingFreyaPanel from '../components/onboarding/OnboardingFreyaPanel';
+import AgentThinking from '../components/agents/AgentThinking';
+import { AGENTS } from '../agents/AgentRegistry';
 import {
   COMPANY_TYPES,
   getRecommendedPlan,
@@ -98,6 +100,7 @@ const STEPS = [
   { id: 'welcome', title: 'Welcome' },
   { id: 'company', title: 'Company type' },
   { id: 'tier', title: 'Your plan' },
+  { id: 'agents', title: 'Your AI team' },
   { id: 'connections', title: 'Connections' },
   { id: 'done', title: "You're set" },
 ];
@@ -152,6 +155,7 @@ export default function Onboarding() {
       setOnboardingSelectedPlanId(planId);
       setSelectedPlanId(planId);
       setShowAllPlans(false);
+      // Step index 3 = agents intro (inserted before connections)
       setStepIndex(3);
     }
   };
@@ -167,7 +171,7 @@ export default function Onboarding() {
     setConnectionAds('meta', connMeta);
     setConnectionAds('linkedin', connLinkedIn);
     setConnectionAds('google', connGoogle);
-    setStepIndex(4);
+    setStepIndex(5);
   };
 
   const handleSkipConnections = () => {
@@ -207,6 +211,9 @@ export default function Onboarding() {
         break;
       case 'see_all':
         setShowAllPlans(true);
+        break;
+      case 'meet_agents':
+        setStepIndex(4); // move to connections step
         break;
       case 'finish':
         handleConnectionsFinish();
@@ -472,6 +479,66 @@ export default function Onboarding() {
                   </button>
                 </>
               )}
+            </>
+          )}
+
+          {/* Step: Agent team intro */}
+          {stepId === 'agents' && (
+            <>
+              <h2 style={{ fontFamily: N.fontDisplay, fontSize: '18px', fontWeight: 700, color: N.textPrimary, margin: `0 0 ${S[1]} 0` }}>
+                Your AI team is ready
+              </h2>
+              <p style={{ fontFamily: N.fontBody, fontSize: '13px', color: N.textSecondary, margin: `0 0 ${S[4]} 0`, lineHeight: 1.5 }}>
+                Freya leads 8 specialist agents — each one an expert in their domain, working together on your GTM engine.
+              </p>
+
+              {/* Freya thinking animation */}
+              <div style={{ marginBottom: S[4] }}>
+                <AgentThinking agentId="freya" task="Briefing your specialist agents…" />
+              </div>
+
+              {/* Agent cards grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: S[2], marginBottom: S[5] }}>
+                {Object.values(AGENTS).map((agent) => (
+                  <div
+                    key={agent.id}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: S[2],
+                      padding: S[3],
+                      borderRadius: N.radiusButton,
+                      backgroundColor: N.surface2,
+                      border: `1px solid ${N.border}`,
+                    }}
+                  >
+                    <div style={{
+                      width: '34px', height: '34px', borderRadius: N.radiusButton, flexShrink: 0,
+                      backgroundColor: `${agent.color}22`, border: `1px solid ${agent.color}44`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '16px',
+                    }}>
+                      {agent.avatar}
+                    </div>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontFamily: N.fontBody, fontSize: '13px', fontWeight: 600, color: N.textPrimary, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {agent.displayName}
+                      </div>
+                      <div style={{ fontFamily: N.fontBody, fontSize: '11px', color: N.textMuted, textTransform: 'capitalize' }}>
+                        {agent.role}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setStepIndex(4)}
+                style={{ ...btnPrimary, width: '100%' }}
+              >
+                Let's connect your tools →
+              </button>
             </>
           )}
 

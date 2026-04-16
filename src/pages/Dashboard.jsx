@@ -3,6 +3,17 @@ import useStore from '../store/useStore';
 import { getDashboardForClient } from '../data/dashboard';
 import { C, F, S } from '../tokens';
 import DashboardWelcome from '../components/dashboard/DashboardWelcome';
+import DashboardOwner from '../views/dashboard/DashboardOwner';
+import DashboardAdvisor from '../views/dashboard/DashboardAdvisor';
+import DashboardCSM from '../views/dashboard/DashboardCSM';
+import DashboardMediaBuyer from '../views/dashboard/DashboardMediaBuyer';
+import DashboardContentStrategist from '../views/dashboard/DashboardContentStrategist';
+import DashboardSDR from '../views/dashboard/DashboardSDR';
+import DashboardAnalyst from '../views/dashboard/DashboardAnalyst';
+import DashboardClient from '../views/dashboard/DashboardClient';
+import DashboardManual from '../views/dashboard/DashboardManual';
+import DashboardSemiAuto from '../views/dashboard/DashboardSemiAuto';
+import DashboardAgentic from '../views/dashboard/DashboardAgentic';
 import KPIHeader from '../components/dashboard/KPIHeader';
 import NewCampaignChoice from '../components/campaign/NewCampaignChoice';
 import CampaignHealthCards from '../components/dashboard/CampaignHealthCards';
@@ -15,6 +26,7 @@ import SocialReachWidget from '../components/dashboard/SocialReachWidget';
 import DonorPipelineWidget from '../components/dashboard/DonorPipelineWidget';
 import ROASTrackerWidget from '../components/dashboard/ROASTrackerWidget';
 import StartCampaignFromFile from '../components/dashboard/StartCampaignFromFile';
+import AgentStatusBar from '../components/agents/AgentStatusBar';
 import StartupDashboard from './for_startups/StartupDashboard';
 
 const PERSONA_LABELS = {
@@ -124,6 +136,12 @@ function WorkspaceDashboardContent() {
         <KPIHeader kpisConfig={getKPIs()} kpiValues={data.kpiValues} />
       </section>
 
+      {/* Agent Status Bar */}
+      <section style={{ marginBottom: S[6] }}>
+        <h2 style={{ ...sectionTitleStyle, marginBottom: S[3] }}>Agent status</h2>
+        <AgentStatusBar />
+      </section>
+
       {/* Widgets grid */}
       <div
         style={{
@@ -186,9 +204,45 @@ function WorkspaceDashboardContent() {
   );
 }
 
+/**
+ * Dashboard dispatch logic:
+ * 1. Startups get StartupDashboard
+ * 2. Owner/Founder roles get command-mode-based dashboards:
+ *    - manual: Workbench (guide one agent, edit output, post manually)
+ *    - semi_auto: Approval queue (Freya proposes, you approve)
+ *    - fully_agentic: Command center (Freya executes, you monitor)
+ * 3. Other roles get role-specific dashboards
+ */
 export default function Dashboard() {
   const segment = useStore((s) => s.segment);
+  const role = useStore((s) => s.currentRole);
+  const commandMode = useStore((s) => s.commandMode);
 
   if (segment === 'startup') return <StartupDashboard embedded />;
-  return <WorkspaceDashboardContent />;
+
+  // Owner/Founder: dispatch by command mode
+  if (role === 'owner' || role === 'founder') {
+    switch (commandMode) {
+      case 'manual':
+        return <DashboardManual />;
+      case 'semi_auto':
+        return <DashboardSemiAuto />;
+      case 'fully_agentic':
+        return <DashboardAgentic />;
+      default:
+        return <DashboardSemiAuto />;
+    }
+  }
+
+  // Other roles: dispatch by role
+  switch (role) {
+    case 'advisor':            return <DashboardAdvisor />;
+    case 'csm':                return <DashboardCSM />;
+    case 'mediaBuyer':         return <DashboardMediaBuyer />;
+    case 'contentStrategist':  return <DashboardContentStrategist />;
+    case 'sdr':                return <DashboardSDR />;
+    case 'analyst':            return <DashboardAnalyst />;
+    case 'client':             return <DashboardClient />;
+    default:                   return <DashboardSemiAuto />;
+  }
 }

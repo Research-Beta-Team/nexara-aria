@@ -227,7 +227,7 @@ function MetaConnectionCard() {
   );
 }
 
-/* ─── Previous ads & Freya: permission to fetch and add to ARIA ─── */
+/* ─── Previous ads & Freya: permission to fetch and add to Freya ─── */
 function PaidAdsAriaCard() {
   const metaConnected = useStore((s) => s.connections?.meta);
   const paidAds = useStore((s) => s.paidAdsPermissions);
@@ -237,7 +237,7 @@ function PaidAdsAriaCard() {
 
   if (!metaConnected) return null;
 
-  const handleFetchAndAddToAria = () => {
+  const handleFetchAndAddToFreya = () => {
     setFetching(true);
     setTimeout(() => {
       setPaidAdsPermissions({ allowFetch: true, allowFreyaLearn: true });
@@ -276,7 +276,7 @@ function PaidAdsAriaCard() {
       </div>
       <button
         type="button"
-        onClick={handleFetchAndAddToAria}
+        onClick={handleFetchAndAddToFreya}
         disabled={fetching}
         style={{
           fontSize: '13px',

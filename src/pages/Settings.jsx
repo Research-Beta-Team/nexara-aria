@@ -55,9 +55,9 @@ function SectionHeader({ title, description }) {
   );
 }
 
-function Card({ children, style }) {
+function Card({ children, style, id }) {
   return (
-    <div style={{ backgroundColor: C.surface2, border: `1px solid ${C.border}`, borderRadius: R.card, overflow: 'hidden', ...style }}>
+    <div id={id} style={{ backgroundColor: C.surface2, border: `1px solid ${C.border}`, borderRadius: R.card, overflow: 'hidden', ...style }}>
       {children}
     </div>
   );
@@ -571,9 +571,9 @@ const AUTONOMY_LEVELS = [
 ];
 
 const COMMAND_MODES = [
-  { id: 'manual',     label: 'Manual',         desc: 'All agents require explicit trigger' },
-  { id: 'semi',       label: 'Semi-Auto',       desc: 'Agents respond to triggers, you approve actions' },
-  { id: 'agentic',    label: 'Fully Agentic',   desc: 'Agents run autonomously, notify on completion' },
+  { id: 'manual', label: 'Manual', desc: 'All agents require explicit trigger' },
+  { id: 'semi_auto', label: 'Semi-Auto', desc: 'Agents respond to triggers; you approve sensitive actions' },
+  { id: 'fully_agentic', label: 'Fully Agentic', desc: 'Agents run autonomously; you get digests and escalations' },
 ];
 
 const APPROVAL_ROLES = ['Owner', 'CMO', 'Legal', 'Brand', 'SDR', 'CSM'];
@@ -581,8 +581,9 @@ const APPROVAL_ROLES = ['Owner', 'CMO', 'Legal', 'Brand', 'SDR', 'CSM'];
 function AgentConfigSection() {
   const toast = useToast();
   const allAgents = Object.values(AGENTS);
+  const commandMode = useStore((s) => s.commandMode);
+  const setCommandModeStore = useStore((s) => s.setCommandMode);
 
-  const [commandMode, setCommandMode] = useState('semi');
   const [globalOverride, setGlobalOverride] = useState(false);
   const [expandedAgent, setExpandedAgent] = useState(null);
   const [agentAutonomy, setAgentAutonomy] = useState(() =>
@@ -607,10 +608,10 @@ function AgentConfigSection() {
   const [testModalAgent, setTestModalAgent] = useState(null);
   const [emergencyStop, setEmergencyStop] = useState(false);
 
-  const handleCommandMode = (mode) => {
-    setCommandMode(mode);
-    const labels = { manual: 'Manual', semi: 'Semi-Auto', agentic: 'Fully Agentic' };
-    toast.info(`Command mode set to "${labels[mode]}".`);
+  const handleCommandMode = (modeId) => {
+    setCommandModeStore(modeId);
+    const labels = { manual: 'Manual', semi_auto: 'Semi-Auto', fully_agentic: 'Fully Agentic' };
+    toast.info(`Command mode set to "${labels[modeId]}".`);
   };
 
   const handleGlobalOverride = (on) => {
@@ -680,7 +681,7 @@ function AgentConfigSection() {
   const handleResetAll = () => {
     setEmergencyStop(false);
     setGlobalOverride(false);
-    setCommandMode('semi');
+    setCommandModeStore('semi_auto');
     setAgentAutonomy(Object.fromEntries(allAgents.map((a) => [a.id, a.autonomyLevel])));
     setSkillToggles(Object.fromEntries(allAgents.map((a) => [a.id, Object.fromEntries(a.skills.map((s) => [s, true]))])));
     setTriggerToggles(Object.fromEntries(allAgents.map((a) => [a.id, Object.fromEntries((a.triggers || []).map((t) => [t, true]))])));
@@ -697,19 +698,20 @@ function AgentConfigSection() {
       />
 
       {/* ── Command Mode ─────────────────────────── */}
-      <Card style={{ marginBottom: S[5] }}>
+      <Card id="settings-command-mode" style={{ marginBottom: S[5] }}>
         <div style={{ padding: S[5], borderBottom: `1px solid ${C.border}` }}>
           <div style={{ fontFamily: F.display, fontSize: '15px', fontWeight: 700, color: C.textPrimary, marginBottom: 4 }}>
             Command Mode
           </div>
           <div style={{ fontFamily: F.body, fontSize: '12px', color: C.textSecondary, marginBottom: S[4] }}>
-            The primary setting that controls how your entire agent fleet operates.
+            The primary setting for the whole workspace. The top bar shows your active mode only; switch between Manual, Semi-Auto, and Fully Agentic here.
           </div>
           <div style={{ display: 'flex', gap: S[3] }}>
             {COMMAND_MODES.map((mode) => {
               const active = commandMode === mode.id;
               return (
                 <button
+                  type="button"
                   key={mode.id}
                   onClick={() => handleCommandMode(mode.id)}
                   style={{

@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useStore from '../store/useStore';
 import useToast from '../hooks/useToast';
+import useCommandModeDesign from '../hooks/useCommandModeDesign';
 import { C, F, R, S, T, btn, shadows, scrollbarStyle } from '../tokens';
 import NewCampaignChoice from '../components/campaign/NewCampaignChoice';
 import usePlan from '../hooks/usePlan';
 import AgentRoleIcon from '../components/ui/AgentRoleIcon';
 import { IconCircleEmpty, IconZap } from '../components/ui/Icons';
+import { ModePageWrapper, ModeButton, ModeBadge } from '../components/mode';
 
 /* ─── Campaign data ─────────────────────────────────────────── */
 const CAMPAIGNS = [
@@ -485,12 +487,17 @@ function WorkflowQueuePanel({ toast }) {
 export default function CampaignList() {
   const navigate = useNavigate();
   const toast = useToast();
+  const design = useCommandModeDesign();
   const openCheckout = useStore((s) => s.openCheckout);
   const { getLimit, isLimitReached } = usePlan();
   const activeCampaignsCount = useStore((s) => s.activeCampaignsCount);
 
   const [statusFilter, setStatusFilter] = useState('all');
   const [freyaDismissed, setFreyaDismissed] = useState(false);
+
+  const isManual = design.id === 'manual';
+  const isAgentic = design.id === 'fully_agentic';
+  const accentColor = isAgentic ? C.green : isManual ? C.red : C.primary;
 
   const campaignLimit = getLimit('activeCampaigns');
   const atCampaignLimit = campaignLimit !== -1 && isLimitReached('activeCampaigns', activeCampaignsCount);
@@ -500,26 +507,40 @@ export default function CampaignList() {
   );
 
   const filterPillStyle = (active) => ({
-    fontFamily: F.body,
-    fontSize: '13px',
+    fontFamily: isManual ? design.typography.dataFont : F.body,
+    fontSize: isManual ? '11px' : '13px',
     fontWeight: active ? 600 : 400,
     color: active ? C.textInverse : C.textSecondary,
-    backgroundColor: active ? C.primary : 'transparent',
-    border: `1px solid ${active ? C.primary : C.border}`,
-    borderRadius: R.pill,
-    padding: `${S[1]} ${S[4]}`,
+    backgroundColor: active ? accentColor : 'transparent',
+    border: active
+      ? `1px solid ${accentColor}`
+      : isManual
+      ? `1px dashed ${C.border}`
+      : `1px solid ${C.border}`,
+    borderRadius: isAgentic ? '20px' : isManual ? '3px' : R.pill,
+    padding: isManual ? `2px ${S[3]}` : `${S[1]} ${S[4]}`,
     cursor: 'pointer',
-    transition: T.color,
+    transition: design.motion.transition,
+    textTransform: isManual ? 'uppercase' : 'none',
+    letterSpacing: isManual ? '0.05em' : '0',
   });
 
   return (
-    <div style={{ padding: `${S[6]} ${S[8]} ${S[10]}`, minHeight: '100vh', backgroundColor: C.bg, ...scrollbarStyle }}>
+    <ModePageWrapper style={{ minHeight: '100vh', ...scrollbarStyle }}>
 
       {/* ── Page Header ─────────────────────────── */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: S[5], flexWrap: 'wrap', gap: S[4] }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: design.spacing.sectionGap, flexWrap: 'wrap', gap: S[4] }}>
         <div>
-          <h1 style={{ fontFamily: F.display, fontSize: '28px', fontWeight: 800, color: C.textPrimary, margin: 0, letterSpacing: '-0.03em' }}>
-            Campaign Operations
+          <h1 style={{
+            fontFamily: design.typography.headingFont,
+            fontSize: isManual ? '16px' : isAgentic ? '32px' : '28px',
+            fontWeight: design.typography.headingWeight,
+            letterSpacing: design.typography.headingLetterSpacing,
+            textTransform: design.typography.headingTransform,
+            color: C.textPrimary,
+            margin: 0,
+          }}>
+            {isManual ? 'CAMPAIGN OPERATIONS' : 'Campaign Operations'}
           </h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: S[3], marginTop: S[2], flexWrap: 'wrap' }}>
             {OVERVIEW_STATS.map(({ label, value, color }, i) => (
@@ -633,6 +654,6 @@ export default function CampaignList() {
 
       {/* ── Workflow Queue ───────────────────────── */}
       <WorkflowQueuePanel toast={toast} />
-    </div>
+    </ModePageWrapper>
   );
 }

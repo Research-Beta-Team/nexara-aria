@@ -1,8 +1,7 @@
 // ─────────────────────────────────────────────
 //  Antarious Design Tokens
-//  All color values resolve from CSS variables
-//  defined in index.css. Switching data-theme
-//  on <html> swaps the full palette instantly.
+//  Colors: CSS variables in index.css — aligned with https://antarious.com/
+//  Switching data-theme on <html> swaps light/dark.
 // ─────────────────────────────────────────────
 
 // ── Colors ───────────────────────────────────
@@ -32,8 +31,8 @@ export const C = {
   textInverse:   'var(--c-text-inverse)',
   /** Text on primary/sage: use textInverse. Text on danger/red: use textOnDanger. */
   textOnDanger:  '#FFFFFF',
-  /** Text on light accent backgrounds (amber, yellow, light surfaces) — always dark for contrast. */
-  textOnLightAccent: '#1C2B27',
+  /** Text on light accent backgrounds (amber, yellow, light surfaces) — slate ink. */
+  textOnLightAccent: '#0f172a',
 
   // Semantic
   red:      'var(--c-red)',
@@ -43,16 +42,22 @@ export const C = {
   green:    'var(--c-green)',
   greenDim: 'var(--c-green-dim)',
 
+  // Command mode accents
+  sageDim:  'rgba(56, 189, 248, 0.15)', // Semi-auto dim background
+  cyan:     '#00d4ff',                   // Agentic primary accent
+  cyanDim:  'rgba(0, 212, 255, 0.15)',   // Agentic dim background
+  ink:      '#07131e',                   // Dark background for inputs in dark mode
+
   // Overlays
   overlay:      'var(--c-overlay)',
   overlayHeavy: 'var(--c-overlay-heavy)',
 };
 
-// ── Typography (Antarious Brand Guidelines) ──
+// ── Typography (aligned with https://antarious.com/) ──
 export const F = {
   display: "'Outfit', sans-serif",
-  body:    "'Plus Jakarta Sans', sans-serif",
-  mono:    "'JetBrains Mono', monospace",
+  body:    "'DM Sans', 'Plus Jakarta Sans', system-ui, sans-serif",
+  mono:    "'DM Mono', 'JetBrains Mono', monospace",
 };
 
 // ── Border Radius (Antarious: r-sm 6, r-md 10, r-lg 14, r-xl 20) ──
@@ -100,6 +105,10 @@ export const Z = {
   dropdown:100,
   sticky:  200,
   overlay: 300,
+  /** Mobile nav scrim (below sidebar drawer) */
+  navScrim: 340,
+  /** Fixed sidebar drawer on small viewports */
+  navDrawer: 360,
   modal:   400,
   toast:   500,
 };
@@ -107,6 +116,15 @@ export const Z = {
 // ── Layout (app shell) ────────────────────────
 export const LAYOUT = {
   footerHeightPx: 48,
+};
+
+/** Viewport breakpoints (px) — mobile-first shell */
+export const BREAKPOINTS = {
+  sm: 480,
+  md: 768,
+  lg: 1024,
+  xl: 1280,
+  xxl: 1600,
 };
 
 // ── Transitions ───────────────────────────────
@@ -382,30 +400,30 @@ export const statLabel = {
   letterSpacing: '0.06em',
 };
 
-// ── Client Portal (light — literal hex for /client-portal) ──
+// ── Client Portal (light — antarious.com marketing light) ──
 export const CLIENT_PORTAL_TOKENS = {
-  bg: '#F7F5F0',          // cream
-  surface: '#FFFFFF',
-  border: '#E8E3D8',      // stone
-  primary: '#0EA5E9',     // Charged Teal
-  textPrimary: '#1C2B27', // ink
-  textSecondary: '#5A7168', // ink-3
+  bg: '#ffffff',
+  surface: '#f8fafc',
+  border: 'rgba(15, 23, 42, 0.09)',
+  primary: '#0ea5e9',
+  textPrimary: '#0f172a',
+  textSecondary: '#334155',
 };
 
-// ── Auth/onboarding pages — Antarious Charged Teal palette (matches index.css :root) ──
+// ── Auth/onboarding — antarious.com dark theme tokens ──
 export const ANTARIOUS_AUTH = {
-  bg: '#060D10',                          // dark-bg
-  surface: '#091520',                     // dark-surf
-  surface2: '#0A1628',                    // navy
-  surface3: '#0B1B2F',
-  border: 'rgba(14, 165, 233, 0.18)',     // dark-border
-  primary: '#0EA5E9',                     // Charged Teal
-  primaryGlow: 'rgba(14, 165, 233, 0.25)',
-  secondary: '#2563EB',                   // Electric
-  textPrimary: '#E5F3FF',
-  textSecondary: 'rgba(226, 232, 240, 0.85)',
-  textMuted: '#64748B',
-  textInverse: '#060D10',
+  bg: '#07131E',
+  surface: '#0B1722',
+  surface2: '#102032',
+  surface3: '#152a3d',
+  border: 'rgba(255, 255, 255, 0.09)',
+  primary: '#38bdf8',
+  primaryGlow: 'rgba(56, 189, 248, 0.18)',
+  secondary: '#7dd3fc',
+  textPrimary: '#e5eef7',
+  textSecondary: '#c3d1dd',
+  textMuted: '#8ea4b8',
+  textInverse: '#07131e',
   red: '#EF4444',
   redDim: 'rgba(239, 68, 68, 0.15)',
   amber: '#FBBF24',

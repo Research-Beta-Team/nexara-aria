@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Zap, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { X, Menu } from 'lucide-react';
 import useStore from '../../store/useStore';
 import useToast from '../../hooks/useToast';
 import useCredits from '../../hooks/useCredits';
@@ -9,12 +9,14 @@ import usePlanAlerts from '../../hooks/usePlanAlerts';
 import NotificationDropdown from '../notifications/NotificationDropdown';
 import UpgradeModal from '../plan/UpgradeModal';
 import PlanExpiryWarning from '../plan/PlanExpiryWarning';
-import { getRoleDisplayName, ROLE_IDS } from '../../config/roleConfig';
 import { IconWarning } from '../ui/Icons';
 import AntariousLogo from '../ui/AntariousLogo';
-import FreyaLogo from '../ui/FreyaLogo';
-import CommandModeToggle from '../ui/CommandModeToggle';
-import { C, F, R, S, T, shadows } from '../../tokens';
+import TopBarCommandModeBadge from '../ui/TopBarCommandModeBadge';
+import TopBarGlobalSearch from '../ui/TopBarGlobalSearch';
+import TopBarFreyaMenu from '../ui/TopBarFreyaMenu';
+import TopBarCreditsMenu from '../ui/TopBarCreditsMenu';
+import TopBarUserMenu from '../ui/TopBarUserMenu';
+import { C, F, R, S, T, shadows, Z } from '../../tokens';
 
 // ── Campaign options (mock) ───────────────────
 const CAMPAIGNS = [
@@ -25,64 +27,8 @@ const CAMPAIGNS = [
   'Global Partner Enablement',
 ];
 
-// ── Breadcrumb from pathname ───────────────────
-function Breadcrumb() {
-  const location = useLocation();
-  const path = location.pathname.replace(/^\//, '') || 'dashboard';
-  const segments = path.split('/').filter(Boolean);
-  const labels = {
-    '': 'Dashboard',
-    campaigns: 'Campaigns',
-    agents: 'Agents',
-    content: 'Content',
-    knowledge: 'Knowledge base',
-    inbox: 'Company Social Inbox',
-    analytics: 'Analytics',
-    meta: 'Meta Ads Monitor',
-    escalations: 'Escalations',
-    querymanager: 'Team Query',
-    'notification-center': 'Notifications',
-    research: 'Research',
-    icp: 'ICP Builder',
-    intent: 'Intent Signals',
-    competitive: 'Competitive Intel',
-    abm: 'ABM Engine',
-    playbooks: 'Playbooks',
-    revenue: 'Revenue',
-    pipeline: 'Pipeline',
-    forecast: 'Forecast',
-    customers: 'Customer Success',
-    'customer-success': 'Customer Success',
-    settings: 'Settings',
-    aria: 'Freya',
-    freya: 'Freya',
-    'freya-brain': 'Freya Intelligence',
-    billing: 'Billing',
-    team: 'Team',
-    whitelabel: 'White-Label',
-    dev: 'Dev',
-    roles: 'Role Switcher',
-    new: 'New',
-    upgrade: 'Upgrade',
-  };
-  const title = segments.length > 0
-    ? (labels[segments[segments.length - 1]] ?? segments[segments.length - 1])
-    : 'Dashboard';
-  return (
-    <span style={{
-      fontFamily: F.body,
-      fontSize: '13px',
-      fontWeight: 500,
-      color: C.textSecondary,
-      textTransform: 'capitalize',
-    }}>
-      {title}
-    </span>
-  );
-}
-
 // ── Campaign selector ─────────────────────────
-function CampaignSelector() {
+function CampaignSelector({ isCompact = false }) {
   const [open, setOpen] = useState(false);
   const currentCampaign = useStore((s) => s.currentCampaign);
   const setCampaign = useStore((s) => s.setCampaign);
@@ -92,13 +38,14 @@ function CampaignSelector() {
     display: 'flex',
     alignItems: 'center',
     gap: S[2],
-    backgroundColor: C.surface2,
+    backgroundColor: C.bg,
     border: `1px solid ${C.border}`,
-    borderRadius: R.button,
-    padding: `${S[1]} ${S[3]}`,
+    borderRadius: R.md,
+    padding: `${S[2]} ${S[3]}`,
     cursor: 'pointer',
     transition: T.base,
     color: C.textPrimary,
+    boxShadow: shadows.inset,
   };
 
   const dropdownStyle = {
@@ -129,14 +76,25 @@ function CampaignSelector() {
   });
 
   return (
-    <div style={{ position: 'relative' }}>
-      <button style={buttonStyle} onClick={() => setOpen((o) => !o)}>
+    <div style={{ position: 'relative', minWidth: 0, width: '100%', maxWidth: '100%' }}>
+      <button type="button" style={{ ...buttonStyle, maxWidth: '100%', minWidth: 0 }} onClick={() => setOpen((o) => !o)}>
         {/* Campaign icon */}
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
           <path d="M1 7h12M1 7l3-3M1 7l3 3" stroke={C.primary} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M13 3v8" stroke={C.primary} strokeWidth="1.5" strokeLinecap="round"/>
         </svg>
-        <span style={{ fontFamily: F.body, fontSize: '13px', fontWeight: 500, maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span style={{
+          fontFamily: F.display,
+          fontSize: isCompact ? '12px' : '13px',
+          fontWeight: 600,
+          flex: 1,
+          minWidth: 0,
+          maxWidth: isCompact ? '120px' : 'min(200px, 22vw)',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+        >
           {currentCampaign}
         </span>
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ color: C.textMuted, transform: open ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.15s ease' }}>
@@ -171,251 +129,6 @@ function CampaignSelector() {
   );
 }
 
-// ── Mock user accounts (switch account) ───────
-const MOCK_ACCOUNTS = [
-  { id: 'main', label: 'Asif', email: 'asif@nexara.demo', current: true },
-  { id: 'work', label: 'Work account', email: 'asif.work@company.com', current: false },
-  { id: 'personal', label: 'Personal', email: 'asif.personal@gmail.com', current: false },
-];
-
-// ── Avatar / Account dropdown ─────────────────
-function AvatarButton() {
-  const currentRole = useStore((s) => s.currentRole);
-  const setRole = useStore((s) => s.setRole);
-  const logout = useStore((s) => s.logout);
-  const navigate = useNavigate();
-  const toast = useToast();
-  const [open, setOpen] = useState(false);
-  const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
-  const isDev = typeof import.meta !== 'undefined' && import.meta.env?.DEV === true;
-
-  const avatarStyle = {
-    width: '32px',
-    height: '32px',
-    borderRadius: '50%',
-    backgroundColor: C.surface3,
-    border: `2px solid ${open ? C.primary : C.border}`,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-    fontFamily: F.mono,
-    fontSize: '11px',
-    fontWeight: 700,
-    color: C.primary,
-    flexShrink: 0,
-    transition: T.base,
-  };
-
-  const dropdownStyle = {
-    position: 'absolute',
-    top: 'calc(100% + 8px)',
-    right: 0,
-    minWidth: '240px',
-    backgroundColor: C.surface2,
-    border: `1px solid ${C.border}`,
-    borderRadius: R.card,
-    boxShadow: shadows.dropdown,
-    zIndex: 200,
-    overflow: 'hidden',
-    padding: `${S[2]} 0`,
-  };
-
-  const itemStyle = (active) => ({
-    display: 'flex',
-    alignItems: 'center',
-    gap: S[3],
-    width: '100%',
-    padding: `${S[2]} ${S[4]}`,
-    border: 'none',
-    background: active ? C.primaryGlow : 'transparent',
-    color: active ? C.primary : C.textPrimary,
-    fontFamily: F.body,
-    fontSize: '13px',
-    cursor: 'pointer',
-    textAlign: 'left',
-    transition: T.color,
-  });
-
-  const sectionLabelStyle = {
-    padding: `${S[1]} ${S[4]} ${S[1]}`,
-    fontFamily: F.mono,
-    fontSize: '10px',
-    fontWeight: 700,
-    color: C.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: '0.08em',
-  };
-
-  return (
-    <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: S[2] }}>
-      {/* Role pill — in dev mode click opens role switcher dropdown */}
-      {isDev ? (
-        <div style={{ position: 'relative' }}>
-          <button
-            type="button"
-            onClick={() => setRoleDropdownOpen((o) => !o)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: S[1],
-              padding: `2px ${S[2]}`,
-              fontFamily: F.mono,
-              fontSize: '10px',
-              fontWeight: 700,
-              color: C.textMuted,
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              backgroundColor: C.surface3,
-              border: `1px solid ${roleDropdownOpen ? C.primary : C.border}`,
-              borderRadius: R.pill,
-              cursor: 'pointer',
-              transition: T.color,
-            }}
-          >
-            {getRoleDisplayName(currentRole)}
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ transform: roleDropdownOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.15s ease' }}>
-              <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-          {roleDropdownOpen && (
-            <>
-              <div style={{ position: 'fixed', inset: 0, zIndex: 198 }} onClick={() => setRoleDropdownOpen(false)} aria-hidden="true" />
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 6px)',
-                  left: 0,
-                  minWidth: '200px',
-                  backgroundColor: C.surface2,
-                  border: `1px solid ${C.border}`,
-                  borderRadius: R.card,
-                  boxShadow: shadows.dropdown,
-                  zIndex: 200,
-                  overflow: 'hidden',
-                  padding: `${S[1]} 0`,
-                }}
-              >
-                {ROLE_IDS.map((roleId) => (
-                  <button
-                    key={roleId}
-                    type="button"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      width: '100%',
-                      padding: `${S[2]} ${S[4]}`,
-                      border: 'none',
-                      background: currentRole === roleId ? C.primaryGlow : 'transparent',
-                      color: currentRole === roleId ? C.primary : C.textPrimary,
-                      fontFamily: F.body,
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      transition: T.color,
-                    }}
-                    onClick={() => {
-                      setRole(roleId);
-                      toast.success(`Now viewing as ${getRoleDisplayName(roleId)}`);
-                      setRoleDropdownOpen(false);
-                    }}
-                  >
-                    {getRoleDisplayName(roleId)}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
-      ) : (
-        <span style={{
-          fontFamily: F.mono,
-          fontSize: '10px',
-          fontWeight: 700,
-          color: C.textMuted,
-          textTransform: 'uppercase',
-          letterSpacing: '0.08em',
-          backgroundColor: C.surface3,
-          border: `1px solid ${C.border}`,
-          borderRadius: R.pill,
-          padding: `2px ${S[2]}`,
-        }}>
-          {getRoleDisplayName(currentRole)}
-        </span>
-      )}
-      <div
-        role="button"
-        tabIndex={0}
-        style={avatarStyle}
-        onClick={() => setOpen((o) => !o)}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen((o) => !o); } }}
-        aria-haspopup="true"
-        aria-expanded={open}
-      >
-        NX
-      </div>
-
-      {open && (
-        <>
-          <div style={{ position: 'fixed', inset: 0, zIndex: 199 }} onClick={() => setOpen(false)} aria-hidden="true" />
-          <div style={dropdownStyle}>
-            {/* Accounts list */}
-            <div style={sectionLabelStyle}>Accounts</div>
-            {MOCK_ACCOUNTS.map((acc) => (
-              <button
-                key={acc.id}
-                type="button"
-                style={itemStyle(acc.current)}
-                onClick={() => {
-                  if (!acc.current) toast.info(`Switch to ${acc.label} (mock)`);
-                  setOpen(false);
-                }}
-              >
-                <span style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: acc.current ? C.primary : C.surface3, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: F.mono, fontSize: '10px', color: acc.current ? C.textInverse : C.textMuted }}>
-                  {acc.label.slice(0, 1)}
-                </span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 600 }}>{acc.label}{acc.current ? ' (current)' : ''}</div>
-                  <div style={{ fontSize: '11px', color: C.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{acc.email}</div>
-                </div>
-              </button>
-            ))}
-
-            <div style={{ height: 1, backgroundColor: C.border, margin: `${S[2]} 0` }} />
-
-            <button type="button" style={itemStyle()} onClick={() => { navigate('/settings'); setOpen(false); }}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 8.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.5 2.5l1 1M10.5 10.5l1 1M2.5 11.5l1-1M10.5 3.5l1-1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
-              Settings
-            </button>
-            <button type="button" style={itemStyle()} onClick={() => { toast.info('Accounts (mock)'); setOpen(false); }}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="4" r="2.5" stroke="currentColor" strokeWidth="1.2"/><path d="M1 12c0-2.5 2-4 6-4s6 1.5 6 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
-              Accounts
-            </button>
-            <button type="button" style={itemStyle()} onClick={() => { navigate('/settings'); setOpen(false); }}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/><path d="M5 6h4M5 8h3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
-              Manage accounts
-            </button>
-
-            <div style={{ height: 1, backgroundColor: C.border, margin: `${S[2]} 0` }} />
-            <button
-              type="button"
-              style={{ ...itemStyle(), color: C.red }}
-              onClick={() => {
-                setOpen(false);
-                logout();
-                navigate('/login');
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 12H3a1 1 0 01-1-1V3a1 1 0 011-1h2M9 10l3-3-3-3M6 7h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              Sign out
-            </button>
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
 // ── Theme toggle button ───────────────────────
 function ThemeToggle() {
   const isDarkMode  = useStore((s) => s.isDarkMode);
@@ -423,20 +136,21 @@ function ThemeToggle() {
 
   return (
     <button
+      type="button"
       onClick={toggleTheme}
       title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
       style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '32px',
-        height: '32px',
+        width: '36px',
+        height: '36px',
         borderRadius: R.button,
-        backgroundColor: 'transparent',
-        border: 'none',
+        backgroundColor: C.surface3,
+        border: `1px solid ${C.border}`,
         color: C.textSecondary,
         cursor: 'pointer',
-        transition: T.color,
+        transition: T.base,
         flexShrink: 0,
       }}
     >
@@ -453,104 +167,6 @@ function ThemeToggle() {
         </svg>
       )}
     </button>
-  );
-}
-
-// ── Credit chip ───────────────────────────────
-function CreditChip() {
-  const {
-    creditsRemaining,
-    creditsIncluded,
-    rolloverBalance,
-    usagePercent,
-    isLow,
-    isCritical,
-    estimatedDaysRemaining,
-  } = useCredits();
-  const navigate   = useNavigate();
-  const [hovered, setHovered] = useState(false);
-
-  const chipColor = isCritical ? C.red : isLow ? C.amber : C.primary;
-  const chipBg    = isCritical ? C.redDim : isLow ? C.amberDim : C.primaryGlow;
-  const totalAvail = creditsIncluded + rolloverBalance;
-  const daysLabel  = Number.isFinite(estimatedDaysRemaining)
-    ? `~${estimatedDaysRemaining}d remaining`
-    : 'unlimited';
-
-  return (
-    <div style={{ position: 'relative' }}>
-      <button
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: S[1],
-          height: '28px',
-          padding: `0 ${S[2]}`,
-          backgroundColor: chipBg,
-          border: `1px solid ${chipColor}`,
-          borderRadius: R.pill,
-          color: chipColor,
-          cursor: 'pointer',
-          boxSizing: 'content-box',
-          fontFamily: F.body,
-          fontSize: '11px',
-          fontWeight: 700,
-          letterSpacing: '0.02em',
-          whiteSpace: 'nowrap',
-          transition: T.color,
-        }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        onClick={() => navigate('/billing')}
-        title="View billing & credits"
-      >
-        <Zap size={11} />
-        {creditsRemaining.toLocaleString()}
-      </button>
-
-      {/* Tooltip */}
-      {hovered && (
-        <div style={{
-          position: 'absolute',
-          top: 'calc(100% + 8px)',
-          right: 0,
-          backgroundColor: C.surface2,
-          border: `1px solid ${C.border}`,
-          borderRadius: R.card,
-          padding: S[3],
-          boxShadow: shadows.dropdown,
-          zIndex: 200,
-          minWidth: '200px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: S[1],
-          pointerEvents: 'none',
-        }}>
-          <div style={{ fontFamily: F.body, fontSize: '12px', fontWeight: 600, color: C.textPrimary }}>
-            Agent Credits
-          </div>
-          <div style={{ fontFamily: F.mono, fontSize: '11px', color: C.textSecondary }}>
-            {creditsRemaining.toLocaleString()} remaining
-          </div>
-          <div style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted }}>
-            {creditsIncluded.toLocaleString()} included
-            {rolloverBalance > 0 && ` + ${rolloverBalance.toLocaleString()} rollover`}
-          </div>
-          <div style={{ fontFamily: F.mono, fontSize: '11px', color: C.textMuted }}>
-            {daysLabel}
-          </div>
-          {/* Mini bar */}
-          <div style={{ height: '3px', borderRadius: R.pill, backgroundColor: C.surface3, marginTop: S[1] }}>
-            <div style={{
-              width: `${Math.min(100, usagePercent)}%`,
-              height: '100%',
-              borderRadius: R.pill,
-              backgroundColor: chipColor,
-            }} />
-          </div>
-        </div>
-      )}
-    </div>
   );
 }
 
@@ -656,56 +272,182 @@ function LowCreditBanner() {
 }
 
 // ── TopBar ────────────────────────────────────
-export default function TopBar({ onFreyaOpen }) {
+export default function TopBar({ onFreyaOpen, isMobile = false, onOpenMobileNav }) {
   const [notifOpen, setNotifOpen] = useState(false);
+  const [centerPanel, setCenterPanel] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        setCenterPanel(null);
+        return;
+      }
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        setCenterPanel((p) => (p === 'search' ? null : 'search'));
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
   const notifications = useStore((s) => s.notifications);
   const inboxUnreadCount = useStore((s) => s.inboxUnreadCount);
-  const currentRole = useStore((s) => s.currentRole);
   const approvalQueues = useStore((s) => s.approvalQueues);
   const pendingApprovalCount = Object.values(approvalQueues || {}).flat().filter((i) => i.status === 'pending').length;
   const unread = notifications.filter((n) => !n.read).length;
   const toast = useToast();
   const { expiryWarning } = usePlanAlerts();
+
   const barStyle = {
-    height: '52px',
+    position: 'relative',
+    zIndex: Z.sticky,
+    minHeight: isMobile ? '52px' : '56px',
     backgroundColor: C.surface,
     borderBottom: `1px solid ${C.border}`,
+    boxShadow: `inset 0 -1px 0 color-mix(in srgb, ${C.primary} 8%, transparent)`,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: `0 ${S[6]}`,
+    justifyContent: 'center',
+    paddingTop: `max(${S[2]}, env(safe-area-inset-top, 0px))`,
+    paddingBottom: S[2],
+    paddingLeft: isMobile ? `max(${S[3]}, env(safe-area-inset-left, 0px))` : S[5],
+    paddingRight: isMobile ? `max(${S[3]}, env(safe-area-inset-right, 0px))` : S[5],
     flexShrink: 0,
-    gap: S[4],
+    isolation: 'isolate',
   };
 
-  const leftStyle = {
+  /**
+   * Desktop: single flex row — left (shrinks + truncates) | center (fixed intrinsic) | right (scroll if needed).
+   * Avoids grid column overlap when the campaign name or toolbar is wide.
+   */
+  const rowStyle = isMobile
+    ? {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        width: '100%',
+        maxWidth: '100%',
+        gap: S[4],
+      }
+    : {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'nowrap',
+        gap: S[3],
+        width: '100%',
+        maxWidth: '100%',
+        minWidth: 0,
+        minHeight: '52px',
+      };
+
+  const leftRailStyle = {
     display: 'flex',
     alignItems: 'center',
-    gap: S[4],
+    gap: isMobile ? S[2] : S[3],
     minWidth: 0,
+    flex: isMobile ? undefined : '1 1 0',
+    overflow: isMobile ? 'visible' : 'hidden',
+    justifyContent: isMobile ? 'space-between' : 'flex-start',
+    maxWidth: isMobile ? '100%' : '100%',
   };
 
-  const centerStyle = {
-    flex: 1,
+  const leftContextShellStyle = {
     display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+    minWidth: 0,
+    flex: 1,
+    width: '100%',
+    maxWidth: '100%',
+    padding: isMobile ? 0 : `${S[2]} ${S[3]}`,
+    backgroundColor: isMobile ? 'transparent' : C.surface2,
+    border: isMobile ? 'none' : `1px solid ${C.border}`,
+    borderRadius: isMobile ? 0 : R.md,
+    boxShadow: isMobile ? 'none' : shadows.inset,
+  };
+
+  const centerZoneStyle = {
+    display: 'flex',
+    alignItems: 'center',
     justifyContent: 'center',
     minWidth: 0,
+    flex: isMobile ? undefined : '0 0 auto',
+    flexShrink: 0,
+    width: isMobile ? '100%' : 'auto',
   };
 
-  const rightStyle = {
+  const centerWellStyle = {
     display: 'flex',
     alignItems: 'center',
-    gap: S[3],
+    justifyContent: 'center',
+    flexWrap: isMobile ? 'wrap' : 'nowrap',
+    rowGap: isMobile ? S[2] : S[2],
+    columnGap: isMobile ? S[2] : S[4],
+    flexShrink: 0,
+    minWidth: 0,
+    width: isMobile ? '100%' : 'auto',
+    maxWidth: isMobile ? '100%' : 'min(520px, 100%)',
+    padding: isMobile ? `${S[2]} ${S[3]}` : `${S[2]} ${S[4]}`,
+    backgroundColor: C.surface2,
+    border: `1px solid ${C.border}`,
+    borderRadius: R.md,
+    boxShadow: shadows.inset,
+    overflow: 'visible',
+    position: 'relative',
+  };
+
+  const rightZoneStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: isMobile ? 'space-between' : 'flex-end',
+    gap: isMobile ? S[2] : S[2],
+    minWidth: 0,
+    flex: isMobile ? undefined : '0 1 auto',
+    maxWidth: '100%',
+    overflowX: isMobile ? 'visible' : 'auto',
+    overflowY: 'hidden',
+    flexWrap: 'nowrap',
+    WebkitOverflowScrolling: 'touch',
+    scrollbarWidth: 'thin',
+  };
+
+  /** One bordered cluster: inbox / notifs / approvals | Freya / theme / credits / account */
+  const rightToolbarStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'nowrap',
+    flexShrink: 0,
+    gap: isMobile ? S[2] : S[2],
+    padding: isMobile ? `${S[1]} ${S[2]}` : `${S[1]} ${S[3]}`,
+    backgroundColor: C.surface2,
+    border: `1px solid ${C.border}`,
+    borderRadius: R.md,
+    boxShadow: shadows.inset,
+    position: 'relative',
+    overflow: 'visible',
+  };
+
+  const alertClusterStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 0,
+    flexShrink: 0,
+    padding: '2px',
+    borderRadius: R.sm,
+    backgroundColor: C.bg,
+    border: `1px solid ${C.border}`,
   };
 
   const iconButtonStyle = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '32px',
-    height: '32px',
-    borderRadius: R.button,
+    width: isMobile ? '40px' : '34px',
+    height: isMobile ? '40px' : '34px',
+    borderRadius: R.sm,
     backgroundColor: 'transparent',
     border: 'none',
     color: C.textSecondary,
@@ -714,164 +456,200 @@ export default function TopBar({ onFreyaOpen }) {
     position: 'relative',
   };
 
+  const vRule = (h = 22) => (
+    <div
+      aria-hidden
+      style={{
+        width: '1px',
+        height: `${h}px`,
+        backgroundColor: C.border,
+        flexShrink: 0,
+        alignSelf: 'center',
+        opacity: 0.85,
+      }}
+    />
+  );
+
   return (
     <>
       <header style={barStyle}>
-        {/* Left: logo + client switcher (owner/csm) or campaign selector */}
-        <div style={leftStyle}>
-          <AntariousLogo variant="dark" height={24} />
-          <CampaignSelector />
-        </div>
-
-        {/* Center: breadcrumb + command mode toggle */}
-        <div style={{ ...centerStyle, gap: S[4] }}>
-          <Breadcrumb />
-          <CommandModeToggle size="sm" showLabels={true} />
-        </div>
-
-        {/* Right: search, Freya, theme, notif, credit chip, divider, avatar */}
-        <div style={rightStyle}>
-          {/* Search */}
-          <button
-            style={iconButtonStyle}
-            title="Search"
-            onClick={() => toast.info('Global search coming soon')}
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-          </button>
-
-          {/* Inbox — pending messages */}
-          <button
-            style={iconButtonStyle}
-            title="Company Social Inbox"
-            onClick={() => navigate('/inbox')}
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M2 4h12v8H2V4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-              <path d="M2 4l6 4 6-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            {inboxUnreadCount > 0 && (
-              <span style={{
-                position: 'absolute',
-                top: '2px',
-                right: '2px',
-                minWidth: '14px',
-                height: '14px',
-                padding: '0 4px',
-                borderRadius: '7px',
-                backgroundColor: C.red,
-                border: `1.5px solid ${C.surface}`,
-                fontFamily: F.mono,
-                fontSize: '10px',
-                fontWeight: 700,
-                color: C.textOnDanger,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                {inboxUnreadCount > 99 ? '99+' : inboxUnreadCount}
-              </span>
+        <div style={rowStyle}>
+          {/* Zone A — mobile nav + campaign context */}
+          <div style={leftRailStyle}>
+            {isMobile && (
+              <button
+                type="button"
+                aria-label="Open navigation"
+                onClick={() => {
+                  onOpenMobileNav?.();
+                }}
+                style={{
+                  ...iconButtonStyle,
+                  border: `1px solid ${C.border}`,
+                  backgroundColor: C.surface2,
+                  color: C.textPrimary,
+                }}
+              >
+                <Menu size={20} strokeWidth={2} />
+              </button>
             )}
-          </button>
-
-          {/* Freya button */}
-          <button
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              height: '30px',
-              padding: '0 10px',
-              backgroundColor: C.primaryGlow,
-              border: `1px solid ${C.primary}`,
-              borderRadius: R.pill,
-              color: C.primary,
-              cursor: 'pointer',
-              transition: T.base,
-            }}
-            title="Ask Freya"
-            onClick={() => onFreyaOpen?.()}
-          >
-            <FreyaLogo size={14} />
-            <span style={{ fontFamily: F.mono, fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em' }}>Freya</span>
-          </button>
-
-          {/* Theme toggle */}
-          <ThemeToggle />
-
-          {/* Notification bell */}
-          <div style={{ position: 'relative' }}>
-            <button
-              style={iconButtonStyle}
-              title="Notifications"
-              onClick={() => setNotifOpen((o) => !o)}
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 1.5a5 5 0 00-5 5v2.5l-1 2h12l-1-2V6.5a5 5 0 00-5-5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-                <path d="M6.5 12.5a1.5 1.5 0 003 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-              {unread > 0 && (
-                <span style={{
-                  position: 'absolute',
-                  top: '3px',
-                  right: '3px',
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  backgroundColor: C.red,
-                  border: `1.5px solid ${C.surface}`,
-                }}/>
+            {isMobile && (
+              <div style={{ flexShrink: 0, opacity: 0.9 }}>
+                <AntariousLogo variant="dark" height={22} />
+              </div>
+            )}
+            <div style={leftContextShellStyle}>
+              {!isMobile && (
+                <span
+                  style={{
+                    fontFamily: F.mono,
+                    fontSize: '9px',
+                    fontWeight: 700,
+                    letterSpacing: '0.1em',
+                    color: C.textMuted,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Active campaign
+                </span>
               )}
-            </button>
-            <NotificationDropdown open={notifOpen} onClose={() => setNotifOpen(false)} />
+              <CampaignSelector isCompact={isMobile} />
+            </div>
           </div>
 
-          {/* Pending approvals badge */}
-          {pendingApprovalCount > 0 && (
-            <button
-              style={{
-                ...iconButtonStyle,
-                position: 'relative',
-              }}
-              title={`${pendingApprovalCount} pending approval${pendingApprovalCount !== 1 ? 's' : ''}`}
-              onClick={() => toast.info(`${pendingApprovalCount} pending approval${pendingApprovalCount !== 1 ? 's' : ''} — check the Approval Queue panel on each page`)}
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 1L9.8 5.2L14.5 5.6L11 8.7L12.1 13.4L8 10.9L3.9 13.4L5 8.7L1.5 5.6L6.2 5.2L8 1Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
-              </svg>
-              <span style={{
-                position: 'absolute',
-                top: '2px',
-                right: '2px',
-                minWidth: '14px',
-                height: '14px',
-                padding: '0 3px',
-                borderRadius: '7px',
-                backgroundColor: C.red,
-                border: `1.5px solid ${C.surface}`,
-                fontFamily: F.mono,
-                fontSize: '9px',
-                fontWeight: 700,
-                color: '#fff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                {pendingApprovalCount > 99 ? '99+' : pendingApprovalCount}
-              </span>
-            </button>
-          )}
+          {/* Zone B — search + command mode */}
+          <div style={centerZoneStyle}>
+            <div style={centerWellStyle}>
+              <TopBarGlobalSearch
+                isMobile={isMobile}
+                open={centerPanel === 'search'}
+                onToggle={() => setCenterPanel((p) => (p === 'search' ? null : 'search'))}
+                onClose={() => setCenterPanel((p) => (p === 'search' ? null : p))}
+              />
+              {vRule(isMobile ? 22 : 28)}
+              <TopBarCommandModeBadge
+                isMobile={isMobile}
+                open={centerPanel === 'mode'}
+                onToggle={() => setCenterPanel((p) => (p === 'mode' ? null : 'mode'))}
+                onClose={() => setCenterPanel((p) => (p === 'mode' ? null : p))}
+              />
+            </div>
+          </div>
 
-          {/* Credit chip */}
-          <CreditChip />
+          {/* Zone C — single toolbar row (alerts + co-pilot + account); parent scrolls horizontally if needed */}
+          <div style={rightZoneStyle}>
+            <div style={rightToolbarStyle}>
+              <div style={alertClusterStyle} aria-label="Inbox and alerts">
+                <button
+                  type="button"
+                  style={iconButtonStyle}
+                  title="Company Social Inbox"
+                  onClick={() => navigate('/inbox')}
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M2 4h12v8H2V4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+                    <path d="M2 4l6 4 6-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  {inboxUnreadCount > 0 && (
+                    <span style={{
+                      position: 'absolute',
+                      top: '2px',
+                      right: '2px',
+                      minWidth: '14px',
+                      height: '14px',
+                      padding: '0 4px',
+                      borderRadius: '7px',
+                      backgroundColor: C.red,
+                      border: `1.5px solid ${C.surface}`,
+                      fontFamily: F.mono,
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      color: C.textOnDanger,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    >
+                      {inboxUnreadCount > 99 ? '99+' : inboxUnreadCount}
+                    </span>
+                  )}
+                </button>
 
-          {/* Divider */}
-          <div style={{ width: '1px', height: '20px', backgroundColor: C.border }}/>
+                <div style={{ position: 'relative', flexShrink: 0 }}>
+                  <button
+                    type="button"
+                    style={iconButtonStyle}
+                    title="Notifications"
+                    onClick={() => setNotifOpen((o) => !o)}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M8 1.5a5 5 0 00-5 5v2.5l-1 2h12l-1-2V6.5a5 5 0 00-5-5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+                      <path d="M6.5 12.5a1.5 1.5 0 003 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                    </svg>
+                    {unread > 0 && (
+                      <span style={{
+                        position: 'absolute',
+                        top: '3px',
+                        right: '3px',
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        backgroundColor: C.red,
+                        border: `1.5px solid ${C.surface}`,
+                      }}
+                      />
+                    )}
+                  </button>
+                  <NotificationDropdown open={notifOpen} onClose={() => setNotifOpen(false)} />
+                </div>
 
-          <AvatarButton />
+                {pendingApprovalCount > 0 && (
+                  <button
+                    type="button"
+                    style={{
+                      ...iconButtonStyle,
+                      position: 'relative',
+                    }}
+                    title={`${pendingApprovalCount} pending approval${pendingApprovalCount !== 1 ? 's' : ''}`}
+                    onClick={() => toast.info(`${pendingApprovalCount} pending approval${pendingApprovalCount !== 1 ? 's' : ''} — check the Approval Queue panel on each page`)}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M8 1L9.8 5.2L14.5 5.6L11 8.7L12.1 13.4L8 10.9L3.9 13.4L5 8.7L1.5 5.6L6.2 5.2L8 1Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+                    </svg>
+                    <span style={{
+                      position: 'absolute',
+                      top: '2px',
+                      right: '2px',
+                      minWidth: '14px',
+                      height: '14px',
+                      padding: '0 3px',
+                      borderRadius: '7px',
+                      backgroundColor: C.red,
+                      border: `1.5px solid ${C.surface}`,
+                      fontFamily: F.mono,
+                      fontSize: '9px',
+                      fontWeight: 700,
+                      color: C.textOnDanger,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    >
+                      {pendingApprovalCount > 99 ? '99+' : pendingApprovalCount}
+                    </span>
+                  </button>
+                )}
+              </div>
+
+              {!isMobile && vRule(24)}
+
+              <TopBarFreyaMenu isMobile={isMobile} onFreyaOpen={onFreyaOpen} />
+              <ThemeToggle />
+              <TopBarCreditsMenu isMobile={isMobile} />
+              {!isMobile && vRule(22)}
+              <TopBarUserMenu isMobile={isMobile} />
+            </div>
+          </div>
         </div>
       </header>
 

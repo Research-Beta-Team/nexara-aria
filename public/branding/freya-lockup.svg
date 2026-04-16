@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 24" fill="none" aria-hidden="true">
+  <title>Freya</title>
+  <circle cx="6" cy="12" r="2.85" fill="#4A7C6F"/>
+  <circle cx="6" cy="12" r="4.15" stroke="#4A7C6F" stroke-width="0.9" opacity="0.35"/>
+  <path d="M12.5 5.5V18.5M12.5 5.5H22M12.5 11.25H18" stroke="#1C2B27" stroke-width="2.05" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="30" y="16.35" font-family="Outfit, system-ui, sans-serif" font-size="13.5" font-weight="600" letter-spacing="-0.02em" fill="#1C2B27">Freya</text>
+</svg>

@@ -1,6 +1,6 @@
 /**
  * Multi-Touch Attribution — Session 4.
- * Top bar (title, date range, ModelSelector, Export, Ask ARIA); summary metric strip; ChannelRevenueChart; AttributionTable; TouchpointTimeline; ARIAAttributionInsight.
+ * Top bar (title, date range, ModelSelector, Export, Ask Freya); summary metric strip; ChannelRevenueChart; AttributionTable; TouchpointTimeline; Freya attribution insights.
  */
 import { useState } from 'react';
 import useStore from '../store/useStore';
@@ -307,7 +307,7 @@ export default function MultiTouchAttribution() {
         <TouchpointTimeline deals={DEALS_WITH_JOURNEY} />
       </div>
 
-      {/* ARIA insights */}
+      {/* Freya attribution insights */}
       <ARIAAttributionInsight insights={ARIA_INSIGHTS} onAction={(insight) => toast.info(insight.actionLabel)} />
     </div>
   );

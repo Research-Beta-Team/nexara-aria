@@ -1,15 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useStore from '../../store/useStore';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
+import CommandModeBanner from './CommandModeBanner';
 import AppFooter from './AppFooter';
 import Toast from '../ui/Toast';
 import FreyaPanel from '../freya/AriaPanel';
 import CheckoutFlow from '../billing/CheckoutFlow';
 import usePlanAlerts from '../../hooks/usePlanAlerts';
 import PlanChangeToast from '../plan/PlanChangeToast';
-import { C, F, R, S, scrollbarStyle } from '../../tokens';
+import { useBreakpoint } from '../../hooks/useBreakpoint';
+import { getShellLayout, getShellContentStyle } from '../../config/roleConfig';
+import { C, F, R, S, scrollbarStyle, Z } from '../../tokens';
+import { getCommandModeTheme } from '../../config/commandModeTheme';
+import { getModeDesign, MODE_KEYFRAMES } from '../../config/commandModeDesign';
 
 export default function AppLayout({ children }) {
   const freyaOpen = useStore((s) => s.freyaOpen);
@@ -21,6 +26,42 @@ export default function AppLayout({ children }) {
   const currentClient = useStore((s) => s.currentClient);
   const exitPreview = useStore((s) => s.exitPreview);
   const isPreviewMode = previousClientIdBeforePreview != null;
+  const currentRole = useStore((s) => s.currentRole);
+  const commandMode = useStore((s) => s.commandMode);
+  const modeTheme = useMemo(() => getCommandModeTheme(commandMode), [commandMode]);
+  const modeDesign = useMemo(() => getModeDesign(commandMode), [commandMode]);
+
+  const { isMobile } = useBreakpoint();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  // Close drawer after navigation (deferred to satisfy react-hooks/set-state-in-effect)
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setMobileNavOpen(false));
+    return () => cancelAnimationFrame(id);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const shell = getShellLayout(currentRole);
+    document.documentElement.setAttribute('data-shell-density', shell.density);
+    document.documentElement.setAttribute('data-role', currentRole);
+    return () => {
+      document.documentElement.removeAttribute('data-shell-density');
+      document.documentElement.removeAttribute('data-role');
+    };
+  }, [currentRole]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-command-mode', commandMode);
+    // Inject mode keyframes once
+    let styleEl = document.getElementById('mode-keyframes');
+    if (!styleEl) {
+      styleEl = document.createElement('style');
+      styleEl.id = 'mode-keyframes';
+      styleEl.textContent = MODE_KEYFRAMES;
+      document.head.appendChild(styleEl);
+    }
+    return () => document.documentElement.removeAttribute('data-command-mode');
+  }, [commandMode]);
 
   const {
     planChangeToast,
@@ -36,10 +77,14 @@ export default function AppLayout({ children }) {
 
   const shellStyle = {
     display: 'flex',
-    height: '100vh',
-    width: '100vw',
+    minHeight: '100dvh',
+    height: '100dvh',
+    width: '100%',
+    maxWidth: '100vw',
     overflow: 'hidden',
     backgroundColor: C.bg,
+    paddingTop: 'env(safe-area-inset-top, 0px)',
+    boxSizing: 'border-box',
   };
 
   const mainColStyle = {
@@ -48,6 +93,7 @@ export default function AppLayout({ children }) {
     flex: 1,
     overflow: 'hidden',
     minWidth: 0,
+    width: '100%',
   };
 
   const contentStyle = {
@@ -56,12 +102,44 @@ export default function AppLayout({ children }) {
     overflowY: 'auto',
     overflowX: 'hidden',
     backgroundColor: C.bg,
+    transition: commandMode === 'manual' ? 'none' : 'background 0.3s ease',
     ...scrollbarStyle,
   };
 
+  // Mode-specific content styling
+  const modeContentStyle = {
+    padding: modeDesign.layout.contentPadding,
+    ...modeTheme.mainSurroundStyle,
+  };
+
+  const contentRailStyle = getShellContentStyle(currentRole, isMobile);
+
   return (
     <div style={shellStyle}>
-      <Sidebar onOpenFreya={() => setFreyaOpen(true)} />
+      {isMobile && mobileNavOpen && (
+        <button
+          type="button"
+          aria-label="Close navigation"
+          onClick={() => setMobileNavOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: Z.navScrim,
+            border: 'none',
+            margin: 0,
+            padding: 0,
+            backgroundColor: C.overlay,
+            cursor: 'pointer',
+          }}
+        />
+      )}
+
+      <Sidebar
+        isMobile={isMobile}
+        mobileOpen={mobileNavOpen}
+        onCloseMobile={() => setMobileNavOpen(false)}
+      />
+
       <div style={mainColStyle}>
         {isPreviewMode && (
           <div
@@ -77,6 +155,7 @@ export default function AppLayout({ children }) {
               fontFamily: F.body,
               fontSize: '13px',
               color: C.textPrimary,
+              flexWrap: 'wrap',
             }}
           >
             <span style={{ fontWeight: 600 }}>
@@ -104,11 +183,16 @@ export default function AppLayout({ children }) {
             </button>
           </div>
         )}
-        <TopBar onFreyaOpen={() => setFreyaOpen(true)} />
-        <main style={contentStyle}>
-          {children}
+        <TopBar
+          onFreyaOpen={() => setFreyaOpen(true)}
+          isMobile={isMobile}
+          onOpenMobileNav={() => setMobileNavOpen(true)}
+        />
+        <CommandModeBanner mode={commandMode} isMobile={isMobile} />
+        <main style={{ ...contentStyle, ...modeContentStyle }}>
+          <div style={contentRailStyle}>{children}</div>
         </main>
-        <AppFooter />
+        <AppFooter isMobile={isMobile} />
       </div>
       <Toast />
       {activeToast && (

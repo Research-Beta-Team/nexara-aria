@@ -8,6 +8,7 @@ import { getRoleConfig, getAssignedClients } from '../config/roleConfig';
 // ── Dashboard: which view component to render ──
 export function getDashboardViewKey(role) {
   if (role === 'owner' || role === 'founder') return 'owner';
+  if (role === 'client') return 'client';
   const key = role;
   const valid = ['owner', 'advisor', 'csm', 'contentStrategist', 'sdr', 'analyst'];
   return valid.includes(key) ? key : 'owner';
@@ -35,6 +36,14 @@ export function getCampaignDetailConfig(role) {
       return { ...base, layout: 'outreach', defaultTab: 'outreach', visibleTabs: ['outreach', 'overview'] };
     case 'analyst':
       return { ...base, layout: 'analytics', defaultTab: 'analytics', visibleTabs: ['analytics', 'overview'] };
+    case 'client':
+      return {
+        ...base,
+        layout: 'client',
+        defaultTab: 'overview',
+        visibleTabs: ['overview', 'content'],
+        showContextSwitcher: false,
+      };
     default:
       return base;
   }
@@ -51,6 +60,8 @@ export function getInboxConfig(role) {
       return { access: true, filter: 'client', layout: 'default' };
     case 'contentStrategist':
       return { access: true, filter: 'content', layout: 'default' };
+    case 'client':
+      return { access: true, filter: 'client', layout: 'default' };
     default:
       return { access: true, filter: 'all', layout: 'default' };
   }
@@ -58,6 +69,7 @@ export function getInboxConfig(role) {
 
 // ── Escalations: access and filter ──
 export function getEscalationsConfig(role) {
+  if (role === 'client') return { access: false, filter: 'all', readOnly: false };
   const access = getRoleConfig(role).access?.escalations;
   if (access === false) return { access: false, filter: 'all', readOnly: false };
   if (access === 'readonly') return { access: 'readonly', filter: 'all', readOnly: true };
@@ -140,6 +152,14 @@ export function getContentLibraryConfig(role) {
         defaultView: 'By Campaign',
         scopeToAssignedClients: true,
       };
+    case 'client':
+      return {
+        ...full,
+        defaultFilterStatus: 'pending',
+        defaultView: 'List',
+        showAgentFilter: false,
+        showCampaignFilter: false,
+      };
     case 'owner':
     case 'founder':
     case 'advisor':
@@ -153,6 +173,9 @@ export function getContentLibraryConfig(role) {
 // ── Filter content items by role (client: my approvals; csm: assigned clients) ──
 export function filterContentItems(items, role, config) {
   if (!config) return items;
+  if (role === 'client') {
+    return items.filter((i) => i.status === 'pending' || i.status === 'in_review');
+  }
   if (config.layout === 'full' && !config.scopeToAssignedClients) return items;
   if (config.layout === 'client') {
     return items.filter((i) => i.status === 'pending' || i.status === 'in_review');

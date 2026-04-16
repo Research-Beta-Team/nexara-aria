@@ -1,4 +1,5 @@
 import { C, F, R, S, sectionHeading } from '../tokens';
+import FreyaLogo from '../components/ui/FreyaLogo';
 import {
   FREYA_STATS,
   LEARNING_ENTRIES,
@@ -28,24 +29,7 @@ export default function ARIABrain() {
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: S[4], flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: S[3] }}>
-          <div
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: R.card,
-              backgroundColor: C.primary,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 0 20px rgba(61,220,132,0.35)',
-              animation: 'ariaPulse 2s ease-in-out infinite',
-            }}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-4 4 4 4 0 0 1-4-4V6a4 4 0 0 1 4-4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M12 14v6M8 18l4 2 4-2M12 14a4 4 0 0 0 4-4h2a6 6 0 0 1-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
+          <FreyaLogo size={48} pulse ariaHidden />
           <div>
             <h1 style={{ ...sectionHeading, fontSize: '22px', letterSpacing: '-0.02em', margin: 0 }}>
               Freya Intelligence
@@ -55,7 +39,6 @@ export default function ARIABrain() {
             </span>
           </div>
         </div>
-        <style>{`@keyframes ariaPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.85; transform: scale(0.98); } }`}</style>
       </div>
 
       <div style={{ display: 'flex', gap: S[4], flexWrap: 'wrap' }}>

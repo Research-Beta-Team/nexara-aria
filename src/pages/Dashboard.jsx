@@ -11,6 +11,9 @@ import DashboardContentStrategist from '../views/dashboard/DashboardContentStrat
 import DashboardSDR from '../views/dashboard/DashboardSDR';
 import DashboardAnalyst from '../views/dashboard/DashboardAnalyst';
 import DashboardClient from '../views/dashboard/DashboardClient';
+import DashboardManual from '../views/dashboard/DashboardManual';
+import DashboardSemiAuto from '../views/dashboard/DashboardSemiAuto';
+import DashboardAgentic from '../views/dashboard/DashboardAgentic';
 import KPIHeader from '../components/dashboard/KPIHeader';
 import NewCampaignChoice from '../components/campaign/NewCampaignChoice';
 import CampaignHealthCards from '../components/dashboard/CampaignHealthCards';
@@ -201,15 +204,38 @@ function WorkspaceDashboardContent() {
   );
 }
 
+/**
+ * Dashboard dispatch logic:
+ * 1. Startups get StartupDashboard
+ * 2. Owner/Founder roles get command-mode-based dashboards:
+ *    - manual: Workbench (guide one agent, edit output, post manually)
+ *    - semi_auto: Approval queue (Freya proposes, you approve)
+ *    - fully_agentic: Command center (Freya executes, you monitor)
+ * 3. Other roles get role-specific dashboards
+ */
 export default function Dashboard() {
   const segment = useStore((s) => s.segment);
   const role = useStore((s) => s.currentRole);
+  const commandMode = useStore((s) => s.commandMode);
 
   if (segment === 'startup') return <StartupDashboard embedded />;
 
+  // Owner/Founder: dispatch by command mode
+  if (role === 'owner' || role === 'founder') {
+    switch (commandMode) {
+      case 'manual':
+        return <DashboardManual />;
+      case 'semi_auto':
+        return <DashboardSemiAuto />;
+      case 'fully_agentic':
+        return <DashboardAgentic />;
+      default:
+        return <DashboardSemiAuto />;
+    }
+  }
+
+  // Other roles: dispatch by role
   switch (role) {
-    case 'owner':
-    case 'founder':            return <DashboardOwner />;
     case 'advisor':            return <DashboardAdvisor />;
     case 'csm':                return <DashboardCSM />;
     case 'mediaBuyer':         return <DashboardMediaBuyer />;
@@ -217,6 +243,6 @@ export default function Dashboard() {
     case 'sdr':                return <DashboardSDR />;
     case 'analyst':            return <DashboardAnalyst />;
     case 'client':             return <DashboardClient />;
-    default:                   return <DashboardOwner />;
+    default:                   return <DashboardSemiAuto />;
   }
 }

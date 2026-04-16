@@ -5,11 +5,13 @@ import {
 } from 'recharts';
 import { C, F, R, S, T, btn, scrollbarStyle, shadows } from '../tokens';
 import { useAgent } from '../hooks/useAgent';
+import useCommandModeDesign from '../hooks/useCommandModeDesign';
 import AgentThinking from '../components/agents/AgentThinking';
 import AgentResultPanel from '../components/agents/AgentResultPanel';
 import useToast from '../hooks/useToast';
 import AgentRoleIcon from '../components/ui/AgentRoleIcon';
 import { IconChart, IconZap } from '../components/ui/Icons';
+import { ModePageWrapper, ModeCard, ModeButton, ModeBadge } from '../components/mode';
 
 /* ─── KPI data ─────────────────────────────────────────────── */
 const KPI_CARDS = [
@@ -304,10 +306,15 @@ function IntelItem({ item, onAction }) {
 /* ─── Main ────────────────────────────────────────────────────── */
 export default function Analytics() {
   const toast = useToast();
+  const design = useCommandModeDesign();
   const analyst = useAgent('analyst');
   const [analysisActive, setAnalysisActive] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
   const [activeModel, setActiveModel] = useState('W-Shaped');
+
+  const isManual = design.id === 'manual';
+  const isAgentic = design.id === 'fully_agentic';
+  const accentColor = isAgentic ? C.green : isManual ? C.red : C.primary;
 
   const handleRunAnalysis = async () => {
     setAnalysisActive(true);
@@ -348,14 +355,20 @@ export default function Analytics() {
   };
 
   return (
-    <div style={{ height: '100vh', overflowY: 'auto', backgroundColor: C.bg, ...scrollbarStyle }}>
-      <div style={{ padding: `${S[6]} ${S[8]} ${S[10]}` }}>
-
+    <ModePageWrapper style={{ height: '100vh', overflowY: 'auto', ...scrollbarStyle }}>
         {/* ── Header ─────────────────────────────────────── */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: S[6] }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: design.spacing.sectionGap }}>
           <div>
-            <h1 style={{ fontFamily: F.display, fontSize: '28px', fontWeight: 800, color: C.textPrimary, margin: 0, letterSpacing: '-0.03em' }}>
-              Intelligence Hub
+            <h1 style={{
+              fontFamily: design.typography.headingFont,
+              fontSize: isManual ? '16px' : isAgentic ? '32px' : '28px',
+              fontWeight: design.typography.headingWeight,
+              letterSpacing: design.typography.headingLetterSpacing,
+              textTransform: design.typography.headingTransform,
+              color: C.textPrimary,
+              margin: 0,
+            }}>
+              {isManual ? 'INTELLIGENCE HUB' : 'Intelligence Hub'}
             </h1>
             <div style={{ display: 'flex', alignItems: 'center', gap: S[3], marginTop: S[2] }}>
               <div style={{
@@ -714,7 +727,6 @@ export default function Analytics() {
           </div>
 
         </div>
-      </div>
-    </div>
+    </ModePageWrapper>
   );
 }

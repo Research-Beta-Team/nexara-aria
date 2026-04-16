@@ -73,6 +73,7 @@ const ForStartupsOnboarding = lazy(() => import('./pages/for_startups/ForStartup
 const StartupDashboard    = lazy(() => import('./pages/for_startups/StartupDashboard'));
 const WhiteLabelConfig    = lazy(() => import('./pages/workspace/WhiteLabelConfig'));
 const RoleSwitcher        = lazy(() => import('./pages/dev/RoleSwitcher'));
+const ModeShowcase        = lazy(() => import('./pages/dev/ModeShowcase'));
 const Onboarding          = lazy(() => import('./pages/Onboarding'));
 const ARIAMomentOnboarding = lazy(() => import('./pages/ARIAMomentOnboarding'));
 const ARIAKnowledge       = lazy(() => import('./pages/ARIAKnowledge'));
@@ -363,6 +364,7 @@ export default function App() {
         <Route path="admin/clients/:clientId/workspace" element={<CSMWorkspaceConfigurator />} />
         <Route path="admin/clients/:clientId/preview" element={<WorkspacePreview />} />
         <Route path="dev/roles"        element={<RoleSwitcher />} />
+        <Route path="dev/modes"        element={<ModeShowcase />} />
         <Route path="*"             element={<NotFound />} />
       </Route>
     </Routes>

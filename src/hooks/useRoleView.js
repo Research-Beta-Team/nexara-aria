@@ -4,7 +4,7 @@
  */
 
 import useStore from '../store/useStore';
-import { getRoleConfig } from '../config/roleConfig';
+import { getRoleConfig, getShellLayout } from '../config/roleConfig';
 import {
   getDashboardViewKey,
   getCampaignDetailConfig,
@@ -47,9 +47,11 @@ export function useRole() {
   const currentRole = useStore((s) => s.currentRole);
   const setRole = useStore((s) => s.setRole);
   const config = getRoleConfig(currentRole);
+  const shell = getShellLayout(currentRole);
   return {
     currentRole,
     setRole,
+    shell,
     ...config,
   };
 }

@@ -340,7 +340,7 @@ function TimelineNode({ touchpoint, isLast }) {
   );
 }
 
-// ── ARIA panel ────────────────────────────────
+// ── Freya panel ────────────────────────────────
 function AriaSidebar() {
   const toast = useToast();
   return (
@@ -648,7 +648,7 @@ export default function OutreachDetail() {
         <AgentResultPanel result={agentReplyResult} />
       )}
 
-      {/* Two-column: timeline + ARIA */}
+      {/* Two-column: timeline + Freya */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: S[5], alignItems: 'start' }}>
         {/* Timeline */}
         <div style={{ backgroundColor: C.surface, border: `1px solid ${C.border}`, borderRadius: R.card, padding: S[5] }}>
@@ -664,7 +664,7 @@ export default function OutreachDetail() {
           ))}
         </div>
 
-        {/* ARIA sidebar */}
+        {/* Freya sidebar */}
         <AriaSidebar />
       </div>
     </div>

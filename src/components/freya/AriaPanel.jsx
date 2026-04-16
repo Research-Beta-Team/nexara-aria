@@ -599,7 +599,7 @@ function AriaFloatBtn({ open, onOpen, onSend, page, actions: actionsProp }) {
   const fabStyle = {
     width: '52px',
     height: '52px',
-    borderRadius: '50%',
+    borderRadius: R.card,
     backgroundColor: C.primary,
     color: C.textInverse,
     border: 'none',
@@ -625,8 +625,8 @@ function AriaFloatBtn({ open, onOpen, onSend, page, actions: actionsProp }) {
           onSend={(a) => { onOpen(); setTimeout(() => onSend(a), 150); }}
         />
       )}
-      <button style={fabStyle} onClick={onOpen} title="Ask Freya">
-        <FreyaLogo size={22} />
+      <button type="button" style={fabStyle} onClick={onOpen} title="Ask Freya">
+        <FreyaLogo size={34} />
       </button>
     </div>
   );
@@ -1188,9 +1188,7 @@ export default function AriaPanel({ open, onOpen, onClose, page }) {
                 <path d="M2 2h10v2H2V2ZM2 6h10v2H2V6ZM2 10h6v2H2v-2Z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
               </svg>
             </button>
-            <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: C.primaryGlow, border: `1.5px solid ${C.primary}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <FreyaLogo size={14} color={C.primary} />
-            </div>
+            <FreyaLogo size={26} />
             <div>
               <div style={{ fontFamily: F.display, fontSize: '14px', fontWeight: 700, color: C.textPrimary, lineHeight: 1 }}>Freya</div>
               <div style={{ fontFamily: F.body, fontSize: '11px', color: C.primary, lineHeight: 1, marginTop: '2px' }}>AI Co-pilot · Online</div>

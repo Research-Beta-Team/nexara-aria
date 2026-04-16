@@ -119,7 +119,7 @@ function AgentActionBar({ strategist, onRunStrategist }) {
         onClick={() => toast.info('Update plan with Freya — opening chat…')}
         style={{ ...btn.secondary, fontSize: '12px', padding: `${S[1]} ${S[3]}` }}
       >
-        <FreyaLogo size={14} color={C.textPrimary} />
+        <FreyaLogo size={16} />
         Update with Freya
       </button>
     </div>
